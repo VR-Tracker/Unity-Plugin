@@ -278,27 +278,31 @@ namespace VRTracker.Manager
         {
             if (data.Contains("triggeron"))
             {
-                UnityMainThreadDispatcher.Instance().Enqueue(OnTriggerDown);
+                if(OnTriggerDown != null)
+                    OnTriggerDown();
                 triggerPressed = true;
                 triggerDown = true;
                 triggerUp = false;
             }
             else if (data.Contains("triggeroff"))
             {
-                UnityMainThreadDispatcher.Instance().Enqueue(OnTriggerUp);
+                if (OnTriggerUp != null)
+                    OnTriggerUp();
                 triggerPressed = false;
                 triggerUp = true;
             }
             else if (data.Contains("buttonon"))
             {
-                UnityMainThreadDispatcher.Instance().Enqueue(OnRedButtonDown);
+                if (OnRedButtonDown != null)
+                    OnRedButtonDown();
                 buttonPressed = true;
                 buttonDown = true;
                 buttonUp = false;
             }
             else if (data.Contains("buttonoff"))
             {
-                UnityMainThreadDispatcher.Instance().Enqueue(OnRedButtonUp);
+                if (OnRedButtonUp != null)
+                    OnRedButtonUp();
                 buttonPressed = false;
                 buttonUp = true;
             }

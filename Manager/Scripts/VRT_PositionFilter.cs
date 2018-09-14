@@ -165,7 +165,7 @@ namespace VRTracker.Utils
                 if (lastPositions.Count <= 1)
                 {
                     predictSpeedFromAcc = true;
-                    Debug.LogError("Could not find any previous position " + index.ToString() + "  - " + trackingDataPosition.timestamp.ToString() + "  count " + lastPositions.Count.ToString() + "  TS: " + timestamp.ToString("0.000"));
+                 //   Debug.LogError("Could not find any previous position " + index.ToString() + "  - " + trackingDataPosition.timestamp.ToString() + "  count " + lastPositions.Count.ToString() + "  TS: " + timestamp.ToString("0.000"));
                 }
                 else
                 {
@@ -295,7 +295,7 @@ namespace VRTracker.Utils
 
                     if (delaySinceLastUpdate < 0.002f)
                     {
-                        Debug.LogError("Too short delay since previous acceleration (Networking issue) " + timestamp.ToString("0.000"));
+                     //   Debug.LogError("Too short delay since previous acceleration (Networking issue) " + timestamp.ToString("0.000"));
                         return;
                     }
                     // Predict position and speed at this update
@@ -322,8 +322,8 @@ namespace VRTracker.Utils
 
                 lastCalculatedPosition = trackingDataBuffer[0].position;
                 lastCalculatedPositionTimestamp = trackingDataBuffer[0].timestamp;
-                if (lastCalculatedPosition.magnitude > 5)
-                    Debug.LogError("TS " + lastCalculatedPositionTimestamp.ToString("0.000") + "  MAG: " + lastCalculatedPosition.magnitude.ToString());
+               // if (lastCalculatedPosition.magnitude > 5)
+                 //   Debug.LogError("TS " + lastCalculatedPositionTimestamp.ToString("0.000") + "  MAG: " + lastCalculatedPosition.magnitude.ToString());
 
             }
         }
