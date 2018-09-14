@@ -5,7 +5,9 @@ using UnityEngine.UI;
 using VRTracker.Network;
 using VRTracker.Manager;
 using System.Collections.Generic;
+#if VRTRACKER_INTERNAL
 using VRTracker.Scoreboard;
+#endif
 
 namespace VRTracker.Player
 {
