@@ -22,7 +22,7 @@ namespace VRTracker.Utils
 
         private List<PositionOffset> offsets = new List<PositionOffset>();
 
-        private OneEuroFilter<Vector3> oneEuro = new OneEuroFilter<Vector3>(90, 5.0f, 0.2f, 1.0f);
+        private OneEuroFilter<Vector3> oneEuro = new OneEuroFilter<Vector3>(90, 1.50f, 20.0f, 1.0f);
 
         private Vector3 lastCalculatedPosition = Vector3.zero;
         private double lastCalculatedPositionTimestamp = 0.0d;
@@ -37,7 +37,7 @@ namespace VRTracker.Utils
 
         public void Init()
         {
-            trackingDataBuffer = new CircularBuffer<TrackingData>(100);
+            trackingDataBuffer = new CircularBuffer<TrackingData>(200);
         }
 
 
@@ -273,7 +273,7 @@ namespace VRTracker.Utils
                 double delaySinceLastUpdate = trackingDataIMU.timestamp - trackingDataBuffer[index + 1].timestamp;
                 if (delaySinceLastUpdate > maxDelaySinceLastMeasurement)
                 {
-                    Debug.LogWarning("Too long delay since last update : " + delaySinceLastUpdate.ToString() + "  " + timestamp.ToString("0.000"));
+                 //   Debug.LogWarning("Too long delay since last update : " + delaySinceLastUpdate.ToString() + "  " + timestamp.ToString("0.000"));
                     return;
                 }
 
