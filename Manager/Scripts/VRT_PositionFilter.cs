@@ -22,7 +22,7 @@ namespace VRTracker.Utils
 
         private List<PositionOffset> offsets = new List<PositionOffset>();
 
-        private OneEuroFilter<Vector3> oneEuro = new OneEuroFilter<Vector3>(90, 5.0f, 0.2f, 1.0f);
+        private OneEuroFilter<Vector3> oneEuro = new OneEuroFilter<Vector3>(90, 0.70f, 25.0f, 1.0f);
 
         private Vector3 lastCalculatedPosition = Vector3.zero;
         private double lastCalculatedPositionTimestamp = 0.0d;
@@ -37,7 +37,7 @@ namespace VRTracker.Utils
 
         public void Init()
         {
-            trackingDataBuffer = new CircularBuffer<TrackingData>(100);
+            trackingDataBuffer = new CircularBuffer<TrackingData>(200);
         }
 
 
@@ -53,7 +53,6 @@ namespace VRTracker.Utils
         {
             lock (trackingDataBuffer)
             {
-
             int lastPositionIndex = GetLastPositionIndex();
             if (lastPositionIndex == -1)
             {
@@ -146,17 +145,19 @@ namespace VRTracker.Utils
 
             // Try to find position jumps
             TrackingDataPosition previousPosition = GetPreviousPositionData(index);
-            if (previousPosition == null)
-                return;
-
-            float speedMagnitudeLastPositions = ((trackingDataPosition.position - previousPosition.position) / (float)(trackingDataPosition.timestamp - previousPosition.timestamp)).magnitude;
-            if (speedMagnitudeLastPositions > discardSpeed && (trackingDataPosition.position - previousPosition.position).magnitude > discardDistance)
-            {
-                ((TrackingDataPosition)trackingDataBuffer[index]).jump = true;
-                predictSpeedFromAcc = true;
-                //    Debug.LogWarning("Jump detected of speed " + speedMagnitudeLastPositions.ToString() + "  at TS " + trackingDataPosition.timestamp.ToString());
+            if (previousPosition != null){
+                float speedMagnitudeLastPositions = ((trackingDataPosition.position - previousPosition.position) / (float)(trackingDataPosition.timestamp - previousPosition.timestamp)).magnitude;
+                if (speedMagnitudeLastPositions > discardSpeed && (trackingDataPosition.position - previousPosition.position).magnitude > discardDistance)
+                {
+                    ((TrackingDataPosition)trackingDataBuffer[index]).jump = true;
+                    predictSpeedFromAcc = true;
+                    //    Debug.LogWarning("Jump detected of speed " + speedMagnitudeLastPositions.ToString() + "  at TS " + trackingDataPosition.timestamp.ToString());
+                }
             }
-
+                // We couldn't find any previous position in the buffer so we add an offset to smooth from the last calculated position to here
+            else {
+                    offsets.Add(new PositionOffset(trackingDataPosition.timestamp, lastCalculatedPosition - trackingDataPosition.position, 0.4f));
+            }
 
             if (!predictSpeedFromAcc)
             {
@@ -273,7 +274,7 @@ namespace VRTracker.Utils
                 double delaySinceLastUpdate = trackingDataIMU.timestamp - trackingDataBuffer[index + 1].timestamp;
                 if (delaySinceLastUpdate > maxDelaySinceLastMeasurement)
                 {
-                    Debug.LogWarning("Too long delay since last update : " + delaySinceLastUpdate.ToString() + "  " + timestamp.ToString("0.000"));
+                 //   Debug.LogWarning("Too long delay since last update : " + delaySinceLastUpdate.ToString() + "  " + timestamp.ToString("0.000"));
                     return;
                 }
 
@@ -381,7 +382,7 @@ namespace VRTracker.Utils
                     return (TrackingDataPosition)trackingDataBuffer[i];
             }
 
-            Debug.LogError("Could not find previous Position Data");
+          //  Debug.LogError("Could not find previous Position Data");
             return null;
         }
 
@@ -565,6 +566,13 @@ namespace VRTracker.Utils
             this.timestamp = timestamp_;
             this.offset = offset_;
             this.correctionDuration = 1.5f * offset_.magnitude;
+        }
+
+        public PositionOffset(double timestamp_, Vector3 offset_, float correctionDuration_)
+        {
+            this.timestamp = timestamp_;
+            this.offset = offset_;
+            this.correctionDuration = correctionDuration_;
         }
 
         /// <summary>
