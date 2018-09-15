@@ -5,6 +5,8 @@ using SimpleJSON;
 using System.IO;   
 using UnityEngine.SceneManagement;
 using VRTracker.Manager;
+using VRTracker.Utils;
+
 namespace VRTracker.Pairing
 {
 	/// <summary>
@@ -12,6 +14,11 @@ namespace VRTracker.Pairing
 	/// Handles the pairing steps
 	/// </summary>
 	public class VRT_PairingManager : MonoBehaviour {
+
+
+        [SerializeField]
+        public SceneField pairingScene;
+        public SceneField gameScene;
 
         [Tooltip("Check to try to automatically assign the Tags")]
         [SerializeField]
@@ -24,29 +31,122 @@ namespace VRTracker.Pairing
         [SerializeField]
         private VRT_PairingUI pairingUI;
 
-		private List<string> availableTagMac;	//List of available tag in the system
+        private List<string> availableTagMac;	//List of available tag in the system
 
 		private float currentTime;
         private bool automaticPairingSuccessfull = false;
+        private bool pairingSuccessfull = false;
 
-		private void Awake()
-	    {
-			availableTagMac  = new List<string> ();
-		}
+        public static VRTracker.Pairing.VRT_PairingManager Instance = null;
+
+        private void Awake()
+        {
+
+            //Check if instance already exists
+            if (Instance == null)
+            {
+                Instance = this;
+                availableTagMac = new List<string>();
+            }
+            
+            //If instance already exists and it's not this:
+            else if (Instance != this){
+                //Then destroy this. This enforces our singleton pattern, meaning there can only ever be one instance of a GameManager.
+                Destroy(gameObject);  
+
+            }
+        }
 
 		// Use this for initialization
 		void Start () {
-            if (pairingUI == null)
-                pairingUI = GetComponent<VRT_PairingUI>();
 
+            DontDestroyOnLoad(this);
+            SceneManager.sceneLoaded += OnSceneLoaded;
             VRTracker.Manager.VRT_Manager.Instance.OnAvailableTag += AddAvailableTag;
 
-			if (!VRTracker.Manager.VRT_Manager.Instance.spectator) {
-				StartCoroutine(Pair());
-			}
-            else
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            if (pairingUI == null)
+                pairingUI = GetComponent<VRT_PairingUI>();
+            if (pairingUI == null)
+                pairingUI = GetComponent<VRT_PairingUIStandardAssets>();
+            
+
+            // If we couldn't find the Pairing UI on Start, it means we did not started from the Pairing scene, but the Main Scene
+            // So we need to save the information
+            if (pairingUI == null){
+                if(gameScene == null)
+                    gameScene = new SceneField(SceneManager.GetActiveScene());
+                Debug.Log("Current scene " + SceneManager.GetActiveScene().name);
+
+                StartCoroutine(PairFromMainScene());
+            }
+
+            // Started from the pairing scene
+            else {
+                pairingScene = new SceneField(SceneManager.GetActiveScene());
+                Debug.Log("Type Of Pairing Scene " + pairingScene.GetType().ToString());
+                if (VRTracker.Manager.VRT_Manager.Instance.spectator){
+                    if(gameScene.SceneName != "")
+                        SceneManager.LoadScene(gameScene);
+                    else // Load next scene in Build setting if no Game Scene was set manually in the Pairing Manager
+                        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+                }
+                // Not spectator
+                else {
+                    StartCoroutine(Pair());
+                }
+            }
 		}
+
+        void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            Debug.Log("OnSceneLoaded: " + scene.name);
+
+            if (pairingUI == null && GameObject.FindObjectsOfType<VRT_PairingUI>().Length > 0)
+                pairingUI = GameObject.FindObjectsOfType<VRT_PairingUI>()[0]; 
+
+            if (pairingUI != null && !pairingSuccessfull){
+                StartCoroutine(Pair());
+            }
+        }
+
+
+        public IEnumerator PairFromMainScene(){
+            // Do not try pairing if spectator
+            if (VRTracker.Manager.VRT_Manager.Instance.spectator)
+                yield return null;
+
+            // Try automatic pairing
+            if (autoPairing)
+            {
+                yield return StartCoroutine(AutomaticPairing());
+                if (automaticPairingSuccessfull)
+                {
+                    Debug.Log("Auto pairing successful");
+                    yield return null;
+                }
+                else
+                {
+                    Debug.Log("Auto pairing Failed");
+                    if (pairingScene.SceneName != "")
+                        SceneManager.LoadScene(pairingScene);
+                    else
+                    {
+                        Debug.LogError("Pairing Scene is not set in VRT Pairing Manager, loading Scene 0");
+                        SceneManager.LoadScene(0);
+                    }
+                }
+            }
+            else
+            {
+                if (pairingScene.SceneName != "")
+                    SceneManager.LoadScene(pairingScene);
+                else
+                {
+                    Debug.LogError("Pairing Scene is not set in VRT Pairing Manager, loading Scene 0");
+                    SceneManager.LoadScene(0);
+                }
+            }
+        }
 
         public IEnumerator Pair()
         {
@@ -62,15 +162,23 @@ namespace VRTracker.Pairing
             {
                 // Load next scene
                 StartCoroutine(pairingUI.ShowLoadingNextScene());
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+                pairingSuccessfull = true;
+                if (gameScene.SceneName != "")
+                    SceneManager.LoadScene(gameScene);
+                else // Load next scene in Build setting if no Game Scene was set manually in the Pairing Manager
+                    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
             }
 
             // Try manual pairing
             else if(!automaticPairingSuccessfull){
                 yield return StartCoroutine(ManualPairing());
+                pairingSuccessfull = true;
                 // Save pairing for next time
                 SavePairingData();
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+                if (gameScene.SceneName != "")
+                    SceneManager.LoadScene(gameScene);
+                else // Load next scene in Build setting if no Game Scene was set manually in the Pairing Manager
+                    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
             }
         }
 
@@ -159,7 +267,6 @@ namespace VRTracker.Pairing
                         mTag.AssignTag(mTag.UID);
                     }
                 }
-
             }
             yield break;
         }

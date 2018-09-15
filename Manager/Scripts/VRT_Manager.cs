@@ -26,7 +26,7 @@ namespace VRTracker.Manager
         [Tooltip("List of the Tags required for the game")]
         public List<VRTracker.Manager.VRT_Tag> tags;
 
-        public static VRTracker.Manager.VRT_Manager Instance;
+        public static VRTracker.Manager.VRT_Manager Instance = null;
 
         public VRTracker.Manager.VRT_WebsocketClient vrtrackerWebsocket; //tcp socket
         public VRTracker.Manager.VRT_UDPClient vrtrackerUDP; //udp socket
@@ -36,36 +36,28 @@ namespace VRTracker.Manager
 
         private void Awake()
         {
-            #if UNITY_ANDROID && !UNITY_EDITOR
+#if UNITY_ANDROID && !UNITY_EDITOR
 				//By default deactivate the spectator mode in android devices when built
                 spectator = false;
-            #endif
-            if (Instance != null)
-            {
-                //Desactivate the object on the main scene if using pairing scene
-                Debug.LogError("More than one VRTracker Manager in the scene");
-				this.gameObject.SetActive(false);
-				gameObject.SetActive (false);
-                DestroyImmediate(this);
-            }
-            else
+#endif
+
+            //Check if instance already exists
+            if (Instance == null)
             {
                 Instance = this;
-				tags = new List<VRTracker.Manager.VRT_Tag>();
+                tags = new List<VRTracker.Manager.VRT_Tag>();
             }
+
+            //If instance already exists and it's not this:
+            else if (Instance != this)
+                //Then destroy this. This enforces our singleton pattern, meaning there can only ever be one instance of a GameManager.
+                Destroy(gameObject);
         }
 
         // Use this for initialization
         void Start()
         {
-			if (Instance != this)
-			{
-				//Desactivate the object on the main scene if using pairing scene
-				Debug.LogError("2 More than one VRTracker Manager in the scene");
-				this.gameObject.SetActive(false);
-				gameObject.SetActive (false);
-				return;
-			}
+			
             DontDestroyOnLoad(this.gameObject);
 
             if (vrtrackerWebsocket == null)
