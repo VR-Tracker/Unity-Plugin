@@ -3,10 +3,12 @@
 ## Documentation
 Follow the documentation available on [Notion](https://www.notion.so/vrtracker/VR-Tracker-Unity-Plugin-V3-5aad172e672944c1a4f47a5ac2c8e72d)
 
-A Youtube playlist is available [here]([here](https://www.youtube.com/playlist?list=PLLrMTGcyUCRVX20KkwyIsl2GJgY3aI7fc)
+A Youtube playlist is available [here](https://www.youtube.com/playlist?list=PLLrMTGcyUCRVX20KkwyIsl2GJgY3aI7fc)
+
 
 ## Demonstration
 The following Git provides a full example to integrate the Plugin in a Game allowing with a set of explanatory video : [Example](https://github.com/VR-Tracker/Unity-Example)
+
 
 ## Import in your Unity project
 ### Download
