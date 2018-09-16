@@ -75,7 +75,6 @@ namespace VRTracker.Pairing
             if (pairingUI == null){
                 if(gameScene == null)
                     gameScene = new SceneField(SceneManager.GetActiveScene());
-                Debug.Log("Current scene " + SceneManager.GetActiveScene().name);
 
                 StartCoroutine(PairFromMainScene());
             }

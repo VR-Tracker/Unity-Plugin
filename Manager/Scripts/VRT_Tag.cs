@@ -4,8 +4,7 @@ using System;
 using UnityEngine.VR;
 using UnityEngine.Networking;
 using System.Collections.Generic;
-
-
+using System.Globalization;
 
 namespace VRTracker.Manager
 {
@@ -19,6 +18,7 @@ namespace VRTracker.Manager
         [Tooltip("Set the type of Tag to access it later. Each type must only be used once.")]
         public TagType tagType; // The tag type is used to get the tag association across multiple scene and player avatar
 
+        public TagVersion tagVersion = TagVersion.V3;
 
         public enum TagType
         {
@@ -31,6 +31,13 @@ namespace VRTracker.Manager
 			CameraSpectator, 	// Track the spectator camera, when a tag is put on a real camera to follow its position
 			Other 				// Use to track any object with a tag
         }
+
+        public enum TagVersion {
+            V2,
+            V3,
+            Gun
+        }
+
 
         // Button value saved here for VRTK
         [System.NonSerialized] public bool triggerPressed = false;
@@ -94,7 +101,7 @@ namespace VRTracker.Manager
 
 		public string status; //Tag status (unassigned, tracked, lost)
         public int battery = 0; //Battery remaining for the tag, in percentage (0-100)
-        public int version = 0; // Tag version (exple 203 304 602...)
+        private string version; // Tag version (exple 203 304 602...)
 
         [System.NonSerialized] public bool waitingForID = false; // if the tag is Waiting for its ID
         [System.NonSerialized] public bool IDisAssigned = false; // if the script is assigned to a tag
@@ -336,7 +343,7 @@ namespace VRTracker.Manager
         /// <param name="status">Status.</param>
         /// <param name="battery">Battery.</param>
         /// <param name="version">Version.</param>
-        public void UpdateTagInformations(string status_, int battery_, int version_){
+        public void UpdateTagInformations(string status_, int battery_, string version_){
             if (status != status_)
             {
                 // At start if not tracking the status is "unassigned"
@@ -346,11 +353,28 @@ namespace VRTracker.Manager
                     OnTrackingLost();
                 else if (status_ == "tracking" && OnTrackingLost != null)
                     OnTrackingFound();
+
+                status = status_;
             }
                 
-            status = status_;
+
             battery = battery_;
-            version = version_;
+
+            if(version != version_){
+                if (version_.StartsWith("2", StringComparison.InvariantCulture))
+                    tagVersion = TagVersion.V2;
+                else if (version_.StartsWith("3", StringComparison.InvariantCulture))
+                    tagVersion = TagVersion.V3;
+                else if (version_.StartsWith("6", StringComparison.InvariantCulture))
+                    tagVersion = TagVersion.Gun;
+                else
+                    Debug.LogWarning("Couldn't determine the Tag version of " + version_ + "  for tag UID " + UID);
+
+                version = version_;
+            }
+
+
+
         }
 
 		/// <summary>
@@ -462,7 +486,7 @@ namespace VRTracker.Manager
                     // IMU Quaternion
                     case 2:
                         {
-                            float accuracy = (data[i + 1] << 8) / 10;
+                          //  float accuracy = (data[i + 1] << 8) / 10;
                             float ow = ((float)((data[i + 2] << 8) + data[i + 3]) / 10000) - 1;
                             float ox = -(((float)((data[i + 4] << 8) + data[i + 5]) / 10000) - 1);
                             float oz = -(((float)((data[i + 6] << 8) + data[i + 7]) / 10000) - 1);

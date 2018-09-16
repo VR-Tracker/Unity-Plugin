@@ -22,6 +22,8 @@ namespace VRTracker.Manager
 		string hostname;		
         bool connected = false;
 
+        private bool askedToClose = false; // Bool set to true when we want to close the socket and avoid poping an Error message 
+
 		public void Start()
 		{
 			Application.runInBackground = true;
@@ -33,6 +35,7 @@ namespace VRTracker.Manager
 		// init
 		private void Init()
 		{
+            askedToClose = false;
 			receiveThread = new Thread( new ThreadStart(ReceiveData));
 			receiveThread.IsBackground = true;
 			receiveThread.Start();
@@ -56,6 +59,7 @@ namespace VRTracker.Manager
 				catch (Exception err)
 				{
                     //Close connection in case of error
+                    if(!askedToClose)
                     Debug.LogError("Error with UDP reception : " + err.ToString());
                     connected = false;
                     if (client != null)
@@ -98,8 +102,10 @@ namespace VRTracker.Manager
 			return null;
 		}
 
+		
 		void OnDisable()
 		{
+            askedToClose = true;
             if (receiveThread != null)
             {
                 connected = false;

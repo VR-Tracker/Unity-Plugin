@@ -33,6 +33,7 @@ namespace VRTracker.Manager
         private bool isSocketClosing = false;
         private bool isSocketRunning = false;
         public string localIp; //Store the local address of the device (192.168.42.xxx)
+  
 
         private void Awake()
         {
@@ -67,6 +68,7 @@ namespace VRTracker.Manager
 		/// <param name="e">E.</param>
         private void OnOpenHandler(object sender, System.EventArgs e)
         {
+            askedToClose = false;
             if (OnConnected != null)
                 OnConnected();
             //Debug.LogWarning("COnnection to the gateway");
@@ -89,7 +91,8 @@ namespace VRTracker.Manager
 
         private void OnErrorHandler(object sender, System.EventArgs e)
         {
-            Debug.LogError("Error with connection to the gateway");
+            if(!isSocketClosing)
+                Debug.LogError("Error with connection to the gateway");
             if (!isSocketRunning && !isSocketClosing)
             {
                 Debug.LogWarning("Trying to reconnect to the gateway");
@@ -217,7 +220,7 @@ namespace VRTracker.Manager
 				string uid = null;
 				string status = null;
 				int battery = 0;
-                int version = 0;
+                string version = "";
 				foreach (string data in datas)
 				{
 					string[] datasplit = data.Split('=');
@@ -240,7 +243,7 @@ namespace VRTracker.Manager
                     // Tag version
                     else if (datasplit[0] == "version")
                     {
-                        version = int.Parse(datasplit[1]);
+                        version = datasplit[1];
                     }
 				}
 				if (uid != null && status != null)
@@ -736,7 +739,7 @@ namespace VRTracker.Manager
 		/// <param name="TagID">Tag I.</param>
 		/// <param name="status">Status.</param>
 		/// <param name="battery">Battery.</param>
-        public void ReceiveTagInformations(string TagID, string status, int battery, int version)
+        public void ReceiveTagInformations(string TagID, string status, int battery, string version)
         {
             foreach (VRTracker.Manager.VRT_Tag tag in VRTracker.Manager.VRT_Manager.Instance.tags)
             {
@@ -870,7 +873,7 @@ namespace VRTracker.Manager
 
             if (addressFound)
             {
-                Debug.Log(myaddress);
+                Debug.Log("My IP address is : " + myaddress);
                 return myaddress;
             }
             else
@@ -880,22 +883,6 @@ namespace VRTracker.Manager
                     OnNoGateway("We could find your IP Address, are you sure to be connected to VR Tracker Gateway ?");
                 }
             return "";
-            /*
-            System.Net.IPHostEntry host;
-            string localIP = "?";
-            Debug.Log("HOST: " + System.Net.Dns.GetHostName());
-            host = System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName());
-            foreach (System.Net.IPAddress ip in host.AddressList)
-            {
-                if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-                {
-
-                    localIP = ip.ToString();
-                    break;
-                }
-            }
-            return localIP;
-            */
         }
 
 		/// <summary>
