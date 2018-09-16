@@ -68,7 +68,6 @@ namespace VRTracker.Manager
 		/// <param name="e">E.</param>
         private void OnOpenHandler(object sender, System.EventArgs e)
         {
-            askedToClose = false;
             if (OnConnected != null)
                 OnConnected();
             //Debug.LogWarning("COnnection to the gateway");
