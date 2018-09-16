@@ -442,7 +442,6 @@ namespace VRTracker.Manager
         // Called when connection to Gateway is closed
         private void OnCloseHandler(object sender, CloseEventArgs e)
         {
-            Debug.LogWarning("VR Tracker closing websocket " + e.ToString());
             if (isSocketClosing)
             {
                 if (OnDisconnected != null)

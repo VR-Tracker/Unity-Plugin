@@ -260,7 +260,8 @@ namespace VRTracker.Manager
             orientation_quat = neworientation;
            
             // For TAG V3 only
-            orientation_quat = new Quaternion(-neworientation.x, neworientation.y, -neworientation.z, neworientation.w);
+            if(tagVersion == TagVersion.V3)
+                orientation_quat = new Quaternion(-neworientation.x, neworientation.y, -neworientation.z, neworientation.w);
 
             orientation_ = orientation_quat.eulerAngles;
             orientation_.y -= VRT_Manager.Instance.roomNorthOffset;
@@ -268,9 +269,11 @@ namespace VRTracker.Manager
 
             // Convert acceleration axis
             // TAG V2
-            //acceleration_ = new Vector3(newacceleration.x, newacceleration.z, newacceleration.y);
+            if (tagVersion == TagVersion.V3)
+                acceleration_ = new Vector3(newacceleration.x, newacceleration.z, newacceleration.y);
             // TAG V3
-             acceleration_ = new Vector3(-newacceleration.x, newacceleration.z, -newacceleration.y);
+            else if (tagVersion == TagVersion.V3 || tagVersion == TagVersion.Gun)
+                acceleration_ = new Vector3(-newacceleration.x, newacceleration.z, -newacceleration.y);
 
             // Transform acceleration from local to world coordinate
             acceleration_ = orientation_quat * acceleration_;
