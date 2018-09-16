@@ -79,6 +79,10 @@ namespace VRTracker.Manager
         public Action OnRedButtonDown;    //Occurs when red button is down
         public Action OnRedButtonUp;  //Occurs when red button is up
 
+        // Actions for tracking lost or found
+        public Action OnTrackingLost;
+        public Action OnTrackingFound;
+
         // For Quaternion orientation from Tag
         protected bool orientationUsesQuaternion = false; 
         protected Quaternion orientation_quat; // Tag V2 and above
@@ -88,8 +92,10 @@ namespace VRTracker.Manager
         protected float currentTime; //Timestamp use for assignation
         private long initialTimeMs = -1; // Time at start in milliseconds
 
-		public string status; 					//Tag status (unassigned, tracked, lost)
-        public int battery; 					//Battery remaining for the tag, in percentage
+		public string status; //Tag status (unassigned, tracked, lost)
+        public int battery = 0; //Battery remaining for the tag, in percentage (0-100)
+        public int version = 0; // Tag version (exple 203 304 602...)
+
         [System.NonSerialized] public bool waitingForID = false; // if the tag is Waiting for its ID
         [System.NonSerialized] public bool IDisAssigned = false; // if the script is assigned to a tag
         protected Vector3 positionReceived;		//Position received from VR Tracker system
@@ -321,6 +327,30 @@ namespace VRTracker.Manager
                 IDisAssigned = true;
                 waitingForID = false;
             }
+        }
+
+        /// <summary>
+        /// Called when receiving updates about the Tag informations
+        /// such as battery update, or status change
+        /// </summary>
+        /// <param name="status">Status.</param>
+        /// <param name="battery">Battery.</param>
+        /// <param name="version">Version.</param>
+        public void UpdateTagInformations(string status_, int battery_, int version_){
+            if (status != status_)
+            {
+                // At start if not tracking the status is "unassigned"
+                if(status_ == "unassigned" && OnTrackingLost != null)
+                    OnTrackingLost();
+                else if (status_ == "lost" && OnTrackingLost != null)
+                    OnTrackingLost();
+                else if (status_ == "tracking" && OnTrackingLost != null)
+                    OnTrackingFound();
+            }
+                
+            status = status_;
+            battery = battery_;
+            version = version_;
         }
 
 		/// <summary>

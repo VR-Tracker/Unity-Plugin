@@ -217,7 +217,7 @@ namespace VRTracker.Manager
 				string uid = null;
 				string status = null;
 				int battery = 0;
-
+                int version = 0;
 				foreach (string data in datas)
 				{
 					string[] datasplit = data.Split('=');
@@ -237,17 +237,15 @@ namespace VRTracker.Manager
 					{
 						battery = int.Parse(datasplit[1]);
 					}
+                    // Tag version
+                    else if (datasplit[0] == "version")
+                    {
+                        version = int.Parse(datasplit[1]);
+                    }
 				}
 				if (uid != null && status != null)
 				{
-					foreach (VRTracker.Manager.VRT_Tag tag in VRTracker.Manager.VRT_Manager.Instance.tags)
-					{
-						if (tag.UID == uid)
-						{
-							tag.status = status;
-							tag.battery = battery;
-						}
-					}
+                    ReceiveTagInformations(uid, status, battery, version);
 				}
 
 			}
@@ -738,9 +736,15 @@ namespace VRTracker.Manager
 		/// <param name="TagID">Tag I.</param>
 		/// <param name="status">Status.</param>
 		/// <param name="battery">Battery.</param>
-        public void ReceiveTagInformations(string TagID, string status, int battery)
+        public void ReceiveTagInformations(string TagID, string status, int battery, int version)
         {
-            // TODO: You can do whatever you wants with the Tag informations
+            foreach (VRTracker.Manager.VRT_Tag tag in VRTracker.Manager.VRT_Manager.Instance.tags)
+            {
+                if (tag.UID == TagID)
+                {
+                    tag.UpdateTagInformations(status, battery, version);
+                }
+            }
         }
 			
 		/// <summary>
