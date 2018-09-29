@@ -581,7 +581,7 @@ namespace VRTracker.Manager
 		/// <param name="blue">Blue (0-255)</param>
         public void SetTagColor(string TagID, int red, int green, int blue)
         {
-            myws.SendAsync("cmd= color&r=" + red + "&g=" + green + "&b=" + blue + "&uid=" + TagID, OnSendComplete);
+            myws.SendAsync("cmd=color&r=" + red + "&g=" + green + "&b=" + blue + "&uid=" + TagID, OnSendComplete);
         }
 			
 		/// <summary>

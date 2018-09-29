@@ -133,6 +133,9 @@ namespace VRTracker.Manager
             // Valdated the Tag is assigned via hardcoded UID
             if (UID != "Enter Your Tag UID")
                 IDisAssigned = true;
+
+            OnTrackingLost += SetLostColor;
+            OnTrackingFound += SetFoundColor;
         }
 
         protected virtual void LateUpdate()
@@ -682,6 +685,23 @@ namespace VRTracker.Manager
             IDisAssigned = true;
             waitingForID = false;
             VRTracker.Manager.VRT_Manager.Instance.vrtrackerWebsocket.AssignTag(tagID);
+        }
+
+        /// <summary>
+        /// Sets the tracker color.
+        /// </summary>
+        /// <param name="color">Color.</param>
+        public void SetColor(Color color){
+            VRTracker.Manager.VRT_Manager.Instance.vrtrackerWebsocket.SetTagColor(UID, (int)(255 * color.r), (int)(255 * color.g), (int)(255 * color.b));
+        }
+
+        private void SetFoundColor(){
+            SetColor(Color.green);
+        }
+
+        private void SetLostColor()
+        {
+            SetColor(Color.yellow);
         }
     }
 }
