@@ -113,12 +113,12 @@ namespace VRTracker.Manager
 
         public bool positionFilter = true; // Check to enable position filtering
         private VRTracker.Utils.VRT_PositionFilter filter = new VRTracker.Utils.VRT_PositionFilter();
-        private volatile static bool dataInQueue = false; // to check if position / acc data were received since last LateUpdate to avoid using a lock if not necessary 
-
 
         // Use this for initialization
         protected virtual void Start()
         {
+            filter.Init();
+
             // Get the time at start
             if (initialTimeMs < 1)
                 initialTimeMs = System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond;
