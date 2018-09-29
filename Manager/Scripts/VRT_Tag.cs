@@ -113,6 +113,7 @@ namespace VRTracker.Manager
 
         public bool positionFilter = true; // Check to enable position filtering
         private VRTracker.Utils.VRT_PositionFilter filter = new VRTracker.Utils.VRT_PositionFilter();
+        private volatile static bool dataInQueue = false; // to check if position / acc data were received since last LateUpdate to avoid using a lock if not necessary 
 
 
         // Use this for initialization
@@ -269,8 +270,10 @@ namespace VRTracker.Manager
 
             // Convert acceleration axis
             // TAG V2
-            if (tagVersion == TagVersion.V3)
+            if (tagVersion == TagVersion.V2)
+            {
                 acceleration_ = new Vector3(newacceleration.x, newacceleration.z, newacceleration.y);
+            }
             // TAG V3
             else if (tagVersion == TagVersion.V3 || tagVersion == TagVersion.Gun)
                 acceleration_ = new Vector3(-newacceleration.x, newacceleration.z, -newacceleration.y);
@@ -278,7 +281,7 @@ namespace VRTracker.Manager
             // Transform acceleration from local to world coordinate
             acceleration_ = orientation_quat * acceleration_;
 
-          //   Debug.Log("ACC X " + acceleration_.x.ToString("0.00") + "  Y " + acceleration_.y.ToString("0.00") + "  Z " + acceleration_.z.ToString("0.00"));
+         //   Debug.Log("ACC X " + acceleration_.x.ToString("0.00") + "  Y " + acceleration_.y.ToString("0.00") + "  Z " + acceleration_.z.ToString("0.00"));
 
             if(positionFilter)
                 filter.AddAccelerationMeasurement(((System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond) - initialTimeMs) / 1000.0d, acceleration_);
