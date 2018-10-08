@@ -138,14 +138,18 @@ namespace VRTracker.Manager
             OnTrackingFound += SetFoundColor;
         }
 
-        protected virtual void LateUpdate()
+        protected virtual void Update()
         {
             //UNET Check
             if (netId != null && !netId.isLocalPlayer)
                 return;
 
             if (positionFilter)
-                this.transform.position = filter.GetPosition(((System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond)-initialTimeMs) / 1000.0d);
+            {
+                Vector3 newPosition = filter.GetPosition(((System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond) - initialTimeMs) / 1000.0d);
+                if (newPosition != null && newPosition != Vector3.zero)
+                    this.transform.position = newPosition;
+            }
             else
                 this.transform.position = this.positionReceived;
 

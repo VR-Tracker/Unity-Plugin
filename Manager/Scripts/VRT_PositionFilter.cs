@@ -268,7 +268,7 @@ namespace VRTracker.Utils
             }
 
             Vector3 positionOffsetAfterPropagation = trackingDataBuffer[0].position - latestPosition;
-            if (positionOffsetAfterPropagation.magnitude > 0.04f)
+            if (positionOffsetAfterPropagation.magnitude > 0.04f && previousPosition != null)
             {
                 offsets.Add(new PositionOffset(trackingDataPosition.timestamp, previousPosition.position - trackingDataPosition.position));
                 //      Debug.LogWarning("     Offset : " + positionOffsetAfterPropagation.magnitude.ToString("0.000") + "   at " + trackingDataBuffer[0].timestamp.ToString("0.000"));

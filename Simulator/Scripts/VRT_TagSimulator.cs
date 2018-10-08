@@ -22,7 +22,7 @@ public class VRT_TagSimulator : VRTracker.Manager.VRT_Tag {
 	}
 	
 	// Update is called once per frame
-    protected override void LateUpdate () {
+    protected override void Update () {
 
     }
 
