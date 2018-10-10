@@ -40,7 +40,7 @@ namespace VRTracker.Utils
         }
 
 
-        public void Init()
+        public virtual void Init()
         {
             //WARNING : Call the Init function on MAIN THREAD ONLY (in Start, or Awake)
             mainThread = System.Threading.Thread.CurrentThread;
@@ -50,7 +50,7 @@ namespace VRTracker.Utils
         }
 
 
-        public Vector3 GetPosition(double timestamp)
+        public virtual Vector3 GetPosition(double timestamp)
         {
             if(dataInQueue){
                 lock(dataQueue){
@@ -126,7 +126,7 @@ namespace VRTracker.Utils
         /// </summary>
         /// <param name="timestamp">Timestamp.</param>
         /// <param name="position">Position.</param>
-        public void AddPositionMeasurement(double timestamp, Vector3 position)
+        public virtual void AddPositionMeasurement(double timestamp, Vector3 position)
         {
             TrackingDataPosition trackingDataPosition = new TrackingDataPosition(timestamp - positionLatency, position);
 
@@ -284,7 +284,7 @@ namespace VRTracker.Utils
         /// </summary>
         /// <param name="timestamp">Timestamp.</param>
         /// <param name="acceleration">Acceleration.</param>
-        public void AddAccelerationMeasurement(double timestamp, Vector3 acceleration)
+        public virtual void AddAccelerationMeasurement(double timestamp, Vector3 acceleration)
         {
             TrackingDataIMU trackingDataIMU = new TrackingDataIMU(timestamp, acceleration);
 
@@ -558,6 +558,7 @@ namespace VRTracker.Utils
         /// <returns><c>true</c>, if main thread was ised, <c>false</c> otherwise.</returns>
         private bool isMainThread()
         {
+            return true;
             return mainThread.Equals(System.Threading.Thread.CurrentThread);
         }
     }
