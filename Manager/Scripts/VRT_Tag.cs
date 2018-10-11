@@ -113,7 +113,6 @@ namespace VRTracker.Manager
 
         public bool positionFilter = true; // Check to enable position filtering
         protected VRTracker.Utils.VRT_PositionFilter filter;
-        public string recordfilename;
         // Use this for initialization
         protected virtual void Start()
         {
@@ -132,8 +131,8 @@ namespace VRTracker.Manager
             VRTracker.Manager.VRT_Manager.Instance.AddTag(this);
 
             // Valdated the Tag is assigned via hardcoded UID
-            //if (UID != "Enter Your Tag UID")
-             //   IDisAssigned = true;
+           // if (UID != "Enter Your Tag UID")
+           //     IDisAssigned = true;
 
             OnTrackingLost += SetLostColor;
             OnTrackingFound += SetFoundColor;
