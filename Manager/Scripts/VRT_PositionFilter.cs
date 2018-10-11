@@ -277,8 +277,8 @@ namespace VRTracker.Utils
             }
             lastCalculatedPosition = trackingDataBuffer[0].position;
             lastCalculatedPositionTimestamp = trackingDataBuffer[0].timestamp;
-            if (lastCalculatedPosition.magnitude > 5)
-                Debug.LogError("TS " + lastCalculatedPositionTimestamp.ToString("0.000") + "  MAG: " + lastCalculatedPosition.magnitude.ToString());
+          //  if (lastCalculatedPosition.magnitude > 5)
+            //    Debug.LogError("TS " + lastCalculatedPositionTimestamp.ToString("0.000") + "  MAG: " + lastCalculatedPosition.magnitude.ToString());
         }
 
         /// <summary>
@@ -308,14 +308,14 @@ namespace VRTracker.Utils
             double lastAccTs = GetLastAccelerationTimestamp();
             if (trackingDataIMU.timestamp - lastAccTs < 0.001)
             {
-                Debug.LogError("Acceleration Timestamp too close at " + trackingDataIMU.timestamp.ToString("F4"));
+              //  Debug.LogError("Acceleration Timestamp too close at " + trackingDataIMU.timestamp.ToString("F4"));
                 return;
             }
             int index = InsertByTimestamp(trackingDataIMU);
             //  Debug.Log("ACC MEASUREMENT AT  " + timestamp.ToString("0.000") + " MAG: " + acceleration.magnitude.ToString("0.000"));
 
-            if (index != 0)
-                Debug.LogError("Acceleration was not insered at last position  " + trackingDataIMU.timestamp.ToString("0.000"));
+            //if (index != 0)
+               // Debug.LogError("Acceleration was not insered at last position  " + trackingDataIMU.timestamp.ToString("0.000"));
 
             if (trackingDataBuffer.Size < 2)
                 return;
@@ -323,7 +323,7 @@ namespace VRTracker.Utils
             double delaySinceLastUpdate = trackingDataIMU.timestamp - trackingDataBuffer[index + 1].timestamp;
             if (delaySinceLastUpdate > maxDelaySinceLastMeasurement)
             {
-                Debug.LogWarning("Too long delay since last update : " + delaySinceLastUpdate.ToString() + "  " + trackingDataIMU.timestamp.ToString("0.000"));
+               // Debug.LogWarning("Too long delay since last update : " + delaySinceLastUpdate.ToString() + "  " + trackingDataIMU.timestamp.ToString("0.000"));
                 return;
             }
 
@@ -331,7 +331,7 @@ namespace VRTracker.Utils
             //        Debug.Log("Last pos ts " + lastpositionts.ToString("0.000"));
             if (lastpositionts < 0 || trackingDataIMU.timestamp - lastpositionts > accelerationOnlyTrackingDelay)
             {
-                Debug.LogError("No previous position, or too long ago");
+              //  Debug.LogError("No previous position, or too long ago");
                 return;
             }
 
@@ -362,7 +362,7 @@ namespace VRTracker.Utils
                 trackingDataBuffer[index].speed = newSpeed;
                 Vector3 newPositionOffset = delaySinceLastUpdate < 0.03f ? previousPosition.speed * (float)delaySinceLastUpdate + 0.5f * ((TrackingDataIMU)trackingDataBuffer[index]).acceleration * (float)delaySinceLastUpdate * (float)delaySinceLastUpdate : Vector3.Slerp(previousPosition.speed * (float)delaySinceLastUpdate + 0.5f * ((TrackingDataIMU)trackingDataBuffer[index]).acceleration * (float)delaySinceLastUpdate * (float)delaySinceLastUpdate, Vector3.zero, (float)(trackingDataIMU.timestamp - lastpositionts) / accelerationOnlyTrackingDelay);
                 trackingDataBuffer[index].position = previousPosition.position + newPositionOffset;
-                   Debug.Log("     Offset from prev position : " + (trackingDataBuffer[index].position-previousPosition.position).magnitude.ToString("0.000"));
+                   //Debug.Log("     Offset from prev position : " + (trackingDataBuffer[index].position-previousPosition.position).magnitude.ToString("0.000"));
             }
 
             lastCalculatedPosition = trackingDataBuffer[0].position;
@@ -386,7 +386,7 @@ namespace VRTracker.Utils
                     return (TrackingDataIMU)trackingDataBuffer[i];
             }
 
-            Debug.LogError("Could not find previous IMU Data");
+           // Debug.LogError("Could not find previous IMU Data");
             return null;
         }
 
@@ -450,8 +450,8 @@ namespace VRTracker.Utils
                 }
             }
 
-            if (!positionFound)
-                Debug.LogError("Could not find previous position Data");
+           // if (!positionFound)
+             //   Debug.LogError("Could not find previous position Data");
             return positions;
         }
 

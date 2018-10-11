@@ -5,6 +5,7 @@ using UnityEngine.VR;
 using UnityEngine.Networking;
 using System.Collections.Generic;
 using System.Globalization;
+using CircularBuffer;
 
 namespace VRTracker.Manager
 {
@@ -99,6 +100,17 @@ namespace VRTracker.Manager
         protected float currentTime; //Timestamp use for assignation
         private long initialTimeMs = -1; // Time at start in milliseconds
 
+        private double imuTimestampModulo = 6.5536; // (16 bits)
+        private int imuTimestampModuloCount = 0; // Count how many time we should add the modulo value have the time now
+        private double imuTimestamp = 0;
+        private CircularBuffer<double> imuTimestampOffsetBuffer; // Buffer to calculate a moving average offset between IMU timestamp and system time
+        private double imuTimestampOffsetAvg = 0;
+        private double positionTimestamp = 0;
+        private double positionTimestampOffset = 0;
+
+        private CircularBuffer<double> positionTimestampOffsetBuffer;
+
+
 		public string status; //Tag status (unassigned, tracked, lost)
         public int battery = 0; //Battery remaining for the tag, in percentage (0-100)
         private string version; // Tag version (exple 203 304 602...)
@@ -118,6 +130,9 @@ namespace VRTracker.Manager
         {
             filter = new VRTracker.Utils.VRT_PositionFilter();
             filter.Init();
+
+            imuTimestampOffsetBuffer = new CircularBuffer<double>(20);
+            positionTimestampOffsetBuffer = new CircularBuffer<double>(20);
 
             // Get the time at start
             if (initialTimeMs < 1)
@@ -257,16 +272,23 @@ namespace VRTracker.Manager
             orientationUsesQuaternion = false;
         }
 
+
+        public void UpdateOrientationAndAcceleration(Quaternion neworientation, Vector3 newacceleration)
+        {
+            UpdateOrientationAndAcceleration(((System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond) - initialTimeMs) / 1000.0d, neworientation, newacceleration);
+        }
+
         /// <summary>
         /// Updates the orientation using quaternion and acceleration from tag data
         /// </summary>
         /// <param name="neworientation">Neworientation.</param>
         /// <param name="newacceleration">Newacceleration.</param>
-        public void UpdateOrientationAndAcceleration(Quaternion neworientation, Vector3 newacceleration)
+        public void UpdateOrientationAndAcceleration(double timestamp, Quaternion neworientation, Vector3 newacceleration)
         {
             orientationUsesQuaternion = true;
             orientation_quat = neworientation;
-           
+
+
             // For TAG V3 only
             if(tagVersion == TagVersion.V3)
                 orientation_quat = new Quaternion(-neworientation.x, neworientation.y, -neworientation.z, neworientation.w);
@@ -291,7 +313,7 @@ namespace VRTracker.Manager
          //   Debug.Log("ACC X " + acceleration_.x.ToString("0.00") + "  Y " + acceleration_.y.ToString("0.00") + "  Z " + acceleration_.z.ToString("0.00"));
 
             if(positionFilter)
-                filter.AddAccelerationMeasurement(((System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond) - initialTimeMs) / 1000.0d, acceleration_);
+                filter.AddAccelerationMeasurement(timestamp, acceleration_);
         }
 
 
@@ -499,6 +521,7 @@ namespace VRTracker.Manager
                     // IMU Quaternion
                     case 2:
                         {
+                            int length = data[i + 1];
                           //  float accuracy = (data[i + 1] << 8) / 10;
                             float ow = ((float)((data[i + 2] << 8) + data[i + 3]) / 10000) - 1;
                             float ox = -(((float)((data[i + 4] << 8) + data[i + 5]) / 10000) - 1);
@@ -513,11 +536,39 @@ namespace VRTracker.Manager
                             int az = isNeg ? (((data[i + 14] & 0x7F) << 8) + data[i + 15]) - 32768 : (((data[i + 14] & 0x7F) << 8) + data[i + 15]);
                             Quaternion rec_orientation = new Quaternion(ox, oy, oz, ow);
                             Vector3 rec_acceleration = new Vector3((float)ax * (9.80665f / 1000f), (float)ay * (9.80665f / 1000f), (float)az * (9.80665f / 1000.0f));
-                            i += 16;
+
+                            // If Timestamped
+                            bool timestamped = length == 18 ? true : false;
+                            double timestamp = 0;
+                            if(timestamped){
+                                timestamp = ((double)((data[i + 16] << 8) + data[i + 17])/10000.0d);
+
+                                // Handle timestamp correction and synchronisation
+                                // The IMU timestamp overflowed and went back to 0
+                                while (timestamp + (imuTimestampModuloCount*imuTimestampModulo) < imuTimestamp)
+                                    imuTimestampModuloCount++;
+                                imuTimestamp = timestamp + (imuTimestampModuloCount * imuTimestampModulo);
+
+                                // Udpate Moving Average of system timestamp and IMU timestamp (mandatory to avoid clock drift issue, and sync all clock while avoid network timing jitter)
+                                double newImuTimestampOffset = (((System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond) - initialTimeMs) / 1000.0d) - imuTimestamp;
+                                imuTimestampOffsetBuffer.PushFront(newImuTimestampOffset);
+                                imuTimestampOffsetAvg = 0;
+
+                                //TODO: Use a better moving average algorithm like here : https://cheind.wordpress.com/2010/01/23/simple-moving-average/
+                                foreach (double ts in imuTimestampOffsetBuffer)
+                                    imuTimestampOffsetAvg += ts;
+                                imuTimestampOffsetAvg /= imuTimestampOffsetBuffer.Size;
+                                imuTimestamp += imuTimestampOffsetAvg;
+                            }
+
+                            i += length;
 
                             if (i >= data.Length)
                                 parsed = true;
-                            UpdateOrientationAndAcceleration(rec_orientation, rec_acceleration);
+                            if(timestamped)
+                                UpdateOrientationAndAcceleration(imuTimestamp, rec_orientation, rec_acceleration);
+                            else
+                                UpdateOrientationAndAcceleration(rec_orientation, rec_acceleration);
                             break;
                         }
                     // Trackpad
