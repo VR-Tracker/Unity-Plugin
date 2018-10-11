@@ -112,11 +112,12 @@ namespace VRTracker.Manager
         protected NetworkIdentity netId;	//Network identity from UNET, used to get local player
 
         public bool positionFilter = true; // Check to enable position filtering
-        private VRTracker.Utils.VRT_PositionFilter filter = new VRTracker.Utils.VRT_PositionFilter();
-
+        protected VRTracker.Utils.VRT_PositionFilter filter;
+        public string recordfilename;
         // Use this for initialization
         protected virtual void Start()
         {
+            filter = new VRTracker.Utils.VRT_PositionFilter(tagType.ToString());
             filter.Init();
 
             // Get the time at start
@@ -131,8 +132,8 @@ namespace VRTracker.Manager
             VRTracker.Manager.VRT_Manager.Instance.AddTag(this);
 
             // Valdated the Tag is assigned via hardcoded UID
-            if (UID != "Enter Your Tag UID")
-                IDisAssigned = true;
+            //if (UID != "Enter Your Tag UID")
+             //   IDisAssigned = true;
 
             OnTrackingLost += SetLostColor;
             OnTrackingFound += SetFoundColor;
@@ -147,7 +148,7 @@ namespace VRTracker.Manager
             if (positionFilter)
             {
                 Vector3 newPosition = filter.GetPosition(((System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond) - initialTimeMs) / 1000.0d);
-                if (newPosition != null && newPosition != Vector3.zero)
+                if (newPosition != Vector3.zero)
                     this.transform.position = newPosition;
             }
             else

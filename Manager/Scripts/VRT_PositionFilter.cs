@@ -7,7 +7,6 @@ namespace VRTracker.Utils
 {
     public class VRT_PositionFilter
     {
-
         private float positionLatency = 0.065f; // Delay between position and acceleration
         private float predictionDelay = 0.02f;
 
@@ -31,14 +30,18 @@ namespace VRTracker.Utils
 
         private static System.Threading.Thread mainThread;
         private List<TrackingData> dataQueue; // Queue to stock received data in case their were not received in main thread
-        private volatile static bool dataInQueue = false; // to check if position / acc data were received since last LateUpdate to avoid using a lock if not necessary 
 
+        protected string uid = "";
+
+        public VRT_PositionFilter(string uid_)
+        {
+            uid = uid_;
+        }
 
         public VRT_PositionFilter()
         {
- 
+            
         }
-
 
         public virtual void Init()
         {
@@ -52,7 +55,7 @@ namespace VRTracker.Utils
 
         public virtual Vector3 GetPosition(double timestamp)
         {
-            if(dataInQueue){
+            if(dataQueue.Count > 0){
                 lock(dataQueue){
                     for (int i = 0; i < dataQueue.Count; i++){
                         if (dataQueue[i].GetType() == typeof(TrackingDataIMU))
@@ -61,7 +64,6 @@ namespace VRTracker.Utils
                             AddPositionMeasurement((TrackingDataPosition)dataQueue[i]);
                     }
                     dataQueue.Clear();
-                    dataInQueue = false;
                 }
             }
 
@@ -136,7 +138,6 @@ namespace VRTracker.Utils
                 {
                     dataQueue.Add(trackingDataPosition);
                 }
-                dataInQueue = true;
             }
             else
             {
@@ -146,6 +147,14 @@ namespace VRTracker.Utils
         }
 
         public void AddPositionMeasurement(TrackingDataPosition trackingDataPosition){
+
+            double lastPosTs = GetLastPositionTimestamp();
+            if (trackingDataPosition.timestamp - lastPosTs < 0.001)
+            {
+                Debug.LogError("Position Timestamp too close at " + trackingDataPosition.timestamp.ToString("F4"));
+                return;
+            }
+
             int index = InsertByTimestamp(trackingDataPosition);
 
             //   Debug.Log("POS MEASUREMENT AT  " + (timestamp-positionLatency).ToString("0.000") + " POS: " + position.ToString("0.000"));
@@ -155,7 +164,7 @@ namespace VRTracker.Utils
             {
                 if (trackingDataBuffer[i].GetType() == typeof(TrackingDataPosition))
                 {
-                    Debug.LogError("The position received is older than other position");
+                    Debug.LogError("The position received is older than other position at " + trackingDataPosition.timestamp.ToString("F4"));
                     //TODO Remove from buffer ?
                     return;
                 }
@@ -294,7 +303,6 @@ namespace VRTracker.Utils
                 {
                     dataQueue.Add(trackingDataIMU);
                 }
-                dataInQueue = true;
             }
             else
             {
@@ -304,6 +312,12 @@ namespace VRTracker.Utils
 
         public void AddAccelerationMeasurement(TrackingDataIMU trackingDataIMU)
         {
+            double lastAccTs = GetLastAccelerationTimestamp();
+            if (trackingDataIMU.timestamp - lastAccTs < 0.001)
+            {
+                Debug.LogError("Acceleration Timestamp too close at " + trackingDataIMU.timestamp.ToString("F4"));
+                return;
+            }
             int index = InsertByTimestamp(trackingDataIMU);
             //  Debug.Log("ACC MEASUREMENT AT  " + timestamp.ToString("0.000") + " MAG: " + acceleration.magnitude.ToString("0.000"));
 
@@ -316,7 +330,7 @@ namespace VRTracker.Utils
             double delaySinceLastUpdate = trackingDataIMU.timestamp - trackingDataBuffer[index + 1].timestamp;
             if (delaySinceLastUpdate > maxDelaySinceLastMeasurement)
             {
-                //   Debug.LogWarning("Too long delay since last update : " + delaySinceLastUpdate.ToString() + "  " + timestamp.ToString("0.000"));
+                Debug.LogWarning("Too long delay since last update : " + delaySinceLastUpdate.ToString() + "  " + trackingDataIMU.timestamp.ToString("0.000"));
                 return;
             }
 
@@ -324,7 +338,7 @@ namespace VRTracker.Utils
             //        Debug.Log("Last pos ts " + lastpositionts.ToString("0.000"));
             if (lastpositionts < 0 || trackingDataIMU.timestamp - lastpositionts > accelerationOnlyTrackingDelay)
             {
-                //  Debug.LogError("No previous position, or too long ago");
+                Debug.LogError("No previous position, or too long ago");
                 return;
             }
 
@@ -336,11 +350,6 @@ namespace VRTracker.Utils
                 //TODO: handle offset correction ?
                 TrackingDataIMU previousAcceleration = ((TrackingDataIMU)trackingDataBuffer[index + 1]);
 
-                if (delaySinceLastUpdate < 0.002f)
-                {
-                    //   Debug.LogError("Too short delay since previous acceleration (Networking issue) " + timestamp.ToString("0.000"));
-                    return;
-                }
                 // Predict position and speed at this update
 
                 // Clamping to avoid predicting for too long
@@ -360,7 +369,7 @@ namespace VRTracker.Utils
                 trackingDataBuffer[index].speed = newSpeed;
                 Vector3 newPositionOffset = delaySinceLastUpdate < 0.03f ? previousPosition.speed * (float)delaySinceLastUpdate + 0.5f * ((TrackingDataIMU)trackingDataBuffer[index]).acceleration * (float)delaySinceLastUpdate * (float)delaySinceLastUpdate : Vector3.Slerp(previousPosition.speed * (float)delaySinceLastUpdate + 0.5f * ((TrackingDataIMU)trackingDataBuffer[index]).acceleration * (float)delaySinceLastUpdate * (float)delaySinceLastUpdate, Vector3.zero, (float)(trackingDataIMU.timestamp - lastpositionts) / accelerationOnlyTrackingDelay);
                 trackingDataBuffer[index].position = previousPosition.position + newPositionOffset;
-                //   Debug.Log("     Offset from prev position : " + (trackingDataBuffer[index].position-previousPosition.position).magnitude.ToString("0.000"));
+                   Debug.Log("     Offset from prev position : " + (trackingDataBuffer[index].position-previousPosition.position).magnitude.ToString("0.000"));
             }
 
             lastCalculatedPosition = trackingDataBuffer[0].position;
@@ -558,7 +567,7 @@ namespace VRTracker.Utils
         /// <returns><c>true</c>, if main thread was ised, <c>false</c> otherwise.</returns>
         private bool isMainThread()
         {
-            return true;
+           // return true;
             return mainThread.Equals(System.Threading.Thread.CurrentThread);
         }
     }
