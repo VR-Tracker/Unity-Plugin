@@ -31,13 +31,6 @@ namespace VRTracker.Utils
         private static System.Threading.Thread mainThread;
         private List<TrackingData> dataQueue; // Queue to stock received data in case their were not received in main thread
 
-        protected string uid = "";
-
-        public VRT_PositionFilter(string uid_)
-        {
-            uid = uid_;
-        }
-
         public VRT_PositionFilter()
         {
             

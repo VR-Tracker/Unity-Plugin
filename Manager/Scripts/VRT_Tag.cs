@@ -117,7 +117,7 @@ namespace VRTracker.Manager
         // Use this for initialization
         protected virtual void Start()
         {
-            filter = new VRTracker.Utils.VRT_PositionFilter(tagType.ToString());
+            filter = new VRTracker.Utils.VRT_PositionFilter();
             filter.Init();
 
             // Get the time at start
