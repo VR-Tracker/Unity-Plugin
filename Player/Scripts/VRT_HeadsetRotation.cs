@@ -114,9 +114,10 @@ namespace VRTracker.Player {
 		/// </summary>
         private void UpdateOrientationData()
         {
-            Vector3 tagRotation = UnmultiplyQuaternion(Quaternion.Euler(tag.getOrientation()));
+            //TODO: Re enable
+/*            Vector3 tagRotation = UnmultiplyQuaternion(Quaternion.Euler(tag.getOrientation()));
             Vector3 cameraRotation = UnmultiplyQuaternion(camera.transform.localRotation);
-            newRotation.y = tagRotation.y - cameraRotation.y;
+            newRotation.y = tagRotation.y - cameraRotation.y;*/
             previousOffset = destinationOffset;
             destinationOffset = Quaternion.Euler(newRotation);
         }

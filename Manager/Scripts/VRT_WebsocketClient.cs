@@ -171,16 +171,32 @@ namespace VRTracker.Manager
                             if (orientationUpdated)
                             {
                                 if (orientationQuaternion)
-                                    tag.UpdateOrientationQuat(orientation_quat);
+                                {
+                                    if (!tag.trackedEndpoints.ContainsKey(0))
+                                        tag.trackedEndpoints.Add(0, new VRT_TagEndpoint(tag));
+                                    tag.trackedEndpoints[0].UpdateOrientationQuat(orientation_quat);
+                                }
                                 else
-                                    tag.UpdateOrientation(orientation);
+                                {
+                                    if (!tag.trackedEndpoints.ContainsKey(0))
+                                        tag.trackedEndpoints.Add(0, new VRT_TagEndpoint(tag));
+                                    tag.trackedEndpoints[0].UpdateOrientation(orientation);
+                                }
                             }
                             if (positionUpdated)
                             {
                                 if (!timestampUpdated)
-                                    tag.UpdatePosition(position);
+                                {
+                                    if (!tag.trackedEndpoints.ContainsKey(0))
+                                        tag.trackedEndpoints.Add(0, new VRT_TagEndpoint(tag));
+                                    tag.trackedEndpoints[0].UpdatePosition(position);
+                                }
                                 else
-                                    tag.UpdatePosition(position, timestamp);
+                                {
+                                    if (!tag.trackedEndpoints.ContainsKey(0))
+                                        tag.trackedEndpoints.Add(0, new VRT_TagEndpoint(tag));
+                                    tag.trackedEndpoints[0].UpdatePosition(position, timestamp);
+                                }
 
                             }
                         }
@@ -411,7 +427,7 @@ namespace VRTracker.Manager
                         {
                             if (tag.UID == datasplit[1])
                             {
-                                Debug.Log("Reassigning Tag " + tag.UID);
+                                Debug.Log("Tag " + tag.UID + " is back ON !");
                                 AssignTag(tag.UID);
                                 break;
                             }

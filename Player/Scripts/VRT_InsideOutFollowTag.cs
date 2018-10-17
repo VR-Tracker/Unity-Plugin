@@ -119,6 +119,8 @@ namespace VRTracker.Player
                         tagToFollow = VRTracker.Manager.VRT_Manager.Instance.GetTag(VRTracker.Manager.VRT_Tag.TagType.Head);
                     if (tagToFollow != null)
                     {
+                        //TODO: Re enable
+                        /*
                         Vector3 tagRotation = UnmultiplyQuaternion(Quaternion.Euler(tagToFollow.getOrientation()));
                         Vector3 cameraRotation = UnmultiplyQuaternion(playerCamera.transform.localRotation);
                         float yRotation = tagRotation.y - cameraRotation.y;
@@ -136,7 +138,7 @@ namespace VRTracker.Player
                         }
                         else
                             tRotation = 0;
-
+*/
                     }
                     yield return new WaitForSeconds(20);
                 }
@@ -161,7 +163,8 @@ namespace VRTracker.Player
                         tagToFollow = VRTracker.Manager.VRT_Manager.Instance.GetTag(VRTracker.Manager.VRT_Tag.TagType.Head);
                     if (tagToFollow != null)
                     {
-                        Vector3 tagRotation = UnmultiplyQuaternion(Quaternion.Euler(tagToFollow.getOrientation()));
+                        //TODO: Re enable
+                        /*Vector3 tagRotation = UnmultiplyQuaternion(Quaternion.Euler(tagToFollow.getOrientation()));
                         Vector3 cameraRotation = UnmultiplyQuaternion(playerCamera.transform.localRotation);
                         float yRotation = tagRotation.y - cameraRotation.y;
            
@@ -177,7 +180,7 @@ namespace VRTracker.Player
                         }
                         else
                             tPosition = 0;
-
+*/
                     }
                     yield return new WaitForSeconds(20);
                 }

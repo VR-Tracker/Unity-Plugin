@@ -39,6 +39,8 @@ namespace VRTracker.Manager
             Gun
         }
 
+        public Dictionary<int, VRT_TagEndpoint> trackedEndpoints = new Dictionary<int, VRT_TagEndpoint>();
+
 
         // Button value saved here for VRTK
         [System.NonSerialized] public bool triggerPressed = false;
@@ -91,25 +93,7 @@ namespace VRTracker.Manager
         public Action OnTrackingLost;
         public Action OnTrackingFound;
 
-        // For Quaternion orientation from Tag
-        protected bool orientationUsesQuaternion = false; 
-        protected Quaternion orientation_quat; // Tag V2 and above
-        protected Vector3 orientation_; // Tag V1 and old V2 (not udpated)
-        protected Vector3 acceleration_;
-
         protected float currentTime; //Timestamp use for assignation
-        private long initialTimeMs = -1; // Time at start in milliseconds
-
-        private double imuTimestampModulo = 6.5536; // (16 bits)
-        private int imuTimestampModuloCount = 0; // Count how many time we should add the modulo value have the time now
-        private double imuTimestamp = 0;
-        private CircularBuffer<double> imuTimestampOffsetBuffer; // Buffer to calculate a moving average offset between IMU timestamp and system time
-        private double imuTimestampOffsetAvg = 0;
-        private double positionTimestamp = 0;
-        private double positionTimestampOffset = 0;
-
-        private CircularBuffer<double> positionTimestampOffsetBuffer;
-
 
 		public string status; //Tag status (unassigned, tracked, lost)
         public int battery = 0; //Battery remaining for the tag, in percentage (0-100)
@@ -117,37 +101,20 @@ namespace VRTracker.Manager
 
         [System.NonSerialized] public bool waitingForID = false; // if the tag is Waiting for its ID
         [System.NonSerialized] public bool IDisAssigned = false; // if the script is assigned to a tag
-        protected Vector3 positionReceived;		//Position received from VR Tracker system
 
         public string UID = "Enter Your Tag UID";	//Tag UID, corresponding to the unique id of a tag
 
         protected NetworkIdentity netId;	//Network identity from UNET, used to get local player
 
-        public bool positionFilter = true; // Check to enable position filtering
-        protected VRTracker.Utils.VRT_PositionFilter filter;
         // Use this for initialization
         protected virtual void Start()
         {
-            filter = new VRTracker.Utils.VRT_PositionFilter();
-            filter.Init();
-
-            imuTimestampOffsetBuffer = new CircularBuffer<double>(20);
-            positionTimestampOffsetBuffer = new CircularBuffer<double>(20);
-
-            // Get the time at start
-            if (initialTimeMs < 1)
-                initialTimeMs = System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond;
-            
             //Check if local player in UNET
             netId = transform.GetComponentInParent<NetworkIdentity>();
             if (netId != null && !netId.isLocalPlayer)
                 return;
 
             VRTracker.Manager.VRT_Manager.Instance.AddTag(this);
-
-            // Valdated the Tag is assigned via hardcoded UID
-           // if (UID != "Enter Your Tag UID")
-           //     IDisAssigned = true;
 
             OnTrackingLost += SetLostColor;
             OnTrackingFound += SetFoundColor;
@@ -159,17 +126,8 @@ namespace VRTracker.Manager
             if (netId != null && !netId.isLocalPlayer)
                 return;
 
-            if (positionFilter)
-            {
-                Vector3 newPosition = filter.GetPosition(((System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond) - initialTimeMs) / 1000.0d);
-                if (newPosition != Vector3.zero)
-                    this.transform.position = newPosition;
-            }
-            else
-                this.transform.position = this.positionReceived;
-
-            this.transform.rotation = orientation_quat;
-            
+            foreach (KeyValuePair<int, VRT_TagEndpoint> trackedEndpoint in trackedEndpoints)
+                trackedEndpoint.Value.Update();
 
             // For pairing purposes
 			if (waitingForID)
@@ -183,19 +141,6 @@ namespace VRTracker.Manager
                     IDisAssigned = false;
                 }
             }
-
-        }
-
-		/// <summary>
-		/// Gets the orientation of the tag
-		/// </summary>
-		/// <returns>The orientation.</returns>
-        public Vector3 getOrientation()
-        {
-            if (orientationUsesQuaternion)
-                return orientation_quat.eulerAngles;
-            else
-                return orientation_;
         }
 
         /// <summary>
@@ -206,117 +151,6 @@ namespace VRTracker.Manager
             if (UnityEngine.XR.XRSettings.isDeviceActive)
                 UnityEngine.XR.InputTracking.Recenter();
         }
-
-
-		/// <summary>
-		/// Updates the position and add the timestamp
-		/// Currently not used
-		/// </summary>
-		/// <param name="position_">Position.</param>
-		/// <param name="timestamp">Timestamp.</param>
-        public void UpdatePosition(Vector3 position_, int timestamp)
-        {
-            UpdatePosition(position_);
-        }
-
-        /// <summary>
-        /// Updates the position and store the data
-        /// </summary>
-        /// <param name="position_">Position.</param>
-        public void UpdatePosition(Vector3 position_)
-        {
-            // PREDICTION
-            this.positionReceived = position_;
-            if (positionFilter)
-                filter.AddPositionMeasurement(((System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond) - initialTimeMs) / 1000.0d, position_);
-        }
-
-        /// <summary>
-        /// Updates the Oriention from IMU For Tag V1
-        /// </summary>
-        /// <param name="neworientation">Neworientation.</param>
-        public void UpdateOrientation(Vector3 neworientation)
-        {
-            orientation_ = neworientation;
-            orientationUsesQuaternion = false;
-        }
-
-        /// <summary>
-        /// Updates the Oriention from IMU For Tag V2
-        /// </summary>
-        /// <param name="neworientation">Neworientation.</param>
-        public void UpdateOrientationQuat(Quaternion neworientation)
-        {
-            orientationUsesQuaternion = true;
-            orientation_quat = neworientation;
-            orientation_quat = orientation_quat * Quaternion.Euler(180f, 0, 0);
-            orientation_ = orientation_quat.eulerAngles;
-        }
-
-
-		/// <summary>
-		/// Updates the orientation and acceleration from tag data
-		/// </summary>
-		/// <param name="neworientation">Neworientation.</param>
-		/// <param name="newacceleration">Newacceleration.</param>
-        public void UpdateOrientationAndAcceleration(Vector3 neworientation, Vector3 newacceleration)
-        {
-            //TODO: Review this
-            Vector3 flippedRotation = new Vector3(-neworientation.z, neworientation.x+90.0f, neworientation.y);
-
-            Quaternion quattest = Quaternion.Euler(flippedRotation);
-            quattest = quattest * Quaternion.Euler(180f, 0, 0);
-            quattest = quattest * Quaternion.Euler(0, -90f, 0);
-            orientation_ = quattest.eulerAngles;
-            acceleration_ = newacceleration;
-            orientationUsesQuaternion = false;
-        }
-
-
-        public void UpdateOrientationAndAcceleration(Quaternion neworientation, Vector3 newacceleration)
-        {
-            UpdateOrientationAndAcceleration(((System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond) - initialTimeMs) / 1000.0d, neworientation, newacceleration);
-        }
-
-        /// <summary>
-        /// Updates the orientation using quaternion and acceleration from tag data
-        /// </summary>
-        /// <param name="neworientation">Neworientation.</param>
-        /// <param name="newacceleration">Newacceleration.</param>
-        public void UpdateOrientationAndAcceleration(double timestamp, Quaternion neworientation, Vector3 newacceleration)
-        {
-            orientationUsesQuaternion = true;
-            orientation_quat = neworientation;
-
-
-            // For TAG V3 only
-            if(tagVersion == TagVersion.V3)
-                orientation_quat = new Quaternion(-neworientation.x, neworientation.y, -neworientation.z, neworientation.w);
-
-            orientation_ = orientation_quat.eulerAngles;
-            orientation_.y -= VRT_Manager.Instance.roomNorthOffset;
-            orientation_quat = Quaternion.Euler(orientation_);
-
-            // Convert acceleration axis
-            // TAG V2
-            if (tagVersion == TagVersion.V2)
-            {
-                acceleration_ = new Vector3(newacceleration.x, newacceleration.z, newacceleration.y);
-            }
-            // TAG V3
-            else if (tagVersion == TagVersion.V3 || tagVersion == TagVersion.Gun)
-                acceleration_ = new Vector3(-newacceleration.x, newacceleration.z, -newacceleration.y);
-
-            // Transform acceleration from local to world coordinate
-            acceleration_ = orientation_quat * acceleration_;
-
-         //   Debug.Log("ACC X " + acceleration_.x.ToString("0.00") + "  Y " + acceleration_.y.ToString("0.00") + "  Z " + acceleration_.z.ToString("0.00"));
-
-            if(positionFilter)
-                filter.AddAccelerationMeasurement(timestamp, acceleration_);
-        }
-
-
 
 		/// <summary>
 		/// Raises the special command event.
@@ -455,7 +289,9 @@ namespace VRTracker.Manager
                     double.TryParse(values["az"], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out f);
                     rec_acceleration.z = (float)(f * (9.80665 / 1000));
 
-                    UpdateOrientationAndAcceleration(rec_orientation, rec_acceleration);
+                    if (!trackedEndpoints.ContainsKey(0))
+                        trackedEndpoints.Add(0, new VRT_TagEndpoint(this));
+                    trackedEndpoints[0].UpdateOrientationAndAcceleration(rec_orientation, rec_acceleration);
                 }
 
                 // Trackpad
@@ -501,6 +337,8 @@ namespace VRTracker.Manager
                     // IMU
                     case 1:
                         {
+                            int sensorCount = data[i] & 0x0F;
+
                             float ox = ((data[i + 4] << 8) + data[i + 5]) / 100;
                             float oy = ((data[i + 6] << 8) + data[i + 7]) / 100;
                             float oz = ((data[i + 8] << 8) + data[i + 9]) / 100;
@@ -515,13 +353,18 @@ namespace VRTracker.Manager
                             i += 16;
                             if (i >= data.Length)
                                 parsed = true;
-                            UpdateOrientationAndAcceleration(rec_orientation, rec_acceleration);
+
+                            // Create Endpoint if inexsiting
+                            if (!trackedEndpoints.ContainsKey(sensorCount))
+                                trackedEndpoints.Add(sensorCount, new VRT_TagEndpoint(this));
+                            trackedEndpoints[sensorCount].UpdateOrientationAndAcceleration(rec_orientation, rec_acceleration);
                             break;
                         }
                     // IMU Quaternion
                     case 2:
                         {
                             int length = data[i + 1];
+                            int sensorCount = data[i] & 0x0F;
                           //  float accuracy = (data[i + 1] << 8) / 10;
                             float ow = ((float)((data[i + 2] << 8) + data[i + 3]) / 10000) - 1;
                             float ox = -(((float)((data[i + 4] << 8) + data[i + 5]) / 10000) - 1);
@@ -542,33 +385,20 @@ namespace VRTracker.Manager
                             double timestamp = 0;
                             if(timestamped){
                                 timestamp = ((double)((data[i + 16] << 8) + data[i + 17])/10000.0d);
-
-                                // Handle timestamp correction and synchronisation
-                                // The IMU timestamp overflowed and went back to 0
-                                while (timestamp + (imuTimestampModuloCount*imuTimestampModulo) < imuTimestamp)
-                                    imuTimestampModuloCount++;
-                                imuTimestamp = timestamp + (imuTimestampModuloCount * imuTimestampModulo);
-
-                                // Udpate Moving Average of system timestamp and IMU timestamp (mandatory to avoid clock drift issue, and sync all clock while avoid network timing jitter)
-                                double newImuTimestampOffset = (((System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond) - initialTimeMs) / 1000.0d) - imuTimestamp;
-                                imuTimestampOffsetBuffer.PushFront(newImuTimestampOffset);
-                                imuTimestampOffsetAvg = 0;
-
-                                //TODO: Use a better moving average algorithm like here : https://cheind.wordpress.com/2010/01/23/simple-moving-average/
-                                foreach (double ts in imuTimestampOffsetBuffer)
-                                    imuTimestampOffsetAvg += ts;
-                                imuTimestampOffsetAvg /= imuTimestampOffsetBuffer.Size;
-                                imuTimestamp += imuTimestampOffsetAvg;
                             }
 
                             i += length;
 
                             if (i >= data.Length)
                                 parsed = true;
+
+                            // Create Endpoint if inexsiting
+                            if (!trackedEndpoints.ContainsKey(sensorCount))
+                                trackedEndpoints.Add(sensorCount, new VRT_TagEndpoint(this));
                             if(timestamped)
-                                UpdateOrientationAndAcceleration(imuTimestamp, rec_orientation, rec_acceleration);
+                                trackedEndpoints[sensorCount].UpdateOrientationAndAcceleration(timestamp, rec_orientation, rec_acceleration);
                             else
-                                UpdateOrientationAndAcceleration(rec_orientation, rec_acceleration);
+                                trackedEndpoints[sensorCount].UpdateOrientationAndAcceleration(rec_orientation, rec_acceleration);
                             break;
                         }
                     // Trackpad
@@ -694,14 +524,6 @@ namespace VRTracker.Manager
             }
         }
 
-		/// <summary>
-		/// Gets the position received from the system
-		/// </summary>
-		/// <returns>The position.</returns>
-        public Vector3 GetPosition()
-        {
-            return this.positionReceived;
-        }
 
 		/// <summary>
 		/// Waits for assignation in pairing phase

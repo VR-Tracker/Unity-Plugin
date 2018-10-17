@@ -14,8 +14,17 @@ namespace VRTracker.Player
     public class VRT_FollowTag : MonoBehaviour
     {
 
+        public enum EndpointId
+        {
+            Main,One,Two,Three,Four,Five,Six,Seven
+        }
+
         [Tooltip("The type of Tag chosen in VRTracker.Manager.VRT_Tag script to follow")]
         public VRTracker.Manager.VRT_Tag.TagType tagTypeToFollow;
+
+        [Tooltip("The tracking endpoint on the Tracker, in case of body tracking where multiple IMU/IR are handled by the same Tracker")]
+        public EndpointId endpoint;
+
         public bool useLocalPosition = false;
         public bool useLocalRotation = false;
         public bool followOrientationX = true;
@@ -30,6 +39,8 @@ namespace VRTracker.Player
 
         [HideInInspector]
         public VRTracker.Manager.VRT_Tag tagToFollow;
+        [HideInInspector]
+        public bool tagFound = false;
         [HideInInspector]
         public bool simulatorTag = false;
 
@@ -59,57 +70,65 @@ namespace VRTracker.Player
                 if (tagToFollow && tagToFollow is VRT_TagSimulator)
                     simulatorTag = true;
 
-                if (tagToFollow != null)
+                if (tagToFollow != null && tagToFollow.trackedEndpoints.ContainsKey((int)endpoint))
+                {
+                    tagFound = true;
+                    tagToFollow.trackedEndpoints[(int)endpoint].positionUpdateHandler += UpdatePosition;
+                    tagToFollow.trackedEndpoints[(int)endpoint].orientationUpdateHandler += UpdateOrientation;
                     OnTagJoinEvent(EventArgs.Empty);
+                }
             }
             else
                 Debug.LogError("No VR Tracker script found in current Scene. Import VRTracker prefab");
         }
 
         // Update is called once per frame
-        void LateUpdate()
+        void Update()
         {
             if (NetIdent != null && !NetIdent.isLocalPlayer)
                 return;
 
-            if (tagToFollow == null && VRTracker.Manager.VRT_Manager.Instance != null)
+            if (!tagFound && VRTracker.Manager.VRT_Manager.Instance != null)
             {
                 tagToFollow = VRTracker.Manager.VRT_Manager.Instance.GetTag(tagTypeToFollow);
-                if (tagToFollow != null)
+                if (tagToFollow != null && tagToFollow.trackedEndpoints.ContainsKey((int)endpoint))
+                {
+                    tagFound = true;
+                    tagToFollow.trackedEndpoints[(int)endpoint].positionUpdateHandler += UpdatePosition;
+                    tagToFollow.trackedEndpoints[(int)endpoint].orientationUpdateHandler += UpdateOrientation;
                     OnTagJoinEvent(EventArgs.Empty);
+                }
             }
             else if (simulatorTag)
             {
-                Vector3 newRotation = tagToFollow.transform.rotation.eulerAngles;
-                transform.position = tagToFollow.transform.position;
-                transform.rotation = Quaternion.Euler(newRotation.x, newRotation.y, newRotation.z);
+                Debug.LogWarning("Simulator Tag is not implement in this version");
             }
-            else if (tagToFollow != null)
-            {
-                if (followPositionX || followPositionY || followPositionZ)
-                {
-                    if(useLocalPosition)
-                        transform.localPosition = new Vector3(followPositionX ? tagToFollow.transform.position.x : originalPosition.x, followPositionY ? tagToFollow.transform.position.y : originalPosition.y, followPositionZ ? tagToFollow.transform.position.z : originalPosition.z);
-                    else
-                        transform.position = new Vector3(followPositionX ? tagToFollow.transform.position.x : originalPosition.x, followPositionY ? tagToFollow.transform.position.y : originalPosition.y, followPositionZ ? tagToFollow.transform.position.z : originalPosition.z);
-                }
 
-                if (followOrientationX || followOrientationY || followOrientationZ)
-                {
-                    Vector3 newRotation = tagToFollow.getOrientation();
-                    if (useLocalRotation)
-                        transform.localRotation = Quaternion.Euler(followOrientationX ? newRotation.x : originalRotation.x, followOrientationY ? newRotation.y : originalRotation.y, followOrientationZ ? newRotation.z : originalRotation.z);
-                    else
-                        transform.rotation = Quaternion.Euler(followOrientationX ? newRotation.x : originalRotation.x, followOrientationY ? newRotation.y : originalRotation.y, followOrientationZ ? newRotation.z : originalRotation.z);
-                }
-            }
+        }
+
+        public void UpdatePosition(Vector3 position)
+		{
+            if(useLocalPosition)
+                transform.localPosition = new Vector3(followPositionX ? position.x : originalPosition.x, followPositionY ? position.y : originalPosition.y, followPositionZ ? position.z : originalPosition.z);
+            else
+                transform.position = new Vector3(followPositionX ? position.x : originalPosition.x, followPositionY ? position.y : originalPosition.y, followPositionZ ? position.z : originalPosition.z);
+       
+		}
+
+        public void UpdateOrientation(Quaternion orientation)
+        {
+            Vector3 eulerRotation = orientation.eulerAngles;
+            if (useLocalRotation)
+                transform.localRotation = Quaternion.Euler(followOrientationX ? eulerRotation.x : originalRotation.x, followOrientationY ? eulerRotation.y : originalRotation.y, followOrientationZ ? eulerRotation.z : originalRotation.z);
+            else
+                transform.rotation = orientation;
         }
 
 		/// <summary>
 		/// Raises the tag join event event
 		/// </summary>
 		/// <param name="e">E.</param>
-        protected virtual void OnTagJoinEvent(EventArgs e)
+		protected virtual void OnTagJoinEvent(EventArgs e)
         {
             EventHandler handler = OnTagJoin;
             if (handler != null)
