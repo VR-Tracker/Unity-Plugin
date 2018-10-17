@@ -492,10 +492,10 @@ namespace VRTracker.Manager
         {
             //Debug.Log("UDP size " + data.Length + "  Timestamp " + System.DateTime.Now.Millisecond);
             bool parsed = false;
+            int i = 2;
             while (!parsed)
             {
-                int i = 2;
-
+                
                 switch (data[i] >> 4 & 0x0F)
                 {
                     // IMU
