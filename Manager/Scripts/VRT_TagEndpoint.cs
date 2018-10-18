@@ -77,12 +77,12 @@ namespace VRTracker.Manager
         /// Gets the orientation of the tag
         /// </summary>
         /// <returns>The orientation.</returns>
-        public Vector3 getOrientation()
+        public Quaternion getOrientation()
         {
             if (orientationUsesQuaternion)
-                return orientation_quat.eulerAngles;
+                return orientation_quat;
             else
-                return orientation_;
+                return Quaternion.Euler(orientation_);
         }
 
         /// <summary>

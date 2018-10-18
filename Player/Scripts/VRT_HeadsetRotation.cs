@@ -22,8 +22,8 @@ namespace VRTracker.Player {
         private Vector3 newRotation;
 
         private float t;
-        private float timeToReachTarget = 5.0f;			//Time used to correct the orientation
-		private int waitTimeBeforeVerification = 300; 	//Time in second before checking if the orientation need to be corrected
+        private float timeToReachTarget = 15.0f;			//Time used to correct the orientation
+		private int waitTimeBeforeVerification = 30; 	//Time in second before checking if the orientation need to be corrected
         [Tooltip("The minimum offset in degrees to blink instead of rotating.")]
 		public float minOffsetToBlink = 15.0f;			//Minimun difference for the orientation to display a blink and do an hard correction
 
@@ -86,7 +86,6 @@ namespace VRTracker.Player {
             {
                 if (VRTracker.Manager.VRT_Manager.Instance != null)
                 {
-					yield return new WaitForSeconds(waitTimeBeforeVerification);
                     if (tag == null)
                         tag = VRTracker.Manager.VRT_Manager.Instance.GetHeadsetTag();
                     if (tag != null)
@@ -101,6 +100,7 @@ namespace VRTracker.Player {
                         else
                             t = 0;
                     }
+                    yield return new WaitForSeconds(waitTimeBeforeVerification);
                 }
                 else
                 {
@@ -112,14 +112,17 @@ namespace VRTracker.Player {
 		/// <summary>
 		/// Updates the orientation data
 		/// </summary>
-        private void UpdateOrientationData()
+        private bool UpdateOrientationData()
         {
-            //TODO: Re enable
-/*            Vector3 tagRotation = UnmultiplyQuaternion(Quaternion.Euler(tag.getOrientation()));
-            Vector3 cameraRotation = UnmultiplyQuaternion(camera.transform.localRotation);
-            newRotation.y = tagRotation.y - cameraRotation.y;*/
-            previousOffset = destinationOffset;
-            destinationOffset = Quaternion.Euler(newRotation);
+            if(tag.trackedEndpoints.ContainsKey((0))){
+                Vector3 tagRotation = UnmultiplyQuaternion(tag.trackedEndpoints[0].getOrientation());
+                Vector3 cameraRotation = UnmultiplyQuaternion(camera.transform.localRotation);
+                newRotation.y = tagRotation.y - cameraRotation.y;
+                previousOffset = destinationOffset;
+                destinationOffset = Quaternion.Euler(newRotation);
+                return true;
+            }
+            return false;
         }
 
 		/// <summary>
@@ -129,8 +132,8 @@ namespace VRTracker.Player {
         private bool NeedReorientation()
         {
             UpdateOrientationData();
-            float offsetY = Mathf.Abs(previousOffset.eulerAngles.y - newRotation.y) % 360;
-            offsetY = offsetY > 180.0f ? offsetY - 360 : offsetY;
+            float offsetY = (newRotation.y - previousOffset.eulerAngles.y)% 360.0f;
+            offsetY = (2 * offsetY)%360.0f - offsetY;
             return Mathf.Abs(offsetY) > minOffsetToBlink;
         }
 
