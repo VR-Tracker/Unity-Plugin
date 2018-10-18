@@ -171,7 +171,6 @@ namespace VRTracker.Manager
         public void UpdateOrientationAndAcceleration(double timestamp, Quaternion neworientation, Vector3 newacceleration)
         {
             orientationUsesQuaternion = true;
-            orientation_quat = neworientation;
 
 
             //=================== START TIMESTAMP CORRECTION ===================
@@ -196,9 +195,9 @@ namespace VRTracker.Manager
 
             // For TAG V3 only
             if (parentTag.tagVersion == VRT_Tag.TagVersion.V3)
-                orientation_quat = new Quaternion(-neworientation.x, neworientation.y, -neworientation.z, neworientation.w);
+                neworientation = new Quaternion(-neworientation.x, neworientation.y, -neworientation.z, neworientation.w);
 
-            orientation_ = orientation_quat.eulerAngles;
+            orientation_ = neworientation.eulerAngles;
             orientation_.y -= VRT_Manager.Instance.roomNorthOffset;
             orientation_quat = Quaternion.Euler(orientation_);
 

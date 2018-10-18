@@ -33,7 +33,7 @@ namespace VRTracker.Player
         public bool followPositionX = true;
         public bool followPositionY = true;
         public bool followPositionZ = true;
-
+            
         private Vector3 originalPosition;
         private Vector3 originalRotation;
 
@@ -121,7 +121,7 @@ namespace VRTracker.Player
             if (useLocalRotation)
                 transform.localRotation = Quaternion.Euler(followOrientationX ? eulerRotation.x : originalRotation.x, followOrientationY ? eulerRotation.y : originalRotation.y, followOrientationZ ? eulerRotation.z : originalRotation.z);
             else
-                transform.rotation = orientation;
+                transform.rotation = Quaternion.Euler(followOrientationX ? eulerRotation.x : originalRotation.x, followOrientationY ? eulerRotation.y : originalRotation.y, followOrientationZ ? eulerRotation.z : originalRotation.z); 
         }
 
 		/// <summary>

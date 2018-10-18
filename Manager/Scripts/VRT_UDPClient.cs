@@ -88,12 +88,14 @@ namespace VRTracker.Manager
 				return null;
 			}
 
+            // Extract MAC address
 			StringBuilder hex = new StringBuilder(tagID.Length * 2);
 			hex.AppendFormat("{0:x2}", tagID[0]);
 			hex.Append (":");
 			hex.AppendFormat("{0:x2}", tagID[1]);
 			string id = hex.ToString();
 			id.ToLower ();
+
             foreach (VRTracker.Manager.VRT_Tag tag in vrtrackerManager.tags) {
 				if (tag.UID.EndsWith (id)){
 					return tag;
