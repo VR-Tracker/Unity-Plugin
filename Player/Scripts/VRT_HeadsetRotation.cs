@@ -135,7 +135,7 @@ namespace VRTracker.Player {
                 newRotation.y = tagRotation.y - cameraRotation.y;
                 previousOffset = destinationOffset;
                 destinationOffset = Quaternion.Euler(newRotation);
-                Debug.Log("Update Data | Tag: " + tagRotation.y.ToString() + " | Cam: " + cameraRotation.y.ToString() + " | New rot: " + newRotation.ToString() + " | Previous offset: " + previousOffset.ToString());
+            //    Debug.Log("Update Data | Tag: " + tagRotation.y.ToString() + " | Cam: " + cameraRotation.y.ToString() + " | New rot: " + newRotation.ToString() + " | Previous offset: " + previousOffset.ToString());
                 return true;
             }
             return false;
@@ -148,7 +148,7 @@ namespace VRTracker.Player {
         private bool ShoudlBlink()
         {
             float angle = GetShortestAngle(previousOffset.eulerAngles.y, newRotation.y);
-            Debug.Log("Blink ? " + angle.ToString());
+        //    Debug.Log("Blink ? " + angle.ToString());
             return Mathf.Abs(angle) > minOffsetToBlink;
         }
 
@@ -163,7 +163,7 @@ namespace VRTracker.Player {
 		/// </summary>
         public void ResetOrientation()
         {
-            Debug.Log("ResetOrientation");
+         //   Debug.Log("ResetOrientation");
 		    UpdateOrientationData();
             transform.localRotation = destinationOffset;
             previousOffset = destinationOffset;
