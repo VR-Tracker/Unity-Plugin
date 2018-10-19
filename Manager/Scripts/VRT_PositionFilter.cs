@@ -29,6 +29,7 @@ namespace VRTracker.Utils
         CircularBuffer<TrackingData> trackingDataBuffer;
 
         private static System.Threading.Thread mainThread;
+
         private CircularBuffer<TrackingData> dataQueue; // Queue to stock received data in case their were not received in main thread
         private bool dataInQueue = false;
 
@@ -41,7 +42,7 @@ namespace VRTracker.Utils
         {
             //WARNING : Call the Init function on MAIN THREAD ONLY (in Start, or Awake)
             mainThread = System.Threading.Thread.CurrentThread;
-            trackingDataBuffer = new CircularBuffer<TrackingData>(200);
+            trackingDataBuffer = new CircularBuffer<TrackingData>(100);
             offsets = new List<PositionOffset>();
             dataQueue = new CircularBuffer<TrackingData>(10);
         }
@@ -149,7 +150,7 @@ namespace VRTracker.Utils
             double lastPosTs = GetLastPositionTimestamp();
             if (trackingDataPosition.timestamp - lastPosTs < 0.001f)
             {
-                Debug.LogError("Position Timestamp too close at " + trackingDataPosition.timestamp.ToString("F4") + "  last timestamp: " + lastPosTs.ToString("F4"));
+//                Debug.LogError("Position Timestamp too close at " + trackingDataPosition.timestamp.ToString("F4") + "  last timestamp: " + lastPosTs.ToString("F4"));
                 return;
             }
 
@@ -320,8 +321,8 @@ namespace VRTracker.Utils
             }
             int index = InsertByTimestamp(trackingDataIMU);
 
-            Debug.Log("0. " + trackingDataIMU.GetType());
-            Debug.Log("1. " + trackingDataBuffer[index].GetType());
+           // Debug.Log("0. " + trackingDataIMU.GetType());
+           // Debug.Log("1. " + trackingDataBuffer[index].GetType());
             //  Debug.Log("ACC MEASUREMENT AT  " + timestamp.ToString("0.000") + " MAG: " + acceleration.magnitude.ToString("0.000"));
 
             //if (index != 0)
@@ -344,8 +345,6 @@ namespace VRTracker.Utils
               //  Debug.LogError("No previous position, or too long ago");
                 return;
             }
-
-            Debug.Log("2. " + trackingDataBuffer[index].GetType());
 
             // Calculate its speed and position using the previous info
 
@@ -370,7 +369,6 @@ namespace VRTracker.Utils
                 //TODO: handle offset correction
                 TrackingDataPosition previousPosition = ((TrackingDataPosition)trackingDataBuffer[index + 1]);
                 // Predict position and speed at this update
-                Debug.Log(trackingDataBuffer[index].GetType());
                 Vector3 newSpeed = delaySinceLastUpdate < 0.03f ? previousPosition.speed + ((TrackingDataIMU)trackingDataBuffer[index]).acceleration * (float)delaySinceLastUpdate : Vector3.Slerp(previousPosition.speed + ((TrackingDataIMU)trackingDataBuffer[index]).acceleration * (float)delaySinceLastUpdate, Vector3.zero, (float)(delaySinceLastUpdate) / accelerationOnlyTrackingDelay);
     
                 trackingDataBuffer[index].speed = newSpeed;
@@ -477,10 +475,13 @@ namespace VRTracker.Utils
         private int InsertByTimestamp(TrackingData data)
         {
 
+            System.Type entryType = data.GetType();
+            System.Type exitType;
             trackingDataBuffer.PushFront(data);
-
+            int index = 0; 
             for (int i = 1; i < trackingDataBuffer.Size; i++)
             {
+                index = i - 1;
                 if (trackingDataBuffer[i - 1].timestamp < trackingDataBuffer[i].timestamp)
                 {
                     // Invert
@@ -489,9 +490,17 @@ namespace VRTracker.Utils
                     trackingDataBuffer[i - 1] = tempData;
                 }
                 else
-                    return i - 1;
+                {
+                    exitType = trackingDataBuffer[i - 1].GetType();
+                    if (entryType != exitType)
+                        Debug.LogWarning("A. Entrype: " + entryType.ToString() + "  ExitType: " + exitType.ToString());
+                    return index;
+                }
             }
-            return 0;
+            exitType = trackingDataBuffer[index].GetType();
+            if (entryType != exitType)
+                Debug.LogWarning("B. Entrype: " + entryType.ToString() + "  ExitType: " + exitType.ToString() + "  Index: " + index.ToString());
+            return index;
         }
 
         private double GetLastPositionTimestamp()
