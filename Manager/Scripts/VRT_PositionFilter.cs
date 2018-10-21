@@ -316,14 +316,10 @@ namespace VRTracker.Utils
             double lastAccTs = GetLastAccelerationTimestamp();
             if (trackingDataIMU.timestamp - lastAccTs < 0.001)
             {
-                Debug.LogError("Acceleration Timestamp too close at " + trackingDataIMU.timestamp.ToString("F4"));
+                //Debug.LogError("Acceleration Timestamp too close at " + trackingDataIMU.timestamp.ToString("F4") + " Previous: " + lastAccTs.ToString());
                 return;
             }
             int index = InsertByTimestamp(trackingDataIMU);
-
-           // Debug.Log("0. " + trackingDataIMU.GetType());
-           // Debug.Log("1. " + trackingDataBuffer[index].GetType());
-            //  Debug.Log("ACC MEASUREMENT AT  " + timestamp.ToString("0.000") + " MAG: " + acceleration.magnitude.ToString("0.000"));
 
             //if (index != 0)
                // Debug.LogError("Acceleration was not insered at last position  " + trackingDataIMU.timestamp.ToString("0.000"));

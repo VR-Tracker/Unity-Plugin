@@ -113,6 +113,7 @@ namespace VRTracker.Manager
         {
             // PREDICTION
             this.positionReceived = position_;
+            Debug.Log("POS: " + (((System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond) - initialTimeMs) / 1000.0d).ToString());
             if (positionFilter)
                 filter.AddPositionMeasurement(((System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond) - initialTimeMs) / 1000.0d, position_);
         }
@@ -191,7 +192,7 @@ namespace VRTracker.Manager
             imuTimestampOffsetAvg /= imuTimestampOffsetBuffer.Size;
             imuTimestamp += imuTimestampOffsetAvg;
 
-          //  Debug.Log("IMU: " + imuTimestamp.ToString() + "  | " + timestamp.ToString());
+            Debug.Log("IMU: " + imuTimestamp.ToString() + "  | " + timestamp.ToString() + " | Rot: " + neworientation.eulerAngles.ToString() );
 
             //==================== END TIMESTAMP CORRECTION ====================
 
@@ -217,7 +218,7 @@ namespace VRTracker.Manager
             acceleration_ = orientation_quat * acceleration_;
 
             if (positionFilter)
-                filter.AddAccelerationMeasurement(((System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond) - initialTimeMs) / 1000.0d, acceleration_);
+                filter.AddAccelerationMeasurement(imuTimestamp, acceleration_);
         }
     }
 }
