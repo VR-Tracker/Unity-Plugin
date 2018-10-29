@@ -191,6 +191,8 @@ namespace VRTracker.Manager
             imuTimestampOffsetAvg /= imuTimestampOffsetBuffer.Size;
             imuTimestamp += imuTimestampOffsetAvg;
 
+          //  Debug.Log("IMU: " + imuTimestamp.ToString() + "  | " + timestamp.ToString());
+
             //==================== END TIMESTAMP CORRECTION ====================
 
             // For TAG V3 only
@@ -215,7 +217,7 @@ namespace VRTracker.Manager
             acceleration_ = orientation_quat * acceleration_;
 
             if (positionFilter)
-                filter.AddAccelerationMeasurement(timestamp, acceleration_);
+                filter.AddAccelerationMeasurement(((System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond) - initialTimeMs) / 1000.0d, acceleration_);
         }
     }
 }

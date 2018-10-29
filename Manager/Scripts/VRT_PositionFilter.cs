@@ -29,7 +29,9 @@ namespace VRTracker.Utils
         CircularBuffer<TrackingData> trackingDataBuffer;
 
         private static System.Threading.Thread mainThread;
-        private List<TrackingData> dataQueue; // Queue to stock received data in case their were not received in main thread
+
+        private CircularBuffer<TrackingData> dataQueue; // Queue to stock received data in case their were not received in main thread
+        private bool dataInQueue = false;
 
         public VRT_PositionFilter()
         {
@@ -40,23 +42,26 @@ namespace VRTracker.Utils
         {
             //WARNING : Call the Init function on MAIN THREAD ONLY (in Start, or Awake)
             mainThread = System.Threading.Thread.CurrentThread;
-            trackingDataBuffer = new CircularBuffer<TrackingData>(200);
+            trackingDataBuffer = new CircularBuffer<TrackingData>(100);
             offsets = new List<PositionOffset>();
-            dataQueue = new List<TrackingData>();
+            dataQueue = new CircularBuffer<TrackingData>(10);
         }
 
 
         public virtual Vector3 GetPosition(double timestamp)
         {
-            if(dataQueue.Count > 0){
+            if(dataInQueue){
                 lock(dataQueue){
-                    for (int i = 0; i < dataQueue.Count; i++){
-                        if (dataQueue[i].GetType() == typeof(TrackingDataIMU))
-                            AddAccelerationMeasurement((TrackingDataIMU)dataQueue[i]);
-                        else if (dataQueue[i].GetType() == typeof(TrackingDataPosition))
-                            AddPositionMeasurement((TrackingDataPosition)dataQueue[i]);
+                    for (int i = 0; i < dataQueue.Size; i++){
+                        TrackingData data = dataQueue.Back();
+                        if (data.GetType() == typeof(TrackingDataIMU))
+                            AddAccelerationMeasurement((TrackingDataIMU)data);
+                        else if (data.GetType() == typeof(TrackingDataPosition))
+                            AddPositionMeasurement((TrackingDataPosition)data);
+
+                        dataQueue.PopBack();
                     }
-                    dataQueue.Clear();
+                    dataInQueue = false;
                 }
             }
 
@@ -129,7 +134,8 @@ namespace VRTracker.Utils
             {
                 lock (dataQueue)
                 {
-                    dataQueue.Add(trackingDataPosition);
+                    dataQueue.PushFront(trackingDataPosition);
+                    dataInQueue = true;
                 }
             }
             else
@@ -142,9 +148,9 @@ namespace VRTracker.Utils
         public void AddPositionMeasurement(TrackingDataPosition trackingDataPosition){
 
             double lastPosTs = GetLastPositionTimestamp();
-            if (trackingDataPosition.timestamp - lastPosTs < 0.001)
+            if (trackingDataPosition.timestamp - lastPosTs < 0.001f)
             {
-                Debug.LogError("Position Timestamp too close at " + trackingDataPosition.timestamp.ToString("F4"));
+//                Debug.LogError("Position Timestamp too close at " + trackingDataPosition.timestamp.ToString("F4") + "  last timestamp: " + lastPosTs.ToString("F4"));
                 return;
             }
 
@@ -294,7 +300,8 @@ namespace VRTracker.Utils
             {
                 lock (dataQueue)
                 {
-                    dataQueue.Add(trackingDataIMU);
+                    dataQueue.PushFront(trackingDataIMU);
+                    dataInQueue = true;
                 }
             }
             else
@@ -305,13 +312,17 @@ namespace VRTracker.Utils
 
         public void AddAccelerationMeasurement(TrackingDataIMU trackingDataIMU)
         {
+
             double lastAccTs = GetLastAccelerationTimestamp();
             if (trackingDataIMU.timestamp - lastAccTs < 0.001)
             {
-              //  Debug.LogError("Acceleration Timestamp too close at " + trackingDataIMU.timestamp.ToString("F4"));
+                Debug.LogError("Acceleration Timestamp too close at " + trackingDataIMU.timestamp.ToString("F4"));
                 return;
             }
             int index = InsertByTimestamp(trackingDataIMU);
+
+           // Debug.Log("0. " + trackingDataIMU.GetType());
+           // Debug.Log("1. " + trackingDataBuffer[index].GetType());
             //  Debug.Log("ACC MEASUREMENT AT  " + timestamp.ToString("0.000") + " MAG: " + acceleration.magnitude.ToString("0.000"));
 
             //if (index != 0)
@@ -323,7 +334,7 @@ namespace VRTracker.Utils
             double delaySinceLastUpdate = trackingDataIMU.timestamp - trackingDataBuffer[index + 1].timestamp;
             if (delaySinceLastUpdate > maxDelaySinceLastMeasurement)
             {
-               // Debug.LogWarning("Too long delay since last update : " + delaySinceLastUpdate.ToString() + "  " + trackingDataIMU.timestamp.ToString("0.000"));
+                Debug.LogWarning("Too long delay since last update : " + delaySinceLastUpdate.ToString() + "  " + trackingDataIMU.timestamp.ToString("0.000"));
                 return;
             }
 
@@ -359,6 +370,7 @@ namespace VRTracker.Utils
                 TrackingDataPosition previousPosition = ((TrackingDataPosition)trackingDataBuffer[index + 1]);
                 // Predict position and speed at this update
                 Vector3 newSpeed = delaySinceLastUpdate < 0.03f ? previousPosition.speed + ((TrackingDataIMU)trackingDataBuffer[index]).acceleration * (float)delaySinceLastUpdate : Vector3.Slerp(previousPosition.speed + ((TrackingDataIMU)trackingDataBuffer[index]).acceleration * (float)delaySinceLastUpdate, Vector3.zero, (float)(delaySinceLastUpdate) / accelerationOnlyTrackingDelay);
+    
                 trackingDataBuffer[index].speed = newSpeed;
                 Vector3 newPositionOffset = delaySinceLastUpdate < 0.03f ? previousPosition.speed * (float)delaySinceLastUpdate + 0.5f * ((TrackingDataIMU)trackingDataBuffer[index]).acceleration * (float)delaySinceLastUpdate * (float)delaySinceLastUpdate : Vector3.Slerp(previousPosition.speed * (float)delaySinceLastUpdate + 0.5f * ((TrackingDataIMU)trackingDataBuffer[index]).acceleration * (float)delaySinceLastUpdate * (float)delaySinceLastUpdate, Vector3.zero, (float)(trackingDataIMU.timestamp - lastpositionts) / accelerationOnlyTrackingDelay);
                 trackingDataBuffer[index].position = previousPosition.position + newPositionOffset;
@@ -463,10 +475,13 @@ namespace VRTracker.Utils
         private int InsertByTimestamp(TrackingData data)
         {
 
+            System.Type entryType = data.GetType();
+            System.Type exitType;
             trackingDataBuffer.PushFront(data);
-
+            int index = 0; 
             for (int i = 1; i < trackingDataBuffer.Size; i++)
             {
+                index = i - 1;
                 if (trackingDataBuffer[i - 1].timestamp < trackingDataBuffer[i].timestamp)
                 {
                     // Invert
@@ -475,9 +490,17 @@ namespace VRTracker.Utils
                     trackingDataBuffer[i - 1] = tempData;
                 }
                 else
-                    return i - 1;
+                {
+                    exitType = trackingDataBuffer[i - 1].GetType();
+                    if (entryType != exitType)
+                        Debug.LogWarning("A. Entrype: " + entryType.ToString() + "  ExitType: " + exitType.ToString());
+                    return index;
+                }
             }
-            return 0;
+            exitType = trackingDataBuffer[index].GetType();
+            if (entryType != exitType)
+                Debug.LogWarning("B. Entrype: " + entryType.ToString() + "  ExitType: " + exitType.ToString() + "  Index: " + index.ToString());
+            return index;
         }
 
         private double GetLastPositionTimestamp()

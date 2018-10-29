@@ -26,6 +26,7 @@ namespace VRTracker.Player {
 		private int waitTimeBeforeVerification = 30; 	//Time in second before checking if the orientation need to be corrected
         [Tooltip("The minimum offset in degrees to blink instead of rotating.")]
 		public float minOffsetToBlink = 15.0f;			//Minimun difference for the orientation to display a blink and do an hard correction
+        public float errorOffset = 30.0f; // Offset to detect error (on start or when headset is put on) 
 
         [SerializeField] Renderer fader;
 
@@ -52,16 +53,31 @@ namespace VRTracker.Player {
         }
 
         // Update is called once per frame
-        void LateUpdate()
+        void FixedUpdate()
         {
             t += Time.deltaTime / timeToReachTarget;
             transform.localRotation = Quaternion.Lerp(previousOffset, destinationOffset, t);
+
+
+            if (tag.trackedEndpoints.ContainsKey((0)))
+            {
+                Vector3 tagRotation = UnmultiplyQuaternion(tag.trackedEndpoints[0].getOrientation());
+                Vector3 cameraRotation = UnmultiplyQuaternion(camera.transform.localRotation);
+                float offsetAngle = Mathf.Abs(GetShortestAngle(newRotation.y, tagRotation.y - cameraRotation.y));
+                if(offsetAngle > errorOffset){
+                    t = timeToReachTarget; 
+                    newRotation.y = tagRotation.y - cameraRotation.y;
+                    previousOffset = destinationOffset;
+                    destinationOffset = Quaternion.Euler(newRotation);
+                    StartCoroutine(Blink());
+                }
+                    
+            }
         }
 
         IEnumerator Blink()
         {
             Color faderColor = fader.material.color;
-
             faderColor.a = 1;
             fader.material.color = faderColor;
 
@@ -90,9 +106,8 @@ namespace VRTracker.Player {
                         tag = VRTracker.Manager.VRT_Manager.Instance.GetHeadsetTag();
                     if (tag != null)
                     {
-
-                        bool isReorienting = NeedReorientation();
-                        if (isReorienting)
+                        UpdateOrientationData();
+                        if (ShoudlBlink())
                         {
                             t = timeToReachTarget;
                             StartCoroutine(Blink());
@@ -120,6 +135,7 @@ namespace VRTracker.Player {
                 newRotation.y = tagRotation.y - cameraRotation.y;
                 previousOffset = destinationOffset;
                 destinationOffset = Quaternion.Euler(newRotation);
+            //    Debug.Log("Update Data | Tag: " + tagRotation.y.ToString() + " | Cam: " + cameraRotation.y.ToString() + " | New rot: " + newRotation.ToString() + " | Previous offset: " + previousOffset.ToString());
                 return true;
             }
             return false;
@@ -129,12 +145,17 @@ namespace VRTracker.Player {
 		/// Returns true if the orientation need to be corrected
 		/// </summary>
 		/// <returns><c>true</c>, if reorientation was needed, <c>false</c> otherwise.</returns>
-        private bool NeedReorientation()
+        private bool ShoudlBlink()
         {
-            UpdateOrientationData();
-            float offsetY = (newRotation.y - previousOffset.eulerAngles.y)% 360.0f;
-            offsetY = (2 * offsetY)%360.0f - offsetY;
-            return Mathf.Abs(offsetY) > minOffsetToBlink;
+            float angle = GetShortestAngle(previousOffset.eulerAngles.y, newRotation.y);
+        //    Debug.Log("Blink ? " + angle.ToString());
+            return Mathf.Abs(angle) > minOffsetToBlink;
+        }
+
+        private float GetShortestAngle(float from, float to){
+            float angle = (to - from) % 360.0f;
+            angle = (2 * angle) % 360.0f - angle;
+            return angle;
         }
 
 		/// <summary>
@@ -142,6 +163,7 @@ namespace VRTracker.Player {
 		/// </summary>
         public void ResetOrientation()
         {
+         //   Debug.Log("ResetOrientation");
 		    UpdateOrientationData();
             transform.localRotation = destinationOffset;
             previousOffset = destinationOffset;
