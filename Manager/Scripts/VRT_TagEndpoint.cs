@@ -192,7 +192,7 @@ namespace VRTracker.Manager
             imuTimestampOffsetAvg /= imuTimestampOffsetBuffer.Size;
             imuTimestamp += imuTimestampOffsetAvg;
 
-            Debug.Log("IMU: " + imuTimestamp.ToString() + "  | " + timestamp.ToString() + " | Rot: " + neworientation.eulerAngles.ToString() );
+           // Debug.Log("IMU: " + imuTimestamp.ToString() + "  | " + timestamp.ToString() + " | Rot: " + neworientation.eulerAngles.ToString() );
 
             //==================== END TIMESTAMP CORRECTION ====================
 
