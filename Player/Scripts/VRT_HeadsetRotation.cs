@@ -27,6 +27,7 @@ namespace VRTracker.Player {
         [Tooltip("The minimum offset in degrees to blink instead of rotating.")]
 		public float minOffsetToBlink = 15.0f;			//Minimun difference for the orientation to display a blink and do an hard correction
         public float errorOffset = 30.0f; // Offset to detect error (on start or when headset is put on) 
+        private int errorCounter = 0;
 
         [SerializeField] Renderer fader;
 
@@ -59,17 +60,25 @@ namespace VRTracker.Player {
             transform.localRotation = Quaternion.Lerp(previousOffset, destinationOffset, t);
 
 
-            if (tag.trackedEndpoints.ContainsKey((0)))
+            if (tag != null && tag.trackedEndpoints.ContainsKey((0)))
             {
                 Vector3 tagRotation = UnmultiplyQuaternion(tag.trackedEndpoints[0].getOrientation());
                 Vector3 cameraRotation = UnmultiplyQuaternion(camera.transform.localRotation);
                 float offsetAngle = Mathf.Abs(GetShortestAngle(newRotation.y, tagRotation.y - cameraRotation.y));
                 if(offsetAngle > errorOffset){
-                    t = timeToReachTarget; 
-                    newRotation.y = tagRotation.y - cameraRotation.y;
-                    previousOffset = destinationOffset;
-                    destinationOffset = Quaternion.Euler(newRotation);
-                    StartCoroutine(Blink());
+                    errorCounter++;
+                    if (errorCounter > 8)
+                    {
+                        errorCounter = 0;
+                        t = timeToReachTarget;
+                        newRotation.y = tagRotation.y - cameraRotation.y;
+                        previousOffset = destinationOffset;
+                        destinationOffset = Quaternion.Euler(newRotation);
+                        StartCoroutine(Blink());
+                    }
+                }
+                else {
+                    errorCounter = 0;
                 }
                     
             }
