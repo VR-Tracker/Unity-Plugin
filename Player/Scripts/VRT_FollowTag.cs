@@ -134,5 +134,16 @@ namespace VRTracker.Player
             if (handler != null)
                 handler(this, e);
         }
+
+        void OnDestroy()
+        {
+            if (tagToFollow != null && tagToFollow.trackedEndpoints.ContainsKey((int)endpoint))
+            {
+                tagFound = true;
+                tagToFollow.trackedEndpoints[(int)endpoint].positionUpdateHandler -= UpdatePosition;
+                tagToFollow.trackedEndpoints[(int)endpoint].orientationUpdateHandler -= UpdateOrientation;
+                OnTagJoinEvent(EventArgs.Empty);
+            }
+        }
     }
 }

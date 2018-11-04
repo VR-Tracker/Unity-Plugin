@@ -7,7 +7,6 @@ using UnityEngine.Networking;
 using VRTracker.Network;
 using System.Collections;
 using VRTracker.Boundary;
-using UnityEngine.Networking;
 using System.Net;
 using System.Net.NetworkInformation;
 
@@ -172,14 +171,21 @@ namespace VRTracker.Manager
                             {
                                 if (orientationQuaternion)
                                 {
-                                    if (!tag.trackedEndpoints.ContainsKey(0))
-                                        tag.trackedEndpoints.Add(0, new VRT_TagEndpoint(tag));
+                                    if (!tag.trackedEndpoints.ContainsKey(0)){
+                                        VRT_TagEndpoint endpoint = tag.gameObject.AddComponent<VRT_TagEndpoint>();
+                                        endpoint.SetTag(tag);
+                                        tag.trackedEndpoints.Add(0, endpoint);
+                                    }
                                     tag.trackedEndpoints[0].UpdateOrientationQuat(orientation_quat);
                                 }
                                 else
                                 {
                                     if (!tag.trackedEndpoints.ContainsKey(0))
-                                        tag.trackedEndpoints.Add(0, new VRT_TagEndpoint(tag));
+                                    {
+                                        VRT_TagEndpoint endpoint = tag.gameObject.AddComponent<VRT_TagEndpoint>();
+                                        endpoint.SetTag(tag);
+                                        tag.trackedEndpoints.Add(0, endpoint);
+                                    }
                                     tag.trackedEndpoints[0].UpdateOrientation(orientation);
                                 }
                             }
@@ -188,13 +194,21 @@ namespace VRTracker.Manager
                                 if (!timestampUpdated)
                                 {
                                     if (!tag.trackedEndpoints.ContainsKey(0))
-                                        tag.trackedEndpoints.Add(0, new VRT_TagEndpoint(tag));
+                                    {
+                                        VRT_TagEndpoint endpoint = tag.gameObject.AddComponent<VRT_TagEndpoint>();
+                                        endpoint.SetTag(tag);
+                                        tag.trackedEndpoints.Add(0, endpoint);
+                                    }
                                     tag.trackedEndpoints[0].UpdatePosition(position);
                                 }
                                 else
                                 {
                                     if (!tag.trackedEndpoints.ContainsKey(0))
-                                        tag.trackedEndpoints.Add(0, new VRT_TagEndpoint(tag));
+                                    {
+                                        VRT_TagEndpoint endpoint = tag.gameObject.AddComponent<VRT_TagEndpoint>();
+                                        endpoint.SetTag(tag);
+                                        tag.trackedEndpoints.Add(0, endpoint);
+                                    }
                                     tag.trackedEndpoints[0].UpdatePosition(position, timestamp);
                                 }
 
@@ -228,6 +242,49 @@ namespace VRTracker.Manager
                     ReceiveSpecialCommand(uid, command);
 
             }
+
+            // Command for second led ping position
+            else if (e.Data.Contains("cmd=orivector"))
+            {
+//                Debug.Log(e.Data);
+                string[] datas = e.Data.Split('&');
+
+                string uid = null;
+                Vector3 secondLedOffset = Vector3.zero;
+                int tagcount = 0;
+                foreach (string data in datas)
+                {
+                    string[] datasplit = data.Split('=');
+
+                    // Tag UID sending its informations
+                    if (datasplit[0] == "uid")
+                    {
+                        uid = datasplit[1];
+                    }
+                    else if (datasplit[0] == "x")
+                    {
+                        secondLedOffset.x = float.Parse(datasplit[1]);
+                    }
+                    else if (datasplit[0] == "y")
+                    {
+                        secondLedOffset.z = float.Parse(datasplit[1]);
+                    }
+                    else if (datasplit[0] == "z")
+                    {
+                        secondLedOffset.y = float.Parse(datasplit[1]);
+                    }
+                    else if (datasplit[0] == "count")
+                    {
+                        tagcount = int.Parse(datasplit[1]);
+                    }
+                }
+                if (uid != null)
+                {
+                    ReceiveTagSecondLedPosition(uid, tagcount, secondLedOffset);
+                }
+
+            }
+
 			else if (e.Data.Contains("cmd=taginfos"))
 			{
 				string[] datas = e.Data.Split('&');
@@ -760,6 +817,16 @@ namespace VRTracker.Manager
                 if (tag.UID == TagID)
                 {
                     tag.UpdateTagInformations(status, battery, version);
+                }
+            }
+        }
+
+        public void ReceiveTagSecondLedPosition(string TagID, int tagCount, Vector3 secondLedOffset){
+            foreach (VRTracker.Manager.VRT_Tag tag in VRTracker.Manager.VRT_Manager.Instance.tags)
+            {
+                if (tag.UID == TagID)
+                {
+                    tag.SecondLedPing(tagCount, secondLedOffset);
                 }
             }
         }

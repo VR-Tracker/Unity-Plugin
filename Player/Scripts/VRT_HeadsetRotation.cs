@@ -138,7 +138,7 @@ namespace VRTracker.Player {
 		/// </summary>
         private bool UpdateOrientationData()
         {
-            if(tag.trackedEndpoints.ContainsKey((0))){
+            if(tag != null && tag.trackedEndpoints.ContainsKey((0))){
                 Vector3 tagRotation = UnmultiplyQuaternion(tag.trackedEndpoints[0].getOrientation());
                 Vector3 cameraRotation = UnmultiplyQuaternion(camera.transform.localRotation);
                 newRotation.y = tagRotation.y - cameraRotation.y;

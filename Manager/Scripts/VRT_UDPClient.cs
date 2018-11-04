@@ -59,11 +59,14 @@ namespace VRTracker.Manager
 				catch (Exception err)
 				{
                     //Close connection in case of error
-                    if(!askedToClose)
-                    Debug.LogError("Error with UDP reception : " + err.ToString());
-                    connected = false;
-                    if (client != null)
-                        client.Close();
+                    if (!askedToClose)
+                        Debug.LogError("Error with UDP reception : " + err.ToString());
+                    else
+                    {
+                        connected = false;
+                        if (client != null)
+                            client.Close();
+                    }
 				}
 			}
 		}
