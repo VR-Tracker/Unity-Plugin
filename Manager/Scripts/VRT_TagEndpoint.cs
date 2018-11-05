@@ -80,7 +80,7 @@ namespace VRTracker.Manager
 
             imuTimestampOffsetBuffer = new CircularBuffer<double>(20);
             positionTimestampOffsetBuffer = new CircularBuffer<double>(20);
-            orientationOffsetBuffer = new CircularBuffer<float>(30);
+            orientationOffsetBuffer = new CircularBuffer<float>(20);
 
             // Get the time at start
             initialTimeMs = System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond;
@@ -109,7 +109,8 @@ namespace VRTracker.Manager
                 if (newPosition != Vector3.zero && positionUpdateHandler != null)
                 {
                     positionUpdateHandler(newPosition);
-                    transform.position = positionReceived;
+                    transform.position = newPosition;
+                    transform.position = newPosition;
                 }
             }
             else if (positionUpdateHandler != null)
@@ -227,7 +228,6 @@ namespace VRTracker.Manager
         {
             orientationUsesQuaternion = true;
 
-
             //=================== START TIMESTAMP CORRECTION ===================
             // Handle timestamp correction and synchronisation
             // The IMU timestamp overflowed and went back to 0
@@ -253,8 +253,10 @@ namespace VRTracker.Manager
             // For TAG V3 only
             if (parentTag.tagVersion == VRT_Tag.TagVersion.V3)
                 neworientation = new Quaternion(-neworientation.x, neworientation.y, -neworientation.z, neworientation.w);
+           // else if (parentTag.tagVersion == VRT_Tag.TagVersion.Gun)
+             //   neworientation = new Quaternion(-neworientation.x, neworientation.y, neworientation.z, neworientation.w);
 
-             
+
 
             orientation_ = neworientation.eulerAngles;
             orientationWithoutCorrection = orientation_;
@@ -270,16 +272,20 @@ namespace VRTracker.Manager
 
             // Convert acceleration axis
             // TAG V2
-            if (parentTag.tagVersion == VRT_Tag.TagVersion.V2)
+            if (parentTag.tagVersion == VRT_Tag.TagVersion.V2 || parentTag.tagVersion == VRT_Tag.TagVersion.Gun)
             {
                 acceleration_ = new Vector3(newacceleration.x, newacceleration.z, newacceleration.y);
             }
             // TAG V3
-            else if (parentTag.tagVersion == VRT_Tag.TagVersion.V3 || parentTag.tagVersion == VRT_Tag.TagVersion.Gun)
-                acceleration_ = new Vector3(-newacceleration.x, newacceleration.z, -newacceleration.y);
+            else if (parentTag.tagVersion == VRT_Tag.TagVersion.V3)
+                acceleration_ = new Vector3(-newacceleration.x, -newacceleration.z, newacceleration.y);
+
+            // acceleration_ = new Vector3(-newacceleration.x, newacceleration.z, -newacceleration.y);
 
             // Transform acceleration from local to world coordinate
+
             acceleration_ = orientation_quat * acceleration_;
+           // Debug.Log("ACC: " + acceleration_.ToString("F1"));
 
             if (positionFilter)
                 filter.AddAccelerationMeasurement(imuTimestamp, acceleration_);
@@ -293,7 +299,7 @@ namespace VRTracker.Manager
             secondLedPlanePosition.y = 0;
 
             // Discard by length (3D and 2D)
-            if (secondLedOffset.magnitude > secondLedPosition.magnitude - 0.02 && secondLedOffset.magnitude < secondLedPosition.magnitude + 0.02 && secondLedPlaneOffset.magnitude > secondLedPlanePosition.magnitude*0.7f)
+            if (secondLedOffset.magnitude > secondLedPosition.magnitude - 0.025 && secondLedOffset.magnitude < secondLedPosition.magnitude + 0.025 && secondLedPlaneOffset.magnitude > secondLedPlanePosition.magnitude*0.5f)
             {
                 Quaternion rotation = Quaternion.LookRotation(secondLedOffset.normalized, Vector3.up);
                 Quaternion ledRotation = Quaternion.LookRotation(secondLedPosition.normalized, Vector3.up); // In case the second LED is not aligned with the main, for example the gun
@@ -301,7 +307,7 @@ namespace VRTracker.Manager
                // Debug.Log("IMU: " + orientationWithoutCorrection.y + " GUN: " + (rotation.eulerAngles.y - ledRotation.eulerAngles.y));
             
                 // Don't discard with orientation offset while not enough data are in the buffer for a proper discarding
-                if (orientationOffsetBuffer.Size < 10)
+                if (orientationOffsetBuffer.Size < 5)
                 {
                     orientationOffsetBuffer.PushFront(newOrientation);
                 }
@@ -321,7 +327,7 @@ namespace VRTracker.Manager
                     else if(orientationOffsetDiscardInRow < 3)
                     {
                         orientationOffsetDiscardInRow++;
-                      //  Debug.Log("Discard angle to far from avg : " + Mathf.DeltaAngle(newOrientationOffset, newOrientation));
+                   //     Debug.Log("Discard angle to far from avg : " + Mathf.DeltaAngle(newOrientationOffset, newOrientation));
                     }
                     else {
                         orientationOffsetDiscardInRow=0;
@@ -334,10 +340,10 @@ namespace VRTracker.Manager
                     }
                 }
 
-               // Debug.Log("ORI: " + newOrientation + " LEN: " + secondLedOffset.magnitude + "  AVG: " + newOrientationOffset);
+               // Debug.LogWarning("ORI: " + newOrientation + " LEN: " + secondLedOffset.magnitude + "  AVG: " + newOrientationOffset);
             }
-           // else
-             //   Debug.Log("Discard Second Led : " + secondLedOffset.magnitude);
+            //else
+            //    Debug.Log("Discard Second Led : " + secondLedOffset.magnitude);
         }
 
         /// <summary>
