@@ -297,23 +297,28 @@ namespace VRTracker.Manager
             secondLedPlaneOffset.y = 0;
             Vector3 secondLedPlanePosition = secondLedPosition;
             secondLedPlanePosition.y = 0;
-
             // Discard by length (3D and 2D)
-            if (secondLedOffset.magnitude > secondLedPosition.magnitude - 0.025 && secondLedOffset.magnitude < secondLedPosition.magnitude + 0.025 && secondLedPlaneOffset.magnitude > secondLedPlanePosition.magnitude*0.5f)
+            //if (secondLedOffset.magnitude > secondLedPosition.magnitude - 0.025 && secondLedOffset.magnitude < secondLedPosition.magnitude + 0.025 && secondLedPlaneOffset.magnitude > secondLedPlanePosition.magnitude*0.5f)
+            if (Mathf.Abs(secondLedOffset.magnitude - secondLedPosition.magnitude) <= 0.035 && secondLedPlaneOffset.magnitude > secondLedPlanePosition.magnitude * 0.6f)
+
             {
                 Quaternion rotation = Quaternion.LookRotation(secondLedOffset.normalized, Vector3.up);
                 Quaternion ledRotation = Quaternion.LookRotation(secondLedPosition.normalized, Vector3.up); // In case the second LED is not aligned with the main, for example the gun
                 float newOrientation = orientationWithoutCorrection.y - (rotation.eulerAngles.y - ledRotation.eulerAngles.y);
-               // Debug.Log("IMU: " + orientationWithoutCorrection.y + " GUN: " + (rotation.eulerAngles.y - ledRotation.eulerAngles.y));
+              //  Debug.Log("IMU: " + orientationWithoutCorrection.y + " GUN: " + (rotation.eulerAngles.y - ledRotation.eulerAngles.y));
             
                 // Don't discard with orientation offset while not enough data are in the buffer for a proper discarding
                 if (orientationOffsetBuffer.Size < 5)
                 {
+                    secondLed = true;
                     orientationOffsetBuffer.PushFront(newOrientation);
+                    previousOrientationOffset = currentOrientationOffset; // To avoid jump if lerp is not over
+                    newOrientationOffset = AngleAvergage(orientationOffsetBuffer);
+                    orientationOffsetStartTime = (System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond);
                 }
                 else
                 {
-                    secondLed = true;
+                    
                     if (Mathf.DeltaAngle(newOrientationOffset, newOrientation) < 40)
                     {
                         orientationOffsetDiscardInRow = 0;
@@ -321,13 +326,12 @@ namespace VRTracker.Manager
 
                         previousOrientationOffset = currentOrientationOffset; // To avoid jump if lerp is not over
                         newOrientationOffset = AngleAvergage(orientationOffsetBuffer);
-                      //  currentOrientationOffset = newOrientationOffset; //TODO: remove
                         orientationOffsetStartTime = (System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond);
                     }
                     else if(orientationOffsetDiscardInRow < 3)
                     {
                         orientationOffsetDiscardInRow++;
-                   //     Debug.Log("Discard angle to far from avg : " + Mathf.DeltaAngle(newOrientationOffset, newOrientation));
+                        Debug.Log("Discard angle to far from avg : " + Mathf.DeltaAngle(newOrientationOffset, newOrientation));
                     }
                     else {
                         orientationOffsetDiscardInRow=0;
@@ -340,10 +344,10 @@ namespace VRTracker.Manager
                     }
                 }
 
-               // Debug.LogWarning("ORI: " + newOrientation + " LEN: " + secondLedOffset.magnitude + "  AVG: " + newOrientationOffset);
+                Debug.LogWarning("ORI: " + newOrientation + " LEN: " + secondLedOffset.magnitude + "  AVG: " + newOrientationOffset);
             }
-            //else
-            //    Debug.Log("Discard Second Led : " + secondLedOffset.magnitude);
+            else
+                Debug.Log("Discard Second Led  : " + parentTag.tagType.ToString() + "  " + secondLedOffset.magnitude);
         }
 
         /// <summary>

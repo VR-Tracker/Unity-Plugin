@@ -90,7 +90,7 @@ namespace VRTracker.Manager
         private void OnErrorHandler(object sender, System.EventArgs e)
         {
             if(!isSocketClosing)
-                Debug.LogError("Error with connection to the gateway");
+                Debug.LogError("Error with connection to the gateway " + e.ToString());
             if (!isSocketRunning && !isSocketClosing)
             {
                 Debug.LogWarning("Trying to reconnect to the gateway");
@@ -121,18 +121,22 @@ namespace VRTracker.Manager
                     {
                         string[] datasplit = data.Split('=');
                         // Position
+                        // Position
                         if (datasplit[0] == "x")
                         {
                             positionUpdated = true;
-                            position.x = float.Parse(datasplit[1]);
+                            position.x = float.Parse(datasplit[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture);
+
                         }
                         else if (datasplit[0] == "z")
                         {
-                            position.y = float.Parse(datasplit[1]);
+                            positionUpdated = true;
+                            position.y = float.Parse(datasplit[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture);
                         }
                         else if (datasplit[0] == "y")
                         {
-                            position.z = float.Parse(datasplit[1]);
+                            positionUpdated = true;
+                            position.z = float.Parse(datasplit[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture);
                         }
                         else if (datasplit[0] == "ts")
                         {
@@ -144,23 +148,24 @@ namespace VRTracker.Manager
                         else if (datasplit[0] == "ox")
                         {
                             orientationUpdated = true;
-                            orientation.y = -float.Parse(datasplit[1]);
+                          //  Debug.Log("Received orientation info for " + uid);
+                            orientation.y = -float.Parse(datasplit[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture);
                             orientation_quat.x = -orientation.y;
                         }
                         else if (datasplit[0] == "oy")
                         {
-                            orientation.x = -float.Parse(datasplit[1]);
+                            orientation.x = -float.Parse(datasplit[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture);
                             orientation_quat.y = -orientation.x;
                         }
                         else if (datasplit[0] == "oz")
                         {
-                            orientation.z = float.Parse(datasplit[1]);
+                            orientation.z = float.Parse(datasplit[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture);
                             orientation_quat.z = orientation.z;
                         }
                         else if (datasplit[0] == "ow")
                         {
                             orientationQuaternion = true;
-                            orientation_quat.w = -float.Parse(datasplit[1]);
+                            orientation_quat.w = -float.Parse(datasplit[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture);
                         }
                     }
                     foreach (VRTracker.Manager.VRT_Tag tag in VRTracker.Manager.VRT_Manager.Instance.tags)
@@ -246,7 +251,7 @@ namespace VRTracker.Manager
             // Command for second led ping position
             else if (e.Data.Contains("cmd=orivector"))
             {
-//                Debug.Log(e.Data);
+              //  Debug.Log(e.Data);
                 string[] datas = e.Data.Split('&');
 
                 string uid = null;
@@ -261,22 +266,23 @@ namespace VRTracker.Manager
                     {
                         uid = datasplit[1];
                     }
-                    else if (datasplit[0] == "x")
+                    if (datasplit[0] == "x")
                     {
-                        secondLedOffset.x = float.Parse(datasplit[1]);
-                    }
-                    else if (datasplit[0] == "y")
-                    {
-                        secondLedOffset.z = float.Parse(datasplit[1]);
+                        secondLedOffset.x = float.Parse(datasplit[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture);
                     }
                     else if (datasplit[0] == "z")
                     {
-                        secondLedOffset.y = float.Parse(datasplit[1]);
+                        secondLedOffset.y = float.Parse(datasplit[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture);
+                    }
+                    else if (datasplit[0] == "y")
+                    {
+                        secondLedOffset.z = float.Parse(datasplit[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture);
                     }
                     else if (datasplit[0] == "count")
                     {
-                        tagcount = int.Parse(datasplit[1]);
+                        tagcount = int.Parse(datasplit[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture);
                     }
+
                 }
                 if (uid != null)
                 {
@@ -446,20 +452,20 @@ namespace VRTracker.Manager
                     // Tag UID sending the special command
                     if (datasplit[0] == "xmin")
                     {
-                        xmin = float.Parse(datasplit[1]);
+                        xmin = float.Parse(datasplit[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture);
 						newBoundary = true;
                     }
                     else if (datasplit[0] == "xmax")
                     {
-                        xmax = float.Parse(datasplit[1]);
+                        xmax = float.Parse(datasplit[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture);
                     }
                     else if (datasplit[0] == "ymin")
                     {
-                        ymin = float.Parse(datasplit[1]);
+                        ymin = float.Parse(datasplit[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture);
                     }
                     else if (datasplit[0] == "ymax")
                     {
-                        ymax = float.Parse(datasplit[1]);
+                        ymax = float.Parse(datasplit[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture);
                     }
                     else if (datasplit[0] == "data")
                     {

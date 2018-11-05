@@ -21,7 +21,7 @@ namespace VRTracker.Utils
 
         private List<PositionOffset> offsets;
 
-        private OneEuroFilter<Vector3> oneEuro = new OneEuroFilter<Vector3>(90, 0.70f, 25.0f, 1.0f);
+        private OneEuroFilter<Vector3> oneEuro = new OneEuroFilter<Vector3>(90, 0.70f, 5.0f, 1.0f);
 
         private Vector3 lastCalculatedPosition = Vector3.zero;
         private double lastCalculatedPositionTimestamp = 0.0d;
