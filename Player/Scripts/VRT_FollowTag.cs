@@ -34,8 +34,8 @@ namespace VRTracker.Player
         public bool followPositionY = true;
         public bool followPositionZ = true;
             
-        private Vector3 originalPosition;
-        private Vector3 originalRotation;
+        protected Vector3 originalPosition;
+        protected Vector3 originalRotation;
 
         [HideInInspector]
         public VRTracker.Manager.VRT_Tag tagToFollow;
@@ -46,7 +46,7 @@ namespace VRTracker.Player
 
         public event EventHandler OnTagJoin;
 
-        private NetworkIdentity NetIdent;
+        protected NetworkIdentity NetIdent;
 
         // Use this for initialization
         void Start()
@@ -106,7 +106,7 @@ namespace VRTracker.Player
 
         }
 
-        public void UpdatePosition(Vector3 position)
+        public virtual void UpdatePosition(Vector3 position)
 		{
             if(useLocalPosition)
                 transform.localPosition = new Vector3(followPositionX ? position.x : originalPosition.x, followPositionY ? position.y : originalPosition.y, followPositionZ ? position.z : originalPosition.z);
@@ -115,7 +115,7 @@ namespace VRTracker.Player
        
 		}
 
-        public void UpdateOrientation(Quaternion orientation)
+        public virtual void UpdateOrientation(Quaternion orientation)
         {
             Vector3 eulerRotation = orientation.eulerAngles;
             if (useLocalRotation)
