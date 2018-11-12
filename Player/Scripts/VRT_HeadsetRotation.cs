@@ -16,8 +16,8 @@ namespace VRTracker.Player {
 
         private NetworkIdentity networkIdentity;
 
-        private Quaternion previousOffset;
-        private Quaternion destinationOffset;
+        private Quaternion previousOffset = Quaternion.identity;
+        private Quaternion destinationOffset = Quaternion.identity;
 
         private Vector3 newRotation;
 
@@ -47,8 +47,6 @@ namespace VRTracker.Player {
                 this.enabled = false;
                 return;
             }
-            previousOffset = Quaternion.Euler(Vector3.zero);
-            destinationOffset = Quaternion.Euler(Vector3.zero);
             ResetOrientation();
             StartCoroutine(FixOffset());
         }
@@ -57,8 +55,8 @@ namespace VRTracker.Player {
         void FixedUpdate()
         {
             t += Time.deltaTime / timeToReachTarget;
-            transform.localRotation = Quaternion.Lerp(previousOffset, destinationOffset, t);
-
+            Quaternion lerpedRotation = Quaternion.Lerp(previousOffset, destinationOffset, t);
+            transform.localRotation = lerpedRotation;
 
             if (tag != null && tag.trackedEndpoints.ContainsKey((0)))
             {

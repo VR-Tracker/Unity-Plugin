@@ -24,6 +24,12 @@ namespace VRTracker.Manager
         public EndpointId endpointID;
 
 
+        
+        [HideInInspector]
+        public bool useCustomOrientation = false; // For custom orientation using 6DOF but no second LED (body tracking with calibration)
+        [HideInInspector]
+        public float customOrientationOffset = 0f; // Orientation offset to use in this case, public to be set by another script
+
         // Second Led Correction
         private bool secondLed = false;
         public float currentOrientationOffset = 0; // Lerped offset
@@ -263,6 +269,10 @@ namespace VRTracker.Manager
             if (secondLed)
             {
                 orientation_.y -= currentOrientationOffset;
+            }
+            else if(useCustomOrientation)
+            {
+                orientation_.y -= customOrientationOffset;
             }
             else
             {

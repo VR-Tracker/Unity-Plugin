@@ -92,6 +92,7 @@ namespace VRTracker.Pairing
             yield return StartCoroutine(m_LoadingFader.InteruptAndFadeIn());
         }
 
+
 		/// <summary>
 		/// Shows the bar to fill to enable the pairing
 		/// </summary>
