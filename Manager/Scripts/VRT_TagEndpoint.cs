@@ -116,7 +116,6 @@ namespace VRTracker.Manager
                 {
                     positionUpdateHandler(newPosition);
                     transform.position = newPosition;
-                    transform.position = newPosition;
                 }
             }
             else if (positionUpdateHandler != null)
@@ -124,12 +123,17 @@ namespace VRTracker.Manager
                 transform.position = positionReceived;
                 positionUpdateHandler(positionReceived);
             }
+            else {
+                transform.position = positionReceived;
+            }
 
             if (orientationUpdateHandler != null)
             {
-                transform.rotation = orientation_quat;
+                
                 orientationUpdateHandler(orientation_quat);
             }
+
+            transform.rotation = orientation_quat;
 
 
         }
@@ -232,6 +236,7 @@ namespace VRTracker.Manager
         /// <param name="newacceleration">Newacceleration.</param>
         public void UpdateOrientationAndAcceleration(double timestamp, Quaternion neworientation, Vector3 newacceleration)
         {
+            Debug.Log(parentTag.tagType.ToString() + "  receive orientation");
             orientationUsesQuaternion = true;
 
             //=================== START TIMESTAMP CORRECTION ===================

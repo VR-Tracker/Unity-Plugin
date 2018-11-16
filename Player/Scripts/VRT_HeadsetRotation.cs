@@ -84,19 +84,22 @@ namespace VRTracker.Player {
 
         IEnumerator Blink()
         {
-            Color faderColor = fader.material.color;
-            faderColor.a = 1;
-            fader.material.color = faderColor;
-
-            yield return new WaitForSeconds(0.1f);
-            while (faderColor.a > 0)
+            if (fader != null)
             {
-                faderColor.a -= 0.2f;
+                Color faderColor = fader.material.color;
+                faderColor.a = 1;
                 fader.material.color = faderColor;
-                yield return new WaitForSeconds(0.05f);
+
+                yield return new WaitForSeconds(0.1f);
+                while (faderColor.a > 0)
+                {
+                    faderColor.a -= 0.2f;
+                    fader.material.color = faderColor;
+                    yield return new WaitForSeconds(0.05f);
+                }
+                faderColor.a = 0;
+                fader.material.color = faderColor;
             }
-            faderColor.a = 0;
-            fader.material.color = faderColor;
         }
 
 		/// <summary>
