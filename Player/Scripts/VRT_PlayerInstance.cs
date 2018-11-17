@@ -40,7 +40,6 @@ namespace VRTracker.Player
         {
             if (!isLocalPlayer)
                 playerNameText.text = playerName;
-
         }
 
         void OnChangeName(string newName)
