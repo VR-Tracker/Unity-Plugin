@@ -60,7 +60,10 @@ namespace VRTracker.Pairing
 		// Use this for initialization
 		void Start () {
 
-            DontDestroyOnLoad(this);
+            if (VRTracker.Manager.VRT_Manager.Instance.spectator)
+                gameObject.SetActive(false);
+            else 
+                DontDestroyOnLoad(this);
 
             SceneManager.sceneLoaded += OnSceneLoaded;
             VRTracker.Manager.VRT_Manager.Instance.OnAvailableTag += AddAvailableTag;
