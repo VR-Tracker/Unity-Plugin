@@ -61,8 +61,11 @@ namespace VRTracker.Pairing
 		void Start () {
 
             if (VRTracker.Manager.VRT_Manager.Instance.spectator)
+            {
                 gameObject.SetActive(false);
-            else 
+                return;
+            }
+            else
                 DontDestroyOnLoad(this);
 
             SceneManager.sceneLoaded += OnSceneLoaded;
