@@ -63,8 +63,15 @@ namespace VRTracker.Pairing
             if (VRTracker.Manager.VRT_Manager.Instance.spectator)
             {
                 gameObject.SetActive(false);
-                if (gameScene.SceneName != "" && SceneManager.GetActiveScene().name != gameScene.SceneName.Split('/')[gameScene.SceneName.Split('/').Length-1])
-                    SceneManager.LoadScene(gameScene);
+                if (gameScene != null)
+                {
+                    if (SceneManager.GetActiveScene().name != gameScene.SceneName.Split('/')[gameScene.SceneName.Split('/').Length - 1])
+                        SceneManager.LoadScene(gameScene);
+                }
+                else if(SceneManager.GetActiveScene().name != gameScene.SceneName.Split('/')[gameScene.SceneName.Split('/').Length - 1])
+                {
+                    Debug.LogWarning("Could not load Game Scene in Spectator mode as the Game Scene is not linked in VRT_PairingManager");
+                }
                 return;
             }
             else
