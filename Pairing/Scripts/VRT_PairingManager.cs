@@ -61,6 +61,7 @@ namespace VRTracker.Pairing
 		void Start () {
 
             DontDestroyOnLoad(this);
+
             SceneManager.sceneLoaded += OnSceneLoaded;
             VRTracker.Manager.VRT_Manager.Instance.OnAvailableTag += AddAvailableTag;
 

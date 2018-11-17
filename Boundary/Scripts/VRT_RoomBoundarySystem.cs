@@ -45,6 +45,8 @@ namespace VRTracker.Boundary
         // Generate the walls using data of each corner
         void Start()
         {
+            DontDestroyOnLoad(this.gameObject);
+
             walls = new List<GameObject>();
             LoadCornersData();
 			//Don't draw the boundaries for spectator

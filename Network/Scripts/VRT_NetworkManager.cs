@@ -39,6 +39,8 @@ namespace VRTracker.Network
 
         public void Start()
         {
+            DontDestroyOnLoad(this.gameObject);
+
             if (VRT_Manager.Instance.spectator)
             {
                 StartServer();
