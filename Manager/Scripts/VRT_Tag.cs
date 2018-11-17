@@ -118,6 +118,15 @@ namespace VRTracker.Manager
 
             OnTrackingLost += SetLostColor;
             OnTrackingFound += SetFoundColor;
+
+            VRT_TagEndpoint[] endpoints = GetComponentsInChildren<VRT_TagEndpoint>();
+            foreach(VRT_TagEndpoint endpoint in endpoints){
+                if (!trackedEndpoints.ContainsKey((int)endpoint.endpointID))
+                {
+                    trackedEndpoints.Add((int)endpoint.endpointID, endpoint);
+                    endpoint.SetTag(this);
+                }
+            }
         }
 
         protected virtual void Update()
@@ -125,9 +134,6 @@ namespace VRTracker.Manager
             //UNET Check
             if (netId != null && !netId.isLocalPlayer)
                 return;
-
-            foreach (KeyValuePair<int, VRT_TagEndpoint> trackedEndpoint in trackedEndpoints)
-                trackedEndpoint.Value.Update();
 
             // For pairing purposes
 			if (waitingForID)
@@ -289,8 +295,10 @@ namespace VRTracker.Manager
                     double.TryParse(values["az"], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out f);
                     rec_acceleration.z = (float)(f * (9.80665 / 1000));
 
+                    VRT_TagEndpoint endpoint = gameObject.AddComponent<VRT_TagEndpoint>();
+                    endpoint.SetTag(this);
                     if (!trackedEndpoints.ContainsKey(0))
-                        trackedEndpoints.Add(0, new VRT_TagEndpoint(this));
+                        trackedEndpoints.Add(0, endpoint);
                     trackedEndpoints[0].UpdateOrientationAndAcceleration(rec_orientation, rec_acceleration);
                 }
 
@@ -356,7 +364,11 @@ namespace VRTracker.Manager
 
                             // Create Endpoint if inexsiting
                             if (!trackedEndpoints.ContainsKey(sensorCount))
-                                trackedEndpoints.Add(sensorCount, new VRT_TagEndpoint(this));
+                            {
+                                VRT_TagEndpoint endpoint = gameObject.AddComponent<VRT_TagEndpoint>();
+                                endpoint.SetTag(this);
+                                trackedEndpoints.Add(sensorCount, endpoint);
+                            }
                             trackedEndpoints[sensorCount].UpdateOrientationAndAcceleration(rec_orientation, rec_acceleration);
                             break;
                         }
@@ -394,7 +406,11 @@ namespace VRTracker.Manager
 
                             // Create Endpoint if inexsiting
                             if (!trackedEndpoints.ContainsKey(sensorCount))
-                                trackedEndpoints.Add(sensorCount, new VRT_TagEndpoint(this));
+                            {
+                                VRT_TagEndpoint endpoint = gameObject.AddComponent<VRT_TagEndpoint>();
+                                endpoint.SetTag(this);
+                                trackedEndpoints.Add(sensorCount, endpoint);
+                            }
                             if(timestamped)
                                 trackedEndpoints[sensorCount].UpdateOrientationAndAcceleration(timestamp, rec_orientation, rec_acceleration);
                             else
@@ -447,11 +463,11 @@ namespace VRTracker.Manager
                             if (new_trigger != trigger)
                             {
                                 trigger = new_trigger;
-                                Debug.Log("tag guin trigger");
+                              //  Debug.Log("tag guin trigger");
 
-                                if (trigger)
+                                if (trigger && OnTriggerDown != null)
                                     UnityMainThreadDispatcher.Instance().Enqueue(OnTriggerDown);
-                                else
+                                else if(OnTriggerUp != null)
                                     UnityMainThreadDispatcher.Instance().Enqueue(OnTriggerUp);
                             }
 
@@ -538,6 +554,19 @@ namespace VRTracker.Manager
             while (!IDisAssigned && waitingForID)
             {
                 yield return new WaitForSeconds(1);
+            }
+        }
+
+
+        /// <summary>
+        /// Called when the second led position is received. Position is relative to first LED wrt world ref
+        /// </summary>
+        /// <param name="tagCount">Count of the endpoint on the Tag</param>
+        /// <param name="secondLedOffset">Second led offset.</param>
+        public void SecondLedPing(int tagCount, Vector3 secondLedOffset){
+            if (trackedEndpoints.ContainsKey((tagCount)))
+            {
+                trackedEndpoints[tagCount].SecondLedPing(secondLedOffset);
             }
         }
 
