@@ -16,8 +16,8 @@ namespace VRTracker.Player {
 
         private NetworkIdentity networkIdentity;
 
-        private Quaternion previousOffset = Quaternion.identity;
-        private Quaternion destinationOffset = Quaternion.identity;
+        private Quaternion previousOffset;
+        private Quaternion destinationOffset;
 
         private Vector3 newRotation;
 
@@ -47,6 +47,8 @@ namespace VRTracker.Player {
                 this.enabled = false;
                 return;
             }
+            previousOffset = Quaternion.Euler(Vector3.zero);
+            destinationOffset = Quaternion.Euler(Vector3.zero);
             ResetOrientation();
             StartCoroutine(FixOffset());
         }
@@ -55,8 +57,8 @@ namespace VRTracker.Player {
         void FixedUpdate()
         {
             t += Time.deltaTime / timeToReachTarget;
-            Quaternion lerpedRotation = Quaternion.Lerp(previousOffset, destinationOffset, t);
-            transform.localRotation = lerpedRotation;
+            transform.localRotation = Quaternion.Lerp(previousOffset, destinationOffset, t);
+
 
             if (tag != null && tag.trackedEndpoints.ContainsKey((0)))
             {
@@ -84,22 +86,19 @@ namespace VRTracker.Player {
 
         IEnumerator Blink()
         {
-            if (fader != null)
-            {
-                Color faderColor = fader.material.color;
-                faderColor.a = 1;
-                fader.material.color = faderColor;
+            Color faderColor = fader.material.color;
+            faderColor.a = 1;
+            fader.material.color = faderColor;
 
-                yield return new WaitForSeconds(0.1f);
-                while (faderColor.a > 0)
-                {
-                    faderColor.a -= 0.2f;
-                    fader.material.color = faderColor;
-                    yield return new WaitForSeconds(0.05f);
-                }
-                faderColor.a = 0;
+            yield return new WaitForSeconds(0.1f);
+            while (faderColor.a > 0)
+            {
+                faderColor.a -= 0.2f;
                 fader.material.color = faderColor;
+                yield return new WaitForSeconds(0.05f);
             }
+            faderColor.a = 0;
+            fader.material.color = faderColor;
         }
 
 		/// <summary>

@@ -57,7 +57,7 @@ namespace VRStandardAssets.Utils
         {
             // Fading has now started.
             m_Fading = true;
-            Debug.Log("Start fading");
+
             // Fading needs to continue until all the groups have finishing fading in so we need to base that on the lowest alpha.
             float lowestAlpha;
 

@@ -24,12 +24,6 @@ namespace VRTracker.Manager
         public EndpointId endpointID;
 
 
-        
-        [HideInInspector]
-        public bool useCustomOrientation = false; // For custom orientation using 6DOF but no second LED (body tracking with calibration)
-        [HideInInspector]
-        public float customOrientationOffset = 0f; // Orientation offset to use in this case, public to be set by another script
-
         // Second Led Correction
         private bool secondLed = false;
         public float currentOrientationOffset = 0; // Lerped offset
@@ -116,6 +110,7 @@ namespace VRTracker.Manager
                 {
                     positionUpdateHandler(newPosition);
                     transform.position = newPosition;
+                    transform.position = newPosition;
                 }
             }
             else if (positionUpdateHandler != null)
@@ -123,17 +118,12 @@ namespace VRTracker.Manager
                 transform.position = positionReceived;
                 positionUpdateHandler(positionReceived);
             }
-            else {
-                transform.position = positionReceived;
-            }
 
             if (orientationUpdateHandler != null)
             {
-                
+                transform.rotation = orientation_quat;
                 orientationUpdateHandler(orientation_quat);
             }
-
-            transform.rotation = orientation_quat;
 
 
         }
@@ -236,7 +226,6 @@ namespace VRTracker.Manager
         /// <param name="newacceleration">Newacceleration.</param>
         public void UpdateOrientationAndAcceleration(double timestamp, Quaternion neworientation, Vector3 newacceleration)
         {
-            Debug.Log(parentTag.tagType.ToString() + "  receive orientation");
             orientationUsesQuaternion = true;
 
             //=================== START TIMESTAMP CORRECTION ===================
@@ -274,10 +263,6 @@ namespace VRTracker.Manager
             if (secondLed)
             {
                 orientation_.y -= currentOrientationOffset;
-            }
-            else if(useCustomOrientation)
-            {
-                orientation_.y -= customOrientationOffset;
             }
             else
             {

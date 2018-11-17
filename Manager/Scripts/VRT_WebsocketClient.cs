@@ -953,6 +953,8 @@ namespace VRTracker.Manager
                         myaddress = address.Address.ToString();
                         addressFound = true;
                     }
+
+
                 }
             }
 
