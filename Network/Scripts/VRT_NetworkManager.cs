@@ -54,6 +54,12 @@ namespace VRTracker.Network
             }
         }
 
+
+        /// <summary>
+        /// Waits in loop to receive server IP from the Gateway before starting
+        /// as a Client
+        /// </summary>
+        /// <returns></returns>
         IEnumerator WaitForServerIP() {
             //while testing
             while (!VRT_Manager.Instance.vrtrackerWebsocket.serverIp.StartsWith("192.168."))
