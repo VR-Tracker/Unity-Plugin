@@ -13,7 +13,7 @@ public class VRT_ErrorMessage : MonoBehaviour {
     public Text text;
 
 	// Use this for initialization
-	void Awake () {
+	void Start () {
         VRTracker.Manager.VRT_Manager.Instance.vrtrackerWebsocket.OnNoGateway += DisplayError;
 	}
 

@@ -109,6 +109,13 @@ namespace VRTracker.Manager
         // Use this for initialization
         protected virtual void Start()
         {
+
+            if (VRTracker.Manager.VRT_Manager.Instance.spectator)
+            {
+                gameObject.SetActive(false);
+                return;
+            }
+
             //Check if local player in UNET
             netId = transform.GetComponentInParent<NetworkIdentity>();
             if (netId != null && !netId.isLocalPlayer)
