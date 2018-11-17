@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -49,25 +50,24 @@ namespace VRTracker.Network
             }
             else
             {
-                //while testing
-                if (VRT_Manager.Instance.vrtrackerWebsocket.serverIp != "")
-                {
-                    //Joining the host
-					serverBindAddress = VRT_Manager.Instance.vrtrackerWebsocket.serverIp;
-                    serverBindToIP = true;
-                    networkAddress = serverBindAddress;
-                    StartClient();
-                }
-                else
-                {
-
-                    StartHost();
-                    isServer = true;
-                    //Set the server ip to inform other users of serverIp
-                    VRT_Manager.Instance.vrtrackerWebsocket.SetServerIp();
-                }
-                isClient = true;
+                StartCoroutine(WaitForServerIP());
             }
+        }
+
+        IEnumerator WaitForServerIP() {
+            //while testing
+            while (!VRT_Manager.Instance.vrtrackerWebsocket.serverIp.StartsWith("192.168."))
+            {
+                yield return new WaitForSeconds(1);
+            }
+
+            //Joining the server
+            serverBindAddress = VRT_Manager.Instance.vrtrackerWebsocket.serverIp;
+            serverBindToIP = true;
+            networkAddress = serverBindAddress;
+            StartClient();
+            isClient = true;
+            yield return null;
         }
 
         internal void JoinGame(string ipAddress)
