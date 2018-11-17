@@ -63,6 +63,8 @@ namespace VRTracker.Pairing
             if (VRTracker.Manager.VRT_Manager.Instance.spectator)
             {
                 gameObject.SetActive(false);
+                if (gameScene.SceneName != "" && SceneManager.GetActiveScene().name != gameScene.SceneName.Split('/')[gameScene.SceneName.Split('/').Length-1])
+                    SceneManager.LoadScene(gameScene);
                 return;
             }
             else

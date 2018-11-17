@@ -145,8 +145,8 @@ MonoBehaviour:
     sceneAsset: {fileID: 102900000, guid: 5f6a80ef468bb4e07a5cb093c72c08fb, type: 3}
     sceneName: VRTracker/Pairing/Scenes/VRT_PairingExample
   gameScene:
-    sceneAsset: {fileID: 102900000, guid: 3f7f03bb1f31a4886b09d6b2ab897907, type: 3}
-    sceneName: Game/Scenes/BodyTracking
+    sceneAsset: {fileID: 102900000, guid: 3c69389c495b88c428e2c45ebc98a6cd, type: 3}
+    sceneName: Game/Scenes/Main
   autoPairing: 1
   JsonFilePath: Player_Data.json
   pairingUI: {fileID: 1091878197}
@@ -2765,7 +2765,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UserUID: 
   roomNorthOffset: 0
-  spectator: 0
+  spectator: 1
   spectatorTrackedCamera: 0
   tags: []
   vrtrackerWebsocket: {fileID: 1305825674}
@@ -3196,8 +3196,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4e1d491ff6665346a843c658e84c5d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_CorrespondingSourceObject: {fileID: 114527587280611946, guid: 85fe7e4c3d3cd4f0d877adf540519e4c,
-    type: 2}
 --- !u!114 &1418872409
 MonoBehaviour:
   m_ObjectHideFlags: 0
