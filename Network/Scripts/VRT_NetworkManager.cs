@@ -47,6 +47,9 @@ namespace VRTracker.Network
                 StartServer();
                 isServer = true;
 				VRT_Manager.Instance.vrtrackerWebsocket.SetServerIp();
+                serverBindAddress = VRT_Manager.Instance.vrtrackerWebsocket.serverIp;
+                serverBindToIP = true;
+                networkAddress = serverBindAddress;
             }
             else
             {
