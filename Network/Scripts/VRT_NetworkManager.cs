@@ -124,7 +124,7 @@ namespace VRTracker.Network
             foreach (VRT_PlayerInstance playerInstance in players)
             {
                 player.playerId = (int)player.GetComponent<NetworkIdentity>().netId.Value;
-                player.playerName = "Player " + (player.playerId);
+                //player.playerName = "Player " + (player.playerId);
                 player.playerTeamId = 0;
             }
 
