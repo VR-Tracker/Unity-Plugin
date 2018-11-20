@@ -5,8 +5,9 @@ using UnityEngine.UI;
 using VRTracker.Network;
 using VRTracker.Manager;
 using System.Collections.Generic;
+#if VRTRACKER_INTERNAL
 using VRTracker.Scoreboard;
-
+#endif
 namespace VRTracker.Player
 {
     /// <summary>
@@ -32,9 +33,12 @@ namespace VRTracker.Player
         public int playerId;        //Player unique id
         public int playerTeamId;    //Player's team unique id
 
+        #if VRTRACKER_INTERNAL
         [SerializeField] public VRT_PlayerModelSkin playerSkin;
-        [SerializeField] public NetworkIdentity networkIdentity;
         [SerializeField] public VRT_PlayerStats playerStats;
+        #endif
+        [SerializeField] public NetworkIdentity networkIdentity;
+
 
         public void Start()
         {
