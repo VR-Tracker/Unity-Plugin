@@ -30,8 +30,11 @@ namespace VRTracker.Manager
 			LeftFoot, 			// Track the user left foot
 			RightFoot, 			// Track the user right controller
 			CameraSpectator, 	// Track the spectator camera, when a tag is put on a real camera to follow its position
-			Other 				// Use to track any object with a tag
+			Other, 				// Use to track any object with a tag
+            Body
         }
+
+
 
         public enum TagVersion {
             V2,
