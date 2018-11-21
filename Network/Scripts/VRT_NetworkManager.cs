@@ -16,7 +16,7 @@ namespace VRTracker.Network
 	/// </summary>
     public class VRT_NetworkManager : NetworkManager
     {
-        [Tooltip("List of all the paleyr in the Game")]
+        [Tooltip("List of all the player in the Game")]
         public List<VRT_PlayerInstance> players;
         public event Action<VRT_PlayerInstance> OnPlayerJoin;
         public event Action<VRT_PlayerInstance> OnPlayerLeave;
