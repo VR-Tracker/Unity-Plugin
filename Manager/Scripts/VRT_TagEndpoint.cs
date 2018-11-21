@@ -27,6 +27,10 @@ namespace VRTracker.Manager
         // Second Led Correction
         public bool secondLed = false;
 
+        // Temp for 6 DOF 
+        public bool useCustomOrientation = false;
+        public float customOrientationOffset = 0.0f;
+
         // For Quaternion orientation from Tag
         protected bool orientationUsesQuaternion = false;
         protected Quaternion orientation_quat; // Tag V2 and above
@@ -244,7 +248,16 @@ namespace VRTracker.Manager
 
             orientation_ = neworientation.eulerAngles;
             orientationWithoutCorrection = orientation_;
-            if (!secondLed)
+
+            if (secondLed)
+            {
+                
+            }
+            else if (useCustomOrientation)
+            {
+                orientation_.y -= customOrientationOffset;
+            }
+            else
             {
                 orientation_.y -= VRT_Manager.Instance.roomNorthOffset;
             }
