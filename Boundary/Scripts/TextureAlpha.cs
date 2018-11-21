@@ -21,7 +21,9 @@ namespace VRTracker.Boundary
 
 		public void SetAlpha(float value)
 		{
-			alpha = value;
+            //Debug.Log("texturealpha script changed to " + value);
+
+            alpha = value;
 			Color color = GetComponent<Renderer>().materials[0].color;
 			color.a = alpha;
 			GetComponent<Renderer>().materials[0].color = color;

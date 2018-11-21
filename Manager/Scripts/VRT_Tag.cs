@@ -109,6 +109,13 @@ namespace VRTracker.Manager
         // Use this for initialization
         protected virtual void Start()
         {
+
+            if (VRTracker.Manager.VRT_Manager.Instance.spectator)
+            {
+                gameObject.SetActive(false);
+                return;
+            }
+
             //Check if local player in UNET
             netId = transform.GetComponentInParent<NetworkIdentity>();
             if (netId != null && !netId.isLocalPlayer)
@@ -556,20 +563,6 @@ namespace VRTracker.Manager
                 yield return new WaitForSeconds(1);
             }
         }
-
-
-        /// <summary>
-        /// Called when the second led position is received. Position is relative to first LED wrt world ref
-        /// </summary>
-        /// <param name="tagCount">Count of the endpoint on the Tag</param>
-        /// <param name="secondLedOffset">Second led offset.</param>
-        public void SecondLedPing(int tagCount, Vector3 secondLedOffset){
-            if (trackedEndpoints.ContainsKey((tagCount)))
-            {
-                trackedEndpoints[tagCount].SecondLedPing(secondLedOffset);
-            }
-        }
-
        
 		/// <summary>
 		/// Raises the destroy event and remove the tag from the list in the manager

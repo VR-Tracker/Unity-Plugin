@@ -248,49 +248,6 @@ namespace VRTracker.Manager
 
             }
 
-            // Command for second led ping position
-            else if (e.Data.Contains("cmd=orivector"))
-            {
-              //  Debug.Log(e.Data);
-                string[] datas = e.Data.Split('&');
-
-                string uid = null;
-                Vector3 secondLedOffset = Vector3.zero;
-                int tagcount = 0;
-                foreach (string data in datas)
-                {
-                    string[] datasplit = data.Split('=');
-
-                    // Tag UID sending its informations
-                    if (datasplit[0] == "uid")
-                    {
-                        uid = datasplit[1];
-                    }
-                    if (datasplit[0] == "x")
-                    {
-                        secondLedOffset.x = float.Parse(datasplit[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture);
-                    }
-                    else if (datasplit[0] == "z")
-                    {
-                        secondLedOffset.y = float.Parse(datasplit[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture);
-                    }
-                    else if (datasplit[0] == "y")
-                    {
-                        secondLedOffset.z = float.Parse(datasplit[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture);
-                    }
-                    else if (datasplit[0] == "count")
-                    {
-                        tagcount = int.Parse(datasplit[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture);
-                    }
-
-                }
-                if (uid != null)
-                {
-                    ReceiveTagSecondLedPosition(uid, tagcount, secondLedOffset);
-                }
-
-            }
-
 			else if (e.Data.Contains("cmd=taginfos"))
 			{
 				string[] datas = e.Data.Split('&');
@@ -827,15 +784,6 @@ namespace VRTracker.Manager
             }
         }
 
-        public void ReceiveTagSecondLedPosition(string TagID, int tagCount, Vector3 secondLedOffset){
-            foreach (VRTracker.Manager.VRT_Tag tag in VRTracker.Manager.VRT_Manager.Instance.tags)
-            {
-                if (tag.UID == TagID)
-                {
-                    tag.SecondLedPing(tagCount, secondLedOffset);
-                }
-            }
-        }
 			
 		/// <summary>
 		/// Receives the boundaries and update the boundaries data

@@ -14,12 +14,12 @@ namespace VRTracker.Player {
         public new Camera camera;
         public new VRTracker.Manager.VRT_Tag tag;
 
-        private NetworkIdentity networkIdentity;
+        protected NetworkIdentity networkIdentity;
 
         private Quaternion previousOffset;
         private Quaternion destinationOffset;
 
-        private Vector3 newRotation;
+        protected Vector3 newRotation;
 
         private float t;
         private float timeToReachTarget = 15.0f;			//Time used to correct the orientation
@@ -84,7 +84,7 @@ namespace VRTracker.Player {
             }
         }
 
-        IEnumerator Blink()
+        protected IEnumerator Blink()
         {
             Color faderColor = fader.material.color;
             faderColor.a = 1;
@@ -167,10 +167,10 @@ namespace VRTracker.Player {
             return angle;
         }
 
-		/// <summary>
-		/// Resets the orientation and fade a blink to the user
-		/// </summary>
-        public void ResetOrientation()
+        /// <summary>
+        /// Resets the orientation and fade a blink to the user
+        /// </summary>
+        public virtual void ResetOrientation()
         {
          //   Debug.Log("ResetOrientation");
 		    UpdateOrientationData();
