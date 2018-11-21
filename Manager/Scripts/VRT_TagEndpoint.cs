@@ -25,8 +25,8 @@ namespace VRTracker.Manager
 
 
         // Second Led Correction
-        private bool secondLed = false;
-        public float currentOrientationOffset = 0; // Lerped offset
+        public bool secondLed = false;
+        private float currentOrientationOffset = 0; // Lerped offset
         private float previousOrientationOffset = 0; // Previously calculated orientation offset (lerp from)
         private float newOrientationOffset = 0; // Last calculated orientation offset (lerp to)
         private double orientationOffsetLerpDelay = 5000; // 5 second or lerp when the orientation offset changes
@@ -34,7 +34,7 @@ namespace VRTracker.Manager
         private int orientationOffsetDiscardInRow = 0;
         private CircularBuffer<float> orientationOffsetBuffer;
         [Tooltip("Position of the second LED w.r.t the first one in the Tag reference (use only is second led is present)")]
-        public Vector3 secondLedPosition = Vector3.zero;
+        private Vector3 secondLedPosition = Vector3.zero;
 
         // For Quaternion orientation from Tag
         protected bool orientationUsesQuaternion = false;
@@ -95,12 +95,6 @@ namespace VRTracker.Manager
 		// Update is called once per frame
 		public void Update()
         {
-            if (secondLed)
-            {
-                double newLerpTime = (System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond) - orientationOffsetStartTime;
-                currentOrientationOffset = Mathf.Lerp(previousOrientationOffset, newOrientationOffset, (float)(newLerpTime / orientationOffsetLerpDelay));
-            }
-
             if (positionFilter)
             {
                 if (filter == null)
@@ -262,7 +256,7 @@ namespace VRTracker.Manager
             orientationWithoutCorrection = orientation_;
             if (secondLed)
             {
-                orientation_.y -= currentOrientationOffset;
+               // orientation_.y -= currentOrientationOffset;
             }
             else
             {
@@ -292,7 +286,8 @@ namespace VRTracker.Manager
         }
 
         public void SecondLedPing(Vector3 secondLedOffset){
-
+            
+            /*
             Vector3 secondLedPlaneOffset = secondLedOffset;
             secondLedPlaneOffset.y = 0;
             Vector3 secondLedPlanePosition = secondLedPosition;
@@ -310,7 +305,7 @@ namespace VRTracker.Manager
                 // Don't discard with orientation offset while not enough data are in the buffer for a proper discarding
                 if (orientationOffsetBuffer.Size < 5)
                 {
-                    secondLed = true;
+                    
                     orientationOffsetBuffer.PushFront(newOrientation);
                     previousOrientationOffset = currentOrientationOffset; // To avoid jump if lerp is not over
                     newOrientationOffset = AngleAvergage(orientationOffsetBuffer);
@@ -348,6 +343,7 @@ namespace VRTracker.Manager
             }
             else
                 Debug.Log("Discard Second Led  : " + parentTag.tagType.ToString() + "  " + secondLedOffset.magnitude);
+                */
         }
 
         /// <summary>
