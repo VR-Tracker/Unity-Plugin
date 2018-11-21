@@ -33,10 +33,6 @@ namespace VRTracker.Player
         public int playerId;        //Player unique id
         public int playerTeamId;    //Player's team unique id
 
-        #if VRTRACKER_INTERNAL
-        [SerializeField] public VRT_PlayerModelSkin playerSkin;
-        [SerializeField] public VRT_PlayerStats playerStats;
-        #endif
         [SerializeField] public NetworkIdentity networkIdentity;
 
 
