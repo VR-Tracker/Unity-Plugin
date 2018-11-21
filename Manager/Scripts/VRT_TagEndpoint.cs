@@ -26,15 +26,6 @@ namespace VRTracker.Manager
 
         // Second Led Correction
         public bool secondLed = false;
-        private float currentOrientationOffset = 0; // Lerped offset
-        private float previousOrientationOffset = 0; // Previously calculated orientation offset (lerp from)
-        private float newOrientationOffset = 0; // Last calculated orientation offset (lerp to)
-        private double orientationOffsetLerpDelay = 5000; // 5 second or lerp when the orientation offset changes
-        private double orientationOffsetStartTime = 0;
-        private int orientationOffsetDiscardInRow = 0;
-        private CircularBuffer<float> orientationOffsetBuffer;
-        [Tooltip("Position of the second LED w.r.t the first one in the Tag reference (use only is second led is present)")]
-        private Vector3 secondLedPosition = Vector3.zero;
 
         // For Quaternion orientation from Tag
         protected bool orientationUsesQuaternion = false;
@@ -80,7 +71,6 @@ namespace VRTracker.Manager
 
             imuTimestampOffsetBuffer = new CircularBuffer<double>(20);
             positionTimestampOffsetBuffer = new CircularBuffer<double>(20);
-            orientationOffsetBuffer = new CircularBuffer<float>(20);
 
             // Get the time at start
             initialTimeMs = System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond;
@@ -254,11 +244,7 @@ namespace VRTracker.Manager
 
             orientation_ = neworientation.eulerAngles;
             orientationWithoutCorrection = orientation_;
-            if (secondLed)
-            {
-               // orientation_.y -= currentOrientationOffset;
-            }
-            else
+            if (!secondLed)
             {
                 orientation_.y -= VRT_Manager.Instance.roomNorthOffset;
             }
@@ -285,66 +271,6 @@ namespace VRTracker.Manager
                 filter.AddAccelerationMeasurement(imuTimestamp, acceleration_);
         }
 
-        public void SecondLedPing(Vector3 secondLedOffset){
-            
-            /*
-            Vector3 secondLedPlaneOffset = secondLedOffset;
-            secondLedPlaneOffset.y = 0;
-            Vector3 secondLedPlanePosition = secondLedPosition;
-            secondLedPlanePosition.y = 0;
-            // Discard by length (3D and 2D)
-            //if (secondLedOffset.magnitude > secondLedPosition.magnitude - 0.025 && secondLedOffset.magnitude < secondLedPosition.magnitude + 0.025 && secondLedPlaneOffset.magnitude > secondLedPlanePosition.magnitude*0.5f)
-            if (Mathf.Abs(secondLedOffset.magnitude - secondLedPosition.magnitude) <= 0.035 && secondLedPlaneOffset.magnitude > secondLedPlanePosition.magnitude * 0.6f)
-
-            {
-                Quaternion rotation = Quaternion.LookRotation(secondLedOffset.normalized, Vector3.up);
-                Quaternion ledRotation = Quaternion.LookRotation(secondLedPosition.normalized, Vector3.up); // In case the second LED is not aligned with the main, for example the gun
-                float newOrientation = orientationWithoutCorrection.y - (rotation.eulerAngles.y - ledRotation.eulerAngles.y);
-              //  Debug.Log("IMU: " + orientationWithoutCorrection.y + " GUN: " + (rotation.eulerAngles.y - ledRotation.eulerAngles.y));
-            
-                // Don't discard with orientation offset while not enough data are in the buffer for a proper discarding
-                if (orientationOffsetBuffer.Size < 5)
-                {
-                    
-                    orientationOffsetBuffer.PushFront(newOrientation);
-                    previousOrientationOffset = currentOrientationOffset; // To avoid jump if lerp is not over
-                    newOrientationOffset = AngleAvergage(orientationOffsetBuffer);
-                    orientationOffsetStartTime = (System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond);
-                }
-                else
-                {
-                    
-                    if (Mathf.DeltaAngle(newOrientationOffset, newOrientation) < 40)
-                    {
-                        orientationOffsetDiscardInRow = 0;
-                        orientationOffsetBuffer.PushFront(newOrientation);
-
-                        previousOrientationOffset = currentOrientationOffset; // To avoid jump if lerp is not over
-                        newOrientationOffset = AngleAvergage(orientationOffsetBuffer);
-                        orientationOffsetStartTime = (System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond);
-                    }
-                    else if(orientationOffsetDiscardInRow < 3)
-                    {
-                        orientationOffsetDiscardInRow++;
-                        Debug.Log("Discard angle to far from avg : " + Mathf.DeltaAngle(newOrientationOffset, newOrientation));
-                    }
-                    else {
-                        orientationOffsetDiscardInRow=0;
-                        orientationOffsetBuffer.PushFront(newOrientation);
-
-                        previousOrientationOffset = currentOrientationOffset; // To avoid jump if lerp is not over
-                        newOrientationOffset = AngleAvergage(orientationOffsetBuffer);
-                      //  currentOrientationOffset = newOrientationOffset; //TODO: remove
-                        orientationOffsetStartTime = (System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond);
-                    }
-                }
-
-                Debug.LogWarning("ORI: " + newOrientation + " LEN: " + secondLedOffset.magnitude + "  AVG: " + newOrientationOffset);
-            }
-            else
-                Debug.Log("Discard Second Led  : " + parentTag.tagType.ToString() + "  " + secondLedOffset.magnitude);
-                */
-        }
 
         /// <summary>
         /// Calculate the avergage angle of a buffer of angles in degrees.
