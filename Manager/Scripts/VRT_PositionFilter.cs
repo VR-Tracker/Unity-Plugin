@@ -8,7 +8,7 @@ namespace VRTracker.Utils
     public class VRT_PositionFilter
     {
         private float positionLatency = 0.065f; // Delay between position and acceleration
-        private float predictionDelay = 0.02f;
+        private float predictionDelay = 0.05f;
 
         private float maxPredictionDelaySinceLastMeasurement = 0.5f;
         private float maxDelaySinceLastMeasurement = 0.1f;

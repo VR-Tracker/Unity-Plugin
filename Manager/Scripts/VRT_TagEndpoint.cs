@@ -271,14 +271,14 @@ namespace VRTracker.Manager
             }
             // TAG V3
             else if (parentTag.tagVersion == VRT_Tag.TagVersion.V3)
-                acceleration_ = new Vector3(-newacceleration.x, -newacceleration.z, newacceleration.y);
+                acceleration_ = new Vector3(-newacceleration.x, newacceleration.z, -newacceleration.y);
 
             // acceleration_ = new Vector3(-newacceleration.x, newacceleration.z, -newacceleration.y);
 
             // Transform acceleration from local to world coordinate
 
             acceleration_ = orientation_quat * acceleration_;
-           // Debug.Log("ACC: " + acceleration_.ToString("F1"));
+          //  Debug.Log("ACC: " + acceleration_.ToString("F1"));
 
             if (positionFilter)
                 filter.AddAccelerationMeasurement(imuTimestamp, acceleration_);
