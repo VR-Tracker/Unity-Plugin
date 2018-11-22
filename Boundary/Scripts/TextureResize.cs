@@ -18,10 +18,11 @@ namespace VRTracker.Boundary
 	{
 		public float scaleFactor = 5.0f;
 		Material mat;
+        [SerializeField] Renderer rend;
 		// Use this for initialization
 		void Start () 
 		{
-			GetComponent<Renderer>().material.mainTextureScale = new Vector2 (transform.localScale.x / scaleFactor , transform.localScale.z / scaleFactor);
+            rend.sharedMaterial.mainTextureScale = new Vector2 (transform.lossyScale.x / scaleFactor , transform.lossyScale.z / scaleFactor);
 		}
 
 		// Update is called once per frame
@@ -30,7 +31,7 @@ namespace VRTracker.Boundary
 
 			if (transform.hasChanged && Application.isEditor && !Application.isPlaying) 
 			{
-				GetComponent<Renderer>().material.mainTextureScale = new Vector2 (transform.localScale.x / scaleFactor , transform.localScale.z / scaleFactor);
+				GetComponent<Renderer>().material.mainTextureScale = new Vector2 (transform.lossyScale.x / scaleFactor , transform.lossyScale.z / scaleFactor);
 				transform.hasChanged = false;
 			} 
 
@@ -39,7 +40,7 @@ namespace VRTracker.Boundary
 		// To force in game resize (when receiving boundaries size for example)
 		public void Resize()
 		{
-			GetComponent<Renderer>().material.mainTextureScale = new Vector2 (transform.localScale.x / scaleFactor , transform.localScale.z / scaleFactor);
+			GetComponent<Renderer>().material.mainTextureScale = new Vector2 (transform.lossyScale.x / scaleFactor , transform.lossyScale.z / scaleFactor);
 		}
 	}
 }

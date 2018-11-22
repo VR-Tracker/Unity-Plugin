@@ -90,7 +90,10 @@ namespace VRTracker.Boundary
                 }
                 if (VRT_Manager.Instance.spectator)
                 {
-                    cornersLoaded();
+                    if (cornersLoaded != null)
+                    {
+                        cornersLoaded();
+                    }
                 }
                 //Debug.Log("corners loaded");
             }
@@ -119,7 +122,7 @@ namespace VRTracker.Boundary
                 bound.transform.parent = this.transform;
 
                 Vector3 scale = bound.transform.localScale;
-                scale.x = distanceToNextPoint / 10;
+                scale.x = distanceToNextPoint;
                 bound.transform.localScale = scale;
 
                 //Set the boundarie gameobject position
@@ -158,7 +161,11 @@ namespace VRTracker.Boundary
         {
             foreach (GameObject wall in walls)
             {
-                textureAlphaList.Add(wall.GetComponent<TextureAlpha>());
+                TextureAlpha textAlph = wall.GetComponent<TextureAlpha>();
+                if (textAlph != null)
+                {
+                    textureAlphaList.Add(textAlph);
+                }
             }
         }
 
@@ -171,15 +178,18 @@ namespace VRTracker.Boundary
             //Debug.Log("change alpha value in roomboundary script to " + value);
             generalAlpha = value;
 
-            if(!assigned)
+            if (!assigned)
             {
                 assigned = true;
                 AssignTextureAlphaScript();
             }
 
-            foreach (TextureAlpha wall in textureAlphaList)
-            {                
+            if (textureAlphaList.Count > 0)
+            {
+                foreach (TextureAlpha wall in textureAlphaList)
+                {
                     wall.SetAlpha(value);
+                }
             }
         }
 
@@ -194,12 +204,12 @@ namespace VRTracker.Boundary
                 return distance;
 
             foreach (VRTracker.Manager.VRT_Tag tag in VRTracker.Manager.VRT_Manager.Instance.tags)
-            {
+            {               
                 foreach (GameObject wall in walls)
                 {
                     // Get the distance from point to plane by using projection
                     Vector3 V1 = tag.trackedEndpoints[0].transform.position - wall.transform.position;
-                    Vector3 V2 = Vector3.Project(V1, wall.transform.up);
+                    Vector3 V2 = Vector3.Project(V1, wall.transform.forward);
                     if (distance > V2.magnitude)
                         distance = V2.magnitude;
                 }
@@ -212,7 +222,7 @@ namespace VRTracker.Boundary
         {
             float distance = GetShortestDistanceToWalls();
 
-            
+
             if (distance < distanceStartFade)
             {
                 float closeToWallValue = (float)(distanceStartFade - distanceStartFade * (distance / distanceStartFade));
