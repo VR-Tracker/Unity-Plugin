@@ -16,6 +16,7 @@ namespace VRTracker.Boundary
 	/// </summary>
 	public class TextureAlpha : MonoBehaviour 
 	{
+        [SerializeField] Renderer rend;
 		[SerializeField]
 		float alpha = 0.0f;
 
@@ -24,9 +25,9 @@ namespace VRTracker.Boundary
             //Debug.Log("texturealpha script changed to " + value);
 
             alpha = value;
-			Color color = GetComponent<Renderer>().materials[0].color;
+			Color color = rend.materials[0].color;
 			color.a = alpha;
-			GetComponent<Renderer>().materials[0].color = color;
+            rend.materials[0].color = color;
 		}
 	}
 }
