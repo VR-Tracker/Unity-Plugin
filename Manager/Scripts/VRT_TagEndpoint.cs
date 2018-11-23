@@ -249,13 +249,14 @@ namespace VRTracker.Manager
             orientation_ = neworientation.eulerAngles;
             orientationWithoutCorrection = orientation_;
 
-            if (secondLed)
-            {
-                
-            }
-            else if (useCustomOrientation)
+            
+            if (useCustomOrientation)
             {
                 orientation_.y -= customOrientationOffset;
+            }
+            else if (secondLed)
+            {
+
             }
             else
             {
