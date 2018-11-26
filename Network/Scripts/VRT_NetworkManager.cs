@@ -30,7 +30,7 @@ namespace VRTracker.Network
 		private bool isServer = false;
 		private bool isClient = false;
 
-        private void Awake()
+        private void OnEnable()
         {
             if (Instance == null)
             {
