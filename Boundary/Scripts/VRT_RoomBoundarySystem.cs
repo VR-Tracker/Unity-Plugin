@@ -50,12 +50,13 @@ namespace VRTracker.Boundary
             walls = new List<GameObject>();
             LoadCornersData();
             //Don't draw the boundaries for spectator
+            Debug.Log("spectator " + VRTracker.Manager.VRT_Manager.Instance.spectator);
             if (!VRTracker.Manager.VRT_Manager.Instance.spectator)
             {
                 DrawBoundaries();
-            }
-            OnNewBoundaries += UpdateBoundaries;
-            exist = true;
+                OnNewBoundaries += UpdateBoundaries;
+                exist = true;
+            }           
         }
 
         public void UpdateBoundaries()
