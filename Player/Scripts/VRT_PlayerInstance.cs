@@ -38,7 +38,7 @@ namespace VRTracker.Player
 
         public void Start()
         {
-            if (!isLocalPlayer)
+            if (!isLocalPlayer && playerNameText != null)
                 playerNameText.text = playerName;
         }
 
