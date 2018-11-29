@@ -47,7 +47,9 @@ namespace VRTracker.Player
             //Debug.Log("change name hook");
             playerName = newName;
             NameChangeEvent(new StringDataEventArgs(newName));
-            playerNameText.text = newName;
+
+            if (playerNameText != null)
+                playerNameText.text = newName;
         }
 
         /// <summary>

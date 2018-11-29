@@ -181,15 +181,18 @@ namespace VRTracker.Player
         public virtual void ResetOrientation()
         {
             //Debug.Log("ResetOrientation");
-            VRTracker.Manager.VRT_Tag headTag = VRTracker.Manager.VRT_Manager.Instance.GetHeadsetTag();
+            VRTracker.Manager.VRT_Tag headTag = VRTracker.Manager.VRT_Manager.Instance.GetTag(VRTracker.Manager.VRT_Tag.TagType.Head);
             VRTracker.Manager.VRT_Tag gunTag = VRTracker.Manager.VRT_Manager.Instance.GetTag(VRTracker.Manager.VRT_Tag.TagType.Gun);
            // Debug.Log("headTag " + (headTag == null) + " gunTag " + (gunTag == null));
             VRTracker.VRT_SixDofOffset tagOffsetHead = headTag.GetComponent<VRTracker.VRT_SixDofOffset>();
             VRTracker.VRT_SixDofOffset tagOffsetGun = gunTag.GetComponent<VRTracker.VRT_SixDofOffset>();
            // Debug.Log("tagOffsetHead " + tagOffsetHead + " tagOffsetGun " + tagOffsetGun);
 
-            tagOffsetHead.SetToZero();
-            tagOffsetGun.SetToZero();
+            if(headTag != null)
+                tagOffsetHead.SetToZero();
+
+            if (gunTag != null)
+                tagOffsetGun.SetToZero();
 
                
             //UpdateOrientationData();
