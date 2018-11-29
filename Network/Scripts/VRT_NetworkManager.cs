@@ -9,11 +9,11 @@ using VRTracker.Player;
 
 namespace VRTracker.Network
 {
-	/// <summary>
-	/// VRT Network Manager overrides the UNET Network Manager
-	/// Handle the network component in the game
-	/// Store the list of players
-	/// </summary>
+    /// <summary>
+    /// VRT Network Manager overrides the UNET Network Manager
+    /// Handle the network component in the game
+    /// Store the list of players
+    /// </summary>
     public class VRT_NetworkManager : NetworkManager
     {
         [Tooltip("List of all the player in the Game")]
@@ -27,8 +27,8 @@ namespace VRTracker.Network
         [Tooltip("Local player in the Game")]
         public VRT_PlayerInstance localPlayer;
 
-		private bool isServer = false;
-		private bool isClient = false;
+        private bool isServer = false;
+        private bool isClient = false;
 
         void Awake()
         {
@@ -46,7 +46,7 @@ namespace VRTracker.Network
             {
                 StartServer();
                 isServer = true;
-				VRT_Manager.Instance.vrtrackerWebsocket.SetServerIp();
+                VRT_Manager.Instance.vrtrackerWebsocket.SetServerIp();
                 serverBindAddress = VRT_Manager.Instance.vrtrackerWebsocket.serverIp;
                 serverBindToIP = true;
                 networkAddress = serverBindAddress;
@@ -63,7 +63,8 @@ namespace VRTracker.Network
         /// as a Client
         /// </summary>
         /// <returns></returns>
-        IEnumerator WaitForServerIP() {
+        IEnumerator WaitForServerIP()
+        {
             //while testing
             while (!VRT_Manager.Instance.vrtrackerWebsocket.serverIp.StartsWith("192.168."))
             {
@@ -75,6 +76,7 @@ namespace VRTracker.Network
             serverBindToIP = true;
             networkAddress = serverBindAddress;
             StartClient();
+            Debug.Log("client started");
             isClient = true;
             yield return null;
         }
@@ -83,6 +85,7 @@ namespace VRTracker.Network
         {
             networkAddress = ipAddress;
             StartClient();
+            Debug.Log("startclient join game");
         }
 
         internal void StartLanHost()
@@ -113,10 +116,10 @@ namespace VRTracker.Network
         }
 
 
-		/// <summary>
-		/// Adds the player to the list, and update its id
-		/// </summary>
-		/// <param name="player">Player.</param>
+        /// <summary>
+        /// Adds the player to the list, and update its id
+        /// </summary>
+        /// <param name="player">Player.</param>
         public void AddPlayer(VRT_PlayerInstance player)
         {
             players.Add(player);
@@ -129,13 +132,33 @@ namespace VRTracker.Network
             }
 
             if (OnPlayerJoin != null)
+            {
                 OnPlayerJoin(player);
+                Debug.Log("on player join ");
+            }
         }
 
-		/// <summary>
-		/// Removes the player on deconnection
-		/// </summary>
-		/// <param name="player">Player.</param>
+        public override void OnClientConnect(NetworkConnection connection)
+        {
+            ClientScene.Ready(connection);
+            //ClientScene.AddPlayer(0);
+
+            //Output text to show the connection on the client side
+            Debug.Log("Client Side : Client " + connection.connectionId + " Connected!");
+
+            //Register and receive the message on the Client's side (NetworkConnection.Send Example)
+            client.RegisterHandler(MsgType.Ready, ReadyMessage);
+        }
+
+        public void ReadyMessage(NetworkMessage networkMessage)
+        {
+            Debug.Log("Client Ready! ");
+        }
+
+        /// <summary>
+        /// Removes the player on deconnection
+        /// </summary>
+        /// <param name="player">Player.</param>
         public void RemovePlayer(VRT_PlayerInstance player)
         {
             players.Remove(player);
@@ -144,12 +167,13 @@ namespace VRTracker.Network
 
         }
 
-		/// <summary>
-		/// Sets the local player in the game
-		/// </summary>
-		/// <param name="player">Player.</param>
+        /// <summary>
+        /// Sets the local player in the game
+        /// </summary>
+        /// <param name="player">Player.</param>
         public void SetLocalPlayer(VRT_PlayerInstance player)
         {
+            Debug.Log("set local player");
             localPlayer = player;
             if (OnLocalPlayerJoin != null)
             {
@@ -161,18 +185,20 @@ namespace VRTracker.Network
         {
             return localPlayer;
         }
-			
-		public void OnDestroy()
-		{
-			if (isServer) {
-				if (isClient)
-					StopHost ();
-				else
-					StopServer ();
+
+        public void OnDestroy()
+        {
+            if (isServer)
+            {
+                if (isClient)
+                    StopHost();
+                else
+                    StopServer();
             }
-            else {
-				if (isClient)
-					StopClient ();
+            else
+            {
+                if (isClient)
+                    StopClient();
                 Debug.Log("NETWORK: Stopping Client ");
             }
 
