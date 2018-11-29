@@ -187,13 +187,13 @@ namespace VRTracker.Player
             VRTracker.VRT_SixDofOffset tagOffsetHead = headTag.GetComponent<VRTracker.VRT_SixDofOffset>();
             VRTracker.VRT_SixDofOffset tagOffsetGun = gunTag.GetComponent<VRTracker.VRT_SixDofOffset>();
            // Debug.Log("tagOffsetHead " + tagOffsetHead + " tagOffsetGun " + tagOffsetGun);
-
+           
             if(headTag != null)
                 tagOffsetHead.SetToZero();
-
+           
             if (gunTag != null)
                 tagOffsetGun.SetToZero();
-
+           
                
             //UpdateOrientationData();
             //transform.localRotation = destinationOffset;
