@@ -137,23 +137,7 @@ namespace VRTracker.Network
                 Debug.Log("on player join ");
             }
         }
-
-        public override void OnClientConnect(NetworkConnection connection)
-        {
-            ClientScene.Ready(connection);
-            //ClientScene.AddPlayer(0);
-
-            //Output text to show the connection on the client side
-            Debug.Log("Client Side : Client " + connection.connectionId + " Connected!");
-
-            //Register and receive the message on the Client's side (NetworkConnection.Send Example)
-            client.RegisterHandler(MsgType.Ready, ReadyMessage);
-        }
-
-        public void ReadyMessage(NetworkMessage networkMessage)
-        {
-            Debug.Log("Client Ready! ");
-        }
+        
 
         /// <summary>
         /// Removes the player on deconnection
