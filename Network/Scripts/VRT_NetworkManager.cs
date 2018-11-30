@@ -27,7 +27,7 @@ namespace VRTracker.Network
         [Tooltip("Local player in the Game")]
         public VRT_PlayerInstance localPlayer;
 
-        private bool isServer = false;
+        public bool isServer = false;
         private bool isClient = false;
 
         private void OnEnable()
@@ -50,11 +50,14 @@ namespace VRTracker.Network
                 serverBindAddress = VRT_Manager.Instance.vrtrackerWebsocket.serverIp;
                 serverBindToIP = true;
                 networkAddress = serverBindAddress;
+                Debug.Log("spectator detected, isServer set to true");
             }
             else
             {
                 StartCoroutine(WaitForServerIP());
             }
+
+            Debug.Log("isServer netmanager " + isServer);
         }
 
 
@@ -137,7 +140,7 @@ namespace VRTracker.Network
                 Debug.Log("on player join ");
             }
         }
-        
+
 
         /// <summary>
         /// Removes the player on deconnection
@@ -172,6 +175,7 @@ namespace VRTracker.Network
 
         public void OnDestroy()
         {
+            Debug.Log("isServer netmanager " + isServer);
             if (isServer)
             {
                 if (isClient)
@@ -179,12 +183,11 @@ namespace VRTracker.Network
                 else
                     StopServer();
             }
-            else
+            else if (isClient)
             {
-                if (isClient)
-                    StopClient();
+                StopClient();
                 Debug.Log("NETWORK: Stopping Client ");
-            }         
+            }
         }
 
         //public override void OnStopClient()
