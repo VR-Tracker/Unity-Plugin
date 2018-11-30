@@ -187,13 +187,17 @@ namespace VRTracker.Network
             }         
         }
 
-
-        public override void OnStopServer()
-        {
-            if (isClient)
-                StopClient();
-
-            base.OnStopServer();
-        }
+        //public override void OnStopClient()
+        //{
+        //    Debug.Log("on stop client");
+        //    base.OnStopClient();
+        //   
+        //}
+        //
+        //public override void OnClientDisconnect(NetworkConnection conn)
+        //{
+        //    Debug.Log("on client disconnect");
+        //    base.OnClientDisconnect(conn);
+        //}
     }
 }
