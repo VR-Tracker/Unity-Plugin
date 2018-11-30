@@ -184,9 +184,16 @@ namespace VRTracker.Network
                 if (isClient)
                     StopClient();
                 Debug.Log("NETWORK: Stopping Client ");
-            }
-
+            }         
         }
 
+
+        public override void OnStopServer()
+        {
+            if (isClient)
+                StopClient();
+
+            base.OnStopServer();
+        }
     }
 }
