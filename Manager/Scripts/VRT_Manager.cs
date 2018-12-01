@@ -20,8 +20,8 @@ namespace VRTracker.Manager
         [Tooltip("Check to enable spectator mode")]
         public bool spectator = false; //Disabled by default on android devices
 
-        [Tooltip("If you want to assign a Tag to the spectator mode tracked camera")]
-        public bool spectatorTrackedCamera = false; 
+        [Tooltip("Check to enable host mode")]
+        public bool host = false; //Disabled by default on android devices
 
         [Tooltip("List of the Tags required for the game")]
         public List<VRTracker.Manager.VRT_Tag> tags;
