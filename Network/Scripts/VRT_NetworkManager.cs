@@ -158,6 +158,7 @@ namespace VRTracker.Network
                 Debug.Log("NETWORK: Stopping Client ");
             }
 
+            Shutdown();
         }
 
     }
