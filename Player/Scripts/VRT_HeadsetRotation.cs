@@ -51,7 +51,7 @@ namespace VRTracker.Player
 
             previousOffset = Quaternion.identity;
             destinationOffset = Quaternion.identity;
-            ResetOrientation();
+           // ResetOrientation();
             StartCoroutine(FixOffset());
         }
 
