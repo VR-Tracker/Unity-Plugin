@@ -97,7 +97,7 @@ namespace VRTracker.Network {
             }
 
             //Joining the server
-            if (networkManager == null)
+            if (networkManager != null)
             {
                 networkManager.JoinGame(VRT_Manager.Instance.vrtrackerWebsocket.serverIp);
             }

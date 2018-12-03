@@ -49,6 +49,7 @@ namespace VRTracker.Network
             serverBindToIP = true;
             networkAddress = serverBindAddress;
             isClient = true;
+            Debug.Log("Start Client");
             StartClient();
         }
 
