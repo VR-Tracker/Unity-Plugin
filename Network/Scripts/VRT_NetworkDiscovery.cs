@@ -23,6 +23,7 @@ namespace VRTracker.Network {
 
 		private void Start()
 		{
+            Debug.Log("Start Net Discovery");
 			base.Initialize();
 			base.StartAsClient();
 			StartCoroutine(CleanupExpiredEntries());
@@ -73,7 +74,8 @@ namespace VRTracker.Network {
 
 		private void OnApplicationQuit()
 		{
-            base.StopBroadcast();
+            if(enabled) 
+                base.StopBroadcast();
 		}
 	}
 }
