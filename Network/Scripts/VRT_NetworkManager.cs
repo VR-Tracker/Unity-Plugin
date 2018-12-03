@@ -55,24 +55,25 @@ namespace VRTracker.Network
         internal void StartLanHost()
         {
             Debug.Log("NETWORK: Starting as Host");
-            StartHost();
             isServer = true;
             isClient = true;
             VRT_Manager.Instance.vrtrackerWebsocket.SetServerIp();
             serverBindAddress = VRT_Manager.Instance.vrtrackerWebsocket.serverIp;
             serverBindToIP = true;
             networkAddress = serverBindAddress;
+            StartHost();
         }
 
         internal void StartLanServer()
         {
             Debug.Log("NETWORK: Starting as Server");
-            StartServer();
             isServer = true;
             VRT_Manager.Instance.vrtrackerWebsocket.SetServerIp();
             serverBindAddress = VRT_Manager.Instance.vrtrackerWebsocket.serverIp;
             serverBindToIP = true;
             networkAddress = serverBindAddress;
+            StartServer();
+            
         }
 
         public override void OnServerDisconnect(NetworkConnection conn)
