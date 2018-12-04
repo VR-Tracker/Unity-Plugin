@@ -27,82 +27,55 @@ namespace VRTracker.Network
         [Tooltip("Local player in the Game")]
         public VRT_PlayerInstance localPlayer;
 
-        public bool isServer = false;
-        private bool isClient = false;
+        [NonSerialized]
+		public bool isServer = false;
+        [NonSerialized]
+        public bool isClient = false;
 
-        private void OnEnable()
+
+        public void Start()
         {
             if (Instance == null)
             {
                 Instance = this;
             }
-        }
 
-        public void Start()
-        {
             DontDestroyOnLoad(this.gameObject);
-
-            if (VRT_Manager.Instance.spectator)
-            {
-                StartServer();
-                isServer = true;
-                VRT_Manager.Instance.vrtrackerWebsocket.SetServerIp();
-                serverBindAddress = VRT_Manager.Instance.vrtrackerWebsocket.serverIp;
-                serverBindToIP = true;
-                networkAddress = serverBindAddress;
-                //Debug.Log("spectator detected, isServer set to true");
-            }
-            else
-            {
-                StartCoroutine(WaitForServerIP());
-            }
-
-            //Debug.Log("isServer netmanager " + isServer);
-        }
-
-
-        /// <summary>
-        /// Waits in loop to receive server IP from the Gateway before starting
-        /// as a Client
-        /// </summary>
-        /// <returns></returns>
-        IEnumerator WaitForServerIP()
-        {
-            //while testing
-            while (!VRT_Manager.Instance.vrtrackerWebsocket.serverIp.StartsWith("192.168."))
-            {
-                yield return new WaitForSeconds(1);
-            }
-
-            //Joining the server
-            serverBindAddress = VRT_Manager.Instance.vrtrackerWebsocket.serverIp;
-            serverBindToIP = true;
-            networkAddress = serverBindAddress;
-            StartClient();
-            Debug.Log("client started");
-            isClient = true;
-            yield return null;
         }
 
         internal void JoinGame(string ipAddress)
         {
-            networkAddress = ipAddress;
+            serverBindAddress = ipAddress;
+            serverBindToIP = true;
+            networkAddress = serverBindAddress;
+            isClient = true;
+            Debug.Log("Start Client");
             StartClient();
             Debug.Log("startclient join game");
         }
 
         internal void StartLanHost()
         {
-            //Debug.Log("NETWORK: Starting as Host");
+            Debug.Log("NETWORK: Starting as Host");
+            isServer = true;
+            isClient = true;
+            VRT_Manager.Instance.vrtrackerWebsocket.SetServerIp();
+            serverBindAddress = VRT_Manager.Instance.vrtrackerWebsocket.serverIp;
+            serverBindToIP = true;
+            networkAddress = serverBindAddress;
             StartHost();
-            //FindObjectOfType<VRTracker.Network.VRT_NetworkDiscovery>().StartBroadcast();
         }
 
         internal void StartLanServer()
         {
-            //Debug.Log("NETWORK: Starting as Server");
+            Debug.Log("NETWORK: Starting as Server");
+            isServer = true;
+            VRT_Manager.Instance.vrtrackerWebsocket.SetServerIp();
+            serverBindAddress = VRT_Manager.Instance.vrtrackerWebsocket.serverIp;
+            serverBindToIP = true;
+            networkAddress = serverBindAddress;
             StartServer();
-            //FindObjectOfType<VRTracker.Network.VRT_NetworkDiscovery>().StartBroadcast();
+            
         }
 
         public override void OnServerDisconnect(NetworkConnection conn)
@@ -172,22 +145,28 @@ namespace VRTracker.Network
         {
             return localPlayer;
         }
-
-        public void OnDestroy()
-        {
-            Debug.Log("isServer netmanager " + isServer);
-            if (isServer)
-            {
+			
+		public void OnDestroy()
+		{
+			if (isServer) {
                 if (isClient)
+                {
                     StopHost();
+                    Debug.Log("NETWORK: Stopping Host ");
+                }
                 else
+                {
                     StopServer();
+                    Debug.Log("NETWORK: Stopping Server ");
+                }
             }
             else if (isClient)
             {
                 StopClient();
                 Debug.Log("NETWORK: Stopping Client ");
             }
+
+            Shutdown();
         }
 
         //public override void OnStopClient()

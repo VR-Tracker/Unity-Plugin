@@ -40,7 +40,7 @@ namespace VRTracker.Player
             if (networkIdentity == null)
                 networkIdentity = GetComponentInParent<NetworkIdentity>();
             newRotation = Vector3.zero;
-            if (tag == null)
+            if (tag == null && VRTracker.Manager.VRT_Manager.Instance != null)
                 tag = VRTracker.Manager.VRT_Manager.Instance.GetHeadsetTag();
             if (networkIdentity != null && !networkIdentity.isLocalPlayer)
             {
@@ -48,9 +48,10 @@ namespace VRTracker.Player
                 this.enabled = false;
                 return;
             }
-            previousOffset = Quaternion.Euler(Vector3.zero);
-            destinationOffset = Quaternion.Euler(Vector3.zero);
-            ResetOrientation();
+
+            previousOffset = Quaternion.identity;
+            destinationOffset = Quaternion.identity;
+           // ResetOrientation();
             StartCoroutine(FixOffset());
         }
 
@@ -183,7 +184,7 @@ namespace VRTracker.Player
             //Debug.Log("ResetOrientation");
             VRTracker.Manager.VRT_Tag headTag = VRTracker.Manager.VRT_Manager.Instance.GetTag(VRTracker.Manager.VRT_Tag.TagType.Head);
             VRTracker.Manager.VRT_Tag gunTag = VRTracker.Manager.VRT_Manager.Instance.GetTag(VRTracker.Manager.VRT_Tag.TagType.Gun);
-           // Debug.Log("headTag " + (headTag == null) + " gunTag " + (gunTag == null));
+
             VRTracker.VRT_SixDofOffset tagOffsetHead = headTag.GetComponent<VRTracker.VRT_SixDofOffset>();
             VRTracker.VRT_SixDofOffset tagOffsetGun = gunTag.GetComponent<VRTracker.VRT_SixDofOffset>();
            // Debug.Log("tagOffsetHead " + tagOffsetHead + " tagOffsetGun " + tagOffsetGun);

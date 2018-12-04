@@ -21,8 +21,9 @@ namespace VRTracker.Network {
 
 		private Dictionary<string, float> lanAddresses = new Dictionary<string, float>();
 
-		private void Awake()
+		private void Start()
 		{
+            Debug.Log("Start Net Discovery");
 			base.Initialize();
 			base.StartAsClient();
 			StartCoroutine(CleanupExpiredEntries());
@@ -69,6 +70,12 @@ namespace VRTracker.Network {
 			{
 				lanAddresses[fromAddress] = Time.time + timeout;
 			}
+		}
+
+		private void OnApplicationQuit()
+		{
+            if(enabled) 
+                base.StopBroadcast();
 		}
 	}
 }
