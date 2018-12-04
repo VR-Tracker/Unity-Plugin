@@ -50,14 +50,14 @@ namespace VRTracker.Network
                 serverBindAddress = VRT_Manager.Instance.vrtrackerWebsocket.serverIp;
                 serverBindToIP = true;
                 networkAddress = serverBindAddress;
-                Debug.Log("spectator detected, isServer set to true");
+                //Debug.Log("spectator detected, isServer set to true");
             }
             else
             {
                 StartCoroutine(WaitForServerIP());
             }
 
-            Debug.Log("isServer netmanager " + isServer);
+            //Debug.Log("isServer netmanager " + isServer);
         }
 
 
@@ -160,7 +160,7 @@ namespace VRTracker.Network
         /// <param name="player">Player.</param>
         public void SetLocalPlayer(VRT_PlayerInstance player)
         {
-            Debug.Log("set local player");
+            //Debug.Log("set local player");
             localPlayer = player;
             if (OnLocalPlayerJoin != null)
             {
