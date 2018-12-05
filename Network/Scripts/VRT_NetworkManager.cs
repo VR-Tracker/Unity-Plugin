@@ -39,11 +39,16 @@ namespace VRTracker.Network
             {
                 Instance = this;
             }
-
-            DontDestroyOnLoad(this.gameObject);
         }
 
-        internal void JoinGame(string ipAddress)
+		public void OnEnable()
+		{
+            NetworkManager[] manager = FindObjectsOfType<NetworkManager>();
+            if (manager.Length > 1)
+                Destroy(this);
+		}
+
+		internal void JoinGame(string ipAddress)
         {
             serverBindAddress = ipAddress;
             serverBindToIP = true;
@@ -146,22 +151,23 @@ namespace VRTracker.Network
                 if (isClient)
                 {
                     StopHost();
-                    Debug.Log("NETWORK: Stopping Host ");
                 }
                 else
                 {
                     StopServer();
-                    Debug.Log("NETWORK: Stopping Server ");
                 }
             }
             else {
 				if (isClient)
 					StopClient ();
-                Debug.Log("NETWORK: Stopping Client ");
             }
-
-            Shutdown();
         }
 
-    }
+
+		public void OnApplicationQuit()
+		{
+            Shutdown();
+		}
+
+	}
 }
