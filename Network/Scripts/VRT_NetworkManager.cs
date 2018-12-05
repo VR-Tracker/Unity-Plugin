@@ -54,9 +54,7 @@ namespace VRTracker.Network
             serverBindToIP = true;
             networkAddress = serverBindAddress;
             isClient = true;
-            Debug.Log("Start Client");
             StartClient();
-            Debug.Log("startclient join game");
         }
 
         internal void StartLanHost()
@@ -115,7 +113,6 @@ namespace VRTracker.Network
             if (OnPlayerJoin != null)
             {
                 OnPlayerJoin(player);
-                Debug.Log("on player join ");
             }
         }
 
