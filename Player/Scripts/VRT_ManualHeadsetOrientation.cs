@@ -31,6 +31,7 @@ public class VRT_ManualHeadsetOrientation : VRT_HeadsetRotation
         Vector3 camRot = camera.transform.eulerAngles;
         Vector3 offsetY = new Vector3(0, camRot.y, 0);
         transform.rotation = Quaternion.Euler(transform.eulerAngles - offsetY);
-        StartCoroutine(Blink());
+        if (Blink != null)
+            Blink();
     }
 }

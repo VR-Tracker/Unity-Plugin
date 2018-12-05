@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -30,7 +31,7 @@ namespace VRTracker.Player
         public float errorOffset = 30.0f; // Offset to detect error (on start or when headset is put on) 
         private int errorCounter = 0;
 
-        [SerializeField] Renderer fader;
+        protected Action Blink;
 
         /*[Tooltip("The VRTK Headset Fade script to use when fading the headset. If this is left blank then the script will need to be applied to the same GameObject.")]
         public VRTK.VRTK_HeadsetFade headsetFade;
@@ -48,6 +49,12 @@ namespace VRTracker.Player
                 this.enabled = false;
                 return;
             }
+
+            VRStandardAssets.Utils.VRCameraFade fader = gameObject.GetComponentInChildren<VRStandardAssets.Utils.VRCameraFade>();
+            if (fader != null)
+                Blink += fader.FadeBlink;
+            else
+                Debug.LogWarning("COuld not find Blink panel");
 
             previousOffset = Quaternion.identity;
             destinationOffset = Quaternion.identity;
@@ -72,12 +79,14 @@ namespace VRTracker.Player
                     errorCounter++;
                     if (errorCounter > 8)
                     {
+                        if (Blink != null)
+                            Blink();
                         errorCounter = 0;
                         t = timeToReachTarget;
                         newRotation.y = tagRotation.y - cameraRotation.y;
                         previousOffset = destinationOffset;
                         destinationOffset = Quaternion.Euler(newRotation);
-                        StartCoroutine(Blink());
+
                     }
                 }
                 else
@@ -85,26 +94,6 @@ namespace VRTracker.Player
                     errorCounter = 0;
                 }
 
-            }
-        }
-
-        protected IEnumerator Blink()
-        {
-            if (fader != null)
-            {
-                Color faderColor = fader.material.color;
-                faderColor.a = 1;
-                fader.material.color = faderColor;
-
-                yield return new WaitForSeconds(0.1f);
-                while (faderColor.a > 0)
-                {
-                    faderColor.a -= 0.2f;
-                    fader.material.color = faderColor;
-                    yield return new WaitForSeconds(0.05f);
-                }
-                faderColor.a = 0;
-                fader.material.color = faderColor;
             }
         }
 
@@ -126,7 +115,8 @@ namespace VRTracker.Player
                         if (ShoudlBlink())
                         {
                             t = timeToReachTarget;
-                            StartCoroutine(Blink());
+                            if (Blink != null)
+                                Blink();
                         }
                         else
                             t = 0;
@@ -194,7 +184,8 @@ namespace VRTracker.Player
             //UpdateOrientationData();
             //transform.localRotation = destinationOffset;
             //previousOffset = destinationOffset;
-            StartCoroutine(Blink());
+            if (Blink != null)
+                Blink();
         }
 
         /// <summary>
