@@ -238,20 +238,26 @@ namespace VRTracker.Manager
             imuTimestampOffsetAvg /= imuTimestampOffsetBuffer.Size;
             imuTimestamp += imuTimestampOffsetAvg;
 
-           // Debug.Log("IMU: " + imuTimestamp.ToString() + "  | " + timestamp.ToString() + " | Rot: " + neworientation.eulerAngles.ToString() );
+            // Debug.Log("IMU: " + imuTimestamp.ToString() + "  | " + timestamp.ToString() + " | Rot: " + neworientation.eulerAngles.ToString() );
 
             //==================== END TIMESTAMP CORRECTION ====================
 
             // For TAG V3 only
             if (parentTag.tagVersion == VRT_Tag.TagVersion.V3)
                 neworientation = new Quaternion(-neworientation.x, neworientation.y, -neworientation.z, neworientation.w);
-           // else if (parentTag.tagVersion == VRT_Tag.TagVersion.Gun)
-             //   neworientation = new Quaternion(-neworientation.x, neworientation.y, neworientation.z, neworientation.w);
 
-
+            if (parentTag.tagVersion == VRT_Tag.TagVersion.V2)
+            {
+                neworientation = neworientation * Quaternion.Euler(0, 180, 180);
+                neworientation.x = -neworientation.x;
+                neworientation.z = -neworientation.z;
+            }
 
             orientation_ = neworientation.eulerAngles;
             orientationWithoutCorrection = orientation_;
+
+            if (parentTag.tagVersion == VRT_Tag.TagVersion.V2) { 
+            }
 
             
             if (useCustomOrientation)
