@@ -54,7 +54,9 @@ namespace VRTracker.Manager
         protected Vector3 positionReceived;     //Position received from VR Tracker system
 
         public bool positionFilter = true; // Check to enable position filtering
-        protected VRTracker.Utils.VRT_PositionFilter filter;
+
+        [HideInInspector]
+        public VRTracker.Utils.VRT_PositionFilter filter;
 
         protected VRT_Tag parentTag; // The Tag to which this endpoint is connected to
 
@@ -62,6 +64,9 @@ namespace VRTracker.Manager
         public delegate void OrientationUpdate(Quaternion orientation);
         public PositionUpdate positionUpdateHandler;
         public OrientationUpdate orientationUpdateHandler;
+
+        [Tooltip("Trigger Blink if position was lost, lerp otherwise")]
+        public bool blinkOnJump = false;
 
         // Use this for initialization
         public void SetTag(VRT_Tag tag)
@@ -80,7 +85,7 @@ namespace VRTracker.Manager
             initialTimeMs = System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond;
 
             filter = new VRTracker.Utils.VRT_PositionFilter();
-            filter.Init();
+            filter.Init(blinkOnJump);
 
             orientationWithoutCorrection = Vector3.zero;
 			
