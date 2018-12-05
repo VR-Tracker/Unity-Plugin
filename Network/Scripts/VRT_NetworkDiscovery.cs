@@ -18,12 +18,11 @@ namespace VRTracker.Network {
 	public class VRT_NetworkDiscovery : NetworkDiscovery
 	{
 		private float timeout = 5f;
-
+        private bool broadcasting = false;
 		private Dictionary<string, float> lanAddresses = new Dictionary<string, float>();
 
 		private void Start()
 		{
-            Debug.Log("Start Net Discovery");
 			base.Initialize();
 			base.StartAsClient();
 			StartCoroutine(CleanupExpiredEntries());
@@ -31,12 +30,14 @@ namespace VRTracker.Network {
 
 		public void StartBroadcast()
 		{
-			StopBroadcast();
+            if(broadcasting)
+    			StopBroadcast();
 			base.Initialize();
 
 			string matchName = SceneManager.GetActiveScene().name;
 			broadcastData = broadcastData + ":" + matchName + ":" + GetComponent<VRTracker.Network.VRT_NetworkManager>().networkPort.ToString() + ":" + GetComponent<VRTracker.Network.VRT_NetworkManager>().playerPrefab.name;
-			base.StartAsServer();
+            broadcasting = true;
+            base.StartAsServer();
 		}
 
 		private IEnumerator CleanupExpiredEntries()
@@ -74,7 +75,7 @@ namespace VRTracker.Network {
 
 		private void OnApplicationQuit()
 		{
-            if(enabled) 
+            if(enabled && broadcasting) 
                 base.StopBroadcast();
 		}
 	}

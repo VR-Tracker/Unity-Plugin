@@ -20,6 +20,7 @@ namespace VRStandardAssets.Utils
         [SerializeField] private AudioMixerSnapshot m_FadedSnapshot;    // Settings for the audio mixer to use when faded out.
         [SerializeField] private Color m_FadeColor = Color.black;       // The colour the image fades out to.
         [SerializeField] private float m_FadeDuration = 2.0f;           // How long it takes to fade in seconds.
+        [SerializeField] private float m_FadeBlinkDuration = 0.30f;           // How long it takes to fade in seconds.
         [SerializeField] private bool m_FadeInOnSceneLoad = false;      // Whether a fade in should happen as soon as the scene is loaded.
         [SerializeField] private bool m_FadeInOnStart = false;          // Whether a fade in should happen just but Updates start.
 
@@ -82,6 +83,10 @@ namespace VRStandardAssets.Utils
                 m_FadedSnapshot.TransitionTo (duration);
         }
 
+
+        public void FadeBlink(){
+            FadeIn(m_FadeBlinkDuration, false);
+        }
 
         // Since no duration is specified with this overload use the default duration.
         public void FadeIn(bool fadeAudio)
