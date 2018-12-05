@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR;
 using UnityEngine.Networking;
 
 /// <summary>
@@ -38,6 +39,13 @@ namespace VRTracker.Player
         */
         void Start()
         {
+            // Don't use when XR device is not connected
+            if (!XRDevice.isPresent)
+            {
+                enabled = false;
+                return;
+            }
+
             if (networkIdentity == null)
                 networkIdentity = GetComponentInParent<NetworkIdentity>();
             newRotation = Vector3.zero;
