@@ -80,6 +80,8 @@ namespace VRTracker.Utils
                 return lastCalculatedPosition;
             }
 
+
+
             float delaySinceLastGetPosition = (float)(timestamp - lastCalculatedPositionTimestamp);
             float delaySinceLastPositionMeasurement = lastPositionIndex == -1 ? maxSpeedViabilityDelay : (float)(timestamp - trackingDataBuffer[lastPositionIndex].timestamp);
             float delaySinceLastMeasurement = (float)(timestamp - (trackingDataBuffer.Size > 0 ? trackingDataBuffer[0].timestamp : 0.0d));
@@ -105,7 +107,7 @@ namespace VRTracker.Utils
             foreach (PositionOffset off in deleteList)
                 offsets.Remove(off);
 
-            if (currentOffset.magnitude > discardDistance)
+            if (currentOffset.magnitude > discardDistance || (trackingDataBuffer[lastPositionIndex].position - lastCalculatedPosition).magnitude > discardDistance)
             {
                 if (blink)
                 {
@@ -133,6 +135,18 @@ namespace VRTracker.Utils
                 lastCalculatedPosition = Vector3.Slerp(lastCalculatedPosition + newOffset, lastCalculatedPosition, delaySinceLastPositionMeasurement / accelerationOnlyTrackingDelay);
                 lastCalculatedPositionTimestamp = timestamp;
             }
+
+            /* TRY TO FIX LONG OFFSET JUMPS, if line 110 isn't enought
+            if ((trackingDataBuffer[lastPositionIndex].position - lastCalculatedPosition).magnitude > discardDistance)
+            {
+                ResetFilter();
+                if (blink)
+                {
+                    if (Blink != null)
+                        Blink();
+                }
+            }*/
+            
             // return lastCalculatedPosition + currentOffset;
             return oneEuro.Filter(lastCalculatedPosition + currentOffset, (float)timestamp);
         }
