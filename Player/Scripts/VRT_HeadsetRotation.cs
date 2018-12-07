@@ -60,9 +60,14 @@ namespace VRTracker.Player
 
             VRStandardAssets.Utils.VRCameraFade fader = gameObject.GetComponentInChildren<VRStandardAssets.Utils.VRCameraFade>();
             if (fader != null)
+            {
                 Blink += fader.FadeBlink;
-            else
-                Debug.LogWarning("COuld not find Blink panel");
+
+                if (tag.trackedEndpoints[0].filter != null && tag.trackedEndpoints[0].blinkOnJump)
+                {
+                    tag.trackedEndpoints[0].filter.Blink += fader.FadeBlink;
+                }
+            }
 
             previousOffset = Quaternion.identity;
             destinationOffset = Quaternion.identity;

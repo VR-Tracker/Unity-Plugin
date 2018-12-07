@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using CircularBuffer;
@@ -12,7 +13,7 @@ namespace VRTracker.Utils
 
         private float maxPredictionDelaySinceLastMeasurement = 0.5f;
         private float maxDelaySinceLastMeasurement = 0.1f;
-        private float discardSpeed = 2.0f; // Max speed before detecting a jump
+        private float discardSpeed = 3.5f; // Max speed before detecting a jump
         private float discardDistance = 0.15f;
         private float speedCalculationDelay = 0.14f;
         private float accelerationOnlyTrackingDelay = 0.30f; // delay during which we keep tracking with acceleration measurement while NOT receiving position udpates
@@ -33,13 +34,17 @@ namespace VRTracker.Utils
         private CircularBuffer<TrackingData> dataQueue; // Queue to stock received data in case their were not received in main thread
         private bool dataInQueue = false;
 
+        public Action Blink;
+        private bool blink = false;
+
         public VRT_PositionFilter()
         {
             
         }
 
-        public virtual void Init()
+        public virtual void Init(bool blink)
         {
+            this.blink = blink;
             //WARNING : Call the Init function on MAIN THREAD ONLY (in Start, or Awake)
             mainThread = System.Threading.Thread.CurrentThread;
             trackingDataBuffer = new CircularBuffer<TrackingData>(100);
@@ -71,6 +76,7 @@ namespace VRTracker.Utils
             if (lastPositionIndex == -1)
             {
                 //  Debug.LogWarning("Couldn't find any last position");
+                
                 return lastCalculatedPosition;
             }
 
@@ -95,9 +101,19 @@ namespace VRTracker.Utils
                     deleteList.Add(off);
 
             }
-
+            
             foreach (PositionOffset off in deleteList)
                 offsets.Remove(off);
+
+            if (currentOffset.magnitude > discardDistance)
+            {
+                if (blink)
+                {
+                    offsets.Clear();
+                    if (Blink != null)
+                        Blink();
+                }
+            }
 
             // ACC
             if (trackingDataBuffer[0].GetType() == typeof(TrackingDataIMU))
@@ -156,6 +172,12 @@ namespace VRTracker.Utils
 
             int index = InsertByTimestamp(trackingDataPosition);
 
+            if (index + 1 >= trackingDataBuffer.Size)
+            {
+                Debug.LogError("Index bigger than Buffer Size");
+                return;
+            }
+
             //   Debug.Log("POS MEASUREMENT AT  " + (timestamp-positionLatency).ToString("0.000") + " POS: " + position.ToString("0.000"));
 
             // Check there is no position with a more recent timestamp, either a network error or impossible state
@@ -183,16 +205,19 @@ namespace VRTracker.Utils
             TrackingDataPosition previousPosition = GetPreviousPositionData(index);
             if (previousPosition != null){
                 float speedMagnitudeLastPositions = ((trackingDataPosition.position - previousPosition.position) / (float)(trackingDataPosition.timestamp - previousPosition.timestamp)).magnitude;
-                if (speedMagnitudeLastPositions > discardSpeed && (trackingDataPosition.position - previousPosition.position).magnitude > discardDistance)
+                if (speedMagnitudeLastPositions > discardSpeed || (trackingDataPosition.position - previousPosition.position).magnitude > discardDistance)
                 {
                     ((TrackingDataPosition)trackingDataBuffer[index]).jump = true;
                     predictSpeedFromAcc = true;
-                    //    Debug.LogWarning("Jump detected of speed " + speedMagnitudeLastPositions.ToString() + "  at TS " + trackingDataPosition.timestamp.ToString());
+                      //  Debug.LogWarning("Jump detected of speed " + speedMagnitudeLastPositions.ToString() + "  at TS " + trackingDataPosition.timestamp.ToString());
                 }
             }
                 // We couldn't find any previous position in the buffer so we add an offset to smooth from the last calculated position to here
             else {
                     offsets.Add(new PositionOffset(trackingDataPosition.timestamp, lastCalculatedPosition - trackingDataPosition.position, 0.4f));
+                    offsets.Add(new PositionOffset(trackingDataPosition.timestamp, lastCalculatedPosition - trackingDataPosition.position, 0.4f));
+               // Debug.LogWarning("Jump detected of speed ");
+                
             }
 
             if (!predictSpeedFromAcc)
@@ -320,9 +345,13 @@ namespace VRTracker.Utils
                 return;
             }
             int index = InsertByTimestamp(trackingDataIMU);
-
+            if (index + 1 >= trackingDataBuffer.Size)
+            {
+                Debug.LogError("Index bigger than Buffer Size");
+                return;
+            }
             //if (index != 0)
-               // Debug.LogError("Acceleration was not insered at last position  " + trackingDataIMU.timestamp.ToString("0.000"));
+            // Debug.LogError("Acceleration was not insered at last position  " + trackingDataIMU.timestamp.ToString("0.000"));
 
             if (trackingDataBuffer.Size < 2)
                 return;
@@ -331,6 +360,8 @@ namespace VRTracker.Utils
             if (delaySinceLastUpdate > maxDelaySinceLastMeasurement)
             {
                 Debug.LogWarning("Too long delay since last update : " + delaySinceLastUpdate.ToString() + "  " + trackingDataIMU.timestamp.ToString("0.000"));
+                if (trackingDataBuffer.Size > 0)
+                    ResetFilter();
                 return;
             }
 
@@ -581,6 +612,21 @@ namespace VRTracker.Utils
         {
            // return true;
             return mainThread.Equals(System.Threading.Thread.CurrentThread);
+        }
+
+        private void ResetFilter() {
+
+            lock (dataQueue)
+            {
+                for (int i = 0; i < dataQueue.Size; i++)
+                    dataQueue.PopBack();
+                dataInQueue = false;
+            }
+            for (int i = 0; i < trackingDataBuffer.Size; i++)
+                trackingDataBuffer.PopBack();
+
+            
+            offsets.Clear();
         }
     }
 

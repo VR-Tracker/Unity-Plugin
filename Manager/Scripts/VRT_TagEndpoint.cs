@@ -54,7 +54,9 @@ namespace VRTracker.Manager
         protected Vector3 positionReceived;     //Position received from VR Tracker system
 
         public bool positionFilter = true; // Check to enable position filtering
-        protected VRTracker.Utils.VRT_PositionFilter filter;
+
+        [HideInInspector]
+        public VRTracker.Utils.VRT_PositionFilter filter;
 
         protected VRT_Tag parentTag; // The Tag to which this endpoint is connected to
 
@@ -62,6 +64,9 @@ namespace VRTracker.Manager
         public delegate void OrientationUpdate(Quaternion orientation);
         public PositionUpdate positionUpdateHandler;
         public OrientationUpdate orientationUpdateHandler;
+
+        [Tooltip("Trigger Blink if position was lost, lerp otherwise")]
+        public bool blinkOnJump = false;
 
         // Use this for initialization
         public void SetTag(VRT_Tag tag)
@@ -80,7 +85,7 @@ namespace VRTracker.Manager
             initialTimeMs = System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond;
 
             filter = new VRTracker.Utils.VRT_PositionFilter();
-            filter.Init();
+            filter.Init(blinkOnJump);
 
             orientationWithoutCorrection = Vector3.zero;
 			
@@ -233,20 +238,26 @@ namespace VRTracker.Manager
             imuTimestampOffsetAvg /= imuTimestampOffsetBuffer.Size;
             imuTimestamp += imuTimestampOffsetAvg;
 
-           // Debug.Log("IMU: " + imuTimestamp.ToString() + "  | " + timestamp.ToString() + " | Rot: " + neworientation.eulerAngles.ToString() );
+            // Debug.Log("IMU: " + imuTimestamp.ToString() + "  | " + timestamp.ToString() + " | Rot: " + neworientation.eulerAngles.ToString() );
 
             //==================== END TIMESTAMP CORRECTION ====================
 
             // For TAG V3 only
             if (parentTag.tagVersion == VRT_Tag.TagVersion.V3)
                 neworientation = new Quaternion(-neworientation.x, neworientation.y, -neworientation.z, neworientation.w);
-           // else if (parentTag.tagVersion == VRT_Tag.TagVersion.Gun)
-             //   neworientation = new Quaternion(-neworientation.x, neworientation.y, neworientation.z, neworientation.w);
 
-
+            if (parentTag.tagVersion == VRT_Tag.TagVersion.V2)
+            {
+                neworientation = neworientation * Quaternion.Euler(0, 180, 180);
+                neworientation.x = -neworientation.x;
+                neworientation.z = -neworientation.z;
+            }
 
             orientation_ = neworientation.eulerAngles;
             orientationWithoutCorrection = orientation_;
+
+            if (parentTag.tagVersion == VRT_Tag.TagVersion.V2) { 
+            }
 
             
             if (useCustomOrientation)
