@@ -362,7 +362,7 @@ namespace VRTracker.Utils
             int index = InsertByTimestamp(trackingDataIMU);
             if (index + 1 >= trackingDataBuffer.Size)
             {
-                Debug.LogError("Index bigger than Buffer Size");
+              //  Debug.LogError("Index bigger than Buffer Size");
                 return;
             }
             //if (index != 0)
