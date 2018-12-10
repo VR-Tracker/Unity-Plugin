@@ -25,8 +25,8 @@ namespace VRTracker.Player
         protected Vector3 newRotation;
 
         private float t;
-        private float timeToReachTarget = 15.0f;            //Time used to correct the orientation
-        private int waitTimeBeforeVerification = 30; 	//Time in second before checking if the orientation need to be corrected
+        private float timeToReachTarget = 10.0f;            //Time used to correct the orientation
+        private int waitTimeBeforeVerification = 10; 	//Time in second before checking if the orientation need to be corrected
         [Tooltip("The minimum offset in degrees to blink instead of rotating.")]
         public float minOffsetToBlink = 15.0f;			//Minimun difference for the orientation to display a blink and do an hard correction
         public float errorOffset = 30.0f; // Offset to detect error (on start or when headset is put on) 
@@ -92,6 +92,7 @@ namespace VRTracker.Player
                     errorCounter++;
                     if (errorCounter > 8)
                     {
+                    //    Debug.Log("Error Offset Detected");
                         if (Blink != null)
                             Blink();
                         errorCounter = 0;
@@ -155,7 +156,7 @@ namespace VRTracker.Player
                 newRotation.y = tagRotation.y - cameraRotation.y;
                 previousOffset = destinationOffset;
                 destinationOffset = Quaternion.Euler(newRotation);
-                //    Debug.Log("Update Data | Tag: " + tagRotation.y.ToString() + " | Cam: " + cameraRotation.y.ToString() + " | New rot: " + newRotation.ToString() + " | Previous offset: " + previousOffset.ToString());
+                //    Debug.Log("Update Data | Tag: " + tagRotation.y.ToString() + " | Cam: " + cameraRotation.y.ToString() + " | New rot: " + newRotation.ToString() + " | Previous offset: " + previousOffset.ToString() + "  CAM: " + camera.transform.rotation.eulerAngles.y.ToString());
                 return true;
             }
             return false;
