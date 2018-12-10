@@ -103,7 +103,6 @@ namespace VRTracker.Manager
                 {
                     positionUpdateHandler(newPosition);
                     transform.position = newPosition;
-                    transform.position = newPosition;
                 }
             }
             else if (positionUpdateHandler != null)
