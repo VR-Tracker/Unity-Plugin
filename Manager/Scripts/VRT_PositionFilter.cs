@@ -15,6 +15,7 @@ namespace VRTracker.Utils
         private float maxDelaySinceLastMeasurement = 0.1f;
         private float discardSpeed = 3.5f; // Max speed before detecting a jump
         private float discardDistance = 0.15f;
+        private float lerpDiscardDistance = 0.5f; // Distance between calculated position and real position at whihch we stop lerping to directly teleport the object
         private float speedCalculationDelay = 0.14f;
         private float accelerationOnlyTrackingDelay = 0.30f; // delay during which we keep tracking with acceleration measurement while NOT receiving position udpates
         private float maxSpeedViabilityDelay = 0.5f;
@@ -107,14 +108,14 @@ namespace VRTracker.Utils
             foreach (PositionOffset off in deleteList)
                 offsets.Remove(off);
 
-            if (currentOffset.magnitude > discardDistance || (trackingDataBuffer[lastPositionIndex].position - lastCalculatedPosition).magnitude > discardDistance)
+            if (currentOffset.magnitude > lerpDiscardDistance || (trackingDataBuffer[lastPositionIndex].position - lastCalculatedPosition).magnitude > lerpDiscardDistance)
             {
-                if (blink)
-                {
+              //  if (blink)
+              //  {
                     offsets.Clear();
                     if (Blink != null)
                         Blink();
-                }
+              //  }
             }
 
             // ACC
