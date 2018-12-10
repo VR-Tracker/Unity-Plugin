@@ -164,10 +164,15 @@ namespace VRTracker.Network
         }
 
 
-		public void OnApplicationQuit()
+        public override void OnClientDisconnect(NetworkConnection conn)
+        {
+            base.OnClientDisconnect(conn);
+            Application.Quit();
+        }
+
+        public void OnApplicationQuit()
 		{
             Shutdown();
-		}
-
-	}
+		}       
+    }
 }
