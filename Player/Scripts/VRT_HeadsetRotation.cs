@@ -163,21 +163,23 @@ namespace VRTracker.Player
                         {
                             Vector3 tagRotation = UnmultiplyQuaternion(tag.trackedEndpoints[0].getOrientation());
                             Vector3 cameraRotation = UnmultiplyQuaternion(camera.transform.localRotation);
-                            if (GetShortestAngle(tagRotation.y, cameraRotation.y) > errorOffset)
+                            if (GetShortestAngle(newRotation.y, tagRotation.y - cameraRotation.y) > errorOffset)
                             {
-                                Debug.Log("Reset Orientation Buffer");
-                                foreach (float f in offsetBuffer)
-                                    offsetBuffer.PopFront();
-
+                                if (offsetBuffer.Size > 0)
+                                {
+                                    foreach (float f in offsetBuffer)
+                                        offsetBuffer.PopFront();
+                                }
                                 t = timeToReachTarget;
                                 if (Blink != null)
                                     Blink();
                             }
                             else
                                 t = 0;
-                            
+
                             offsetBuffer.PushFront(tagRotation.y - cameraRotation.y);
                             newRotation.y = AngleAvergage(offsetBuffer);
+
                             previousOffset = destinationOffset;
                             destinationOffset = Quaternion.Euler(newRotation);
 
