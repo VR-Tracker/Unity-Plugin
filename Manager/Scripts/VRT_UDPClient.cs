@@ -124,12 +124,40 @@ namespace VRTracker.Manager
                 client.Close();
             }
 
-        }        
-		/// <summary>
-		/// Transforms the Byte array to string.
-		/// </summary>
-		/// <returns>The array to string.</returns>
-		/// <param name="ba">Ba.</param>
+        }
+
+        private void OnApplicationPause(bool pause)
+        {
+            if(pause)
+            {
+                Debug.Log("Pausing app, udp close");
+                askedToClose = true;
+                if (receiveThread != null)
+                {
+                    Debug.Log("receive thread not null");
+                    connected = false;
+                    client.Close();
+                    receiveThread.Abort();
+                }
+                if (client != null)
+                {
+                    Debug.Log("client not null");
+                    client.Close();
+                }
+            }
+            else
+            {
+                Debug.Log("UnPause UDP Init");
+                Init();
+            }
+        }
+
+
+        /// <summary>
+        /// Transforms the Byte array to string.
+        /// </summary>
+        /// <returns>The array to string.</returns>
+        /// <param name="ba">Ba.</param>
         public static string ByteArrayToString(byte[] ba)
 		{
 			StringBuilder hex = new StringBuilder(ba.Length * 2);
