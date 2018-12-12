@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
 using UnityEngine.Networking;
+using CircularBuffer;
 
 /// <summary>
 /// VRT headset rotation.
@@ -25,12 +26,13 @@ namespace VRTracker.Player
         protected Vector3 newRotation;
 
         private float t;
-        private float timeToReachTarget = 15.0f;            //Time used to correct the orientation
-        private int waitTimeBeforeVerification = 30; 	//Time in second before checking if the orientation need to be corrected
+        private float timeToReachTarget = 1.0f;            //Time used to correct the orientation
+        private int waitTimeBeforeVerification = 1; 	//Time in second before checking if the orientation need to be corrected
         [Tooltip("The minimum offset in degrees to blink instead of rotating.")]
         public float minOffsetToBlink = 15.0f;			//Minimun difference for the orientation to display a blink and do an hard correction
         public float errorOffset = 30.0f; // Offset to detect error (on start or when headset is put on) 
         private int errorCounter = 0;
+        private CircularBuffer<float> offsetBuffer;
 
         protected Action Blink;
 
@@ -39,6 +41,8 @@ namespace VRTracker.Player
         */
         void Start()
         {
+            offsetBuffer = new CircularBuffer<float>(20);
+
             // Don't use when XR device is not connected
             if (!XRDevice.isPresent)
             {
@@ -72,7 +76,7 @@ namespace VRTracker.Player
             previousOffset = Quaternion.identity;
             destinationOffset = Quaternion.identity;
            // ResetOrientation();
-            StartCoroutine(FixOffset());
+            StartCoroutine(FixOffset2());
         }
 
         // Update is called once per frame
@@ -82,7 +86,7 @@ namespace VRTracker.Player
             transform.localRotation = Quaternion.Lerp(previousOffset, destinationOffset, t);
 
 
-            if (tag != null && tag.trackedEndpoints.ContainsKey((0)))
+            /*if (tag != null && tag.trackedEndpoints.ContainsKey((0)))
             {
                 Vector3 tagRotation = UnmultiplyQuaternion(tag.trackedEndpoints[0].getOrientation());
                 Vector3 cameraRotation = UnmultiplyQuaternion(camera.transform.localRotation);
@@ -92,12 +96,13 @@ namespace VRTracker.Player
                     errorCounter++;
                     if (errorCounter > 8)
                     {
+                    //    Debug.Log("Error Offset Detected");
                         if (Blink != null)
                             Blink();
                         errorCounter = 0;
                         t = timeToReachTarget;
                         newRotation.y = tagRotation.y - cameraRotation.y;
-                        previousOffset = destinationOffset;
+                        previousOffset = transform.localRotation;
                         destinationOffset = Quaternion.Euler(newRotation);
 
                     }
@@ -107,7 +112,7 @@ namespace VRTracker.Player
                     errorCounter = 0;
                 }
 
-            }
+            }*/
         }
 
         /// <summary>
@@ -143,6 +148,62 @@ namespace VRTracker.Player
             }
         }
 
+
+        IEnumerator FixOffset2()
+        {
+            while (true)
+            {
+                if (VRTracker.Manager.VRT_Manager.Instance != null)
+                {
+                    if (tag == null)
+                        tag = VRTracker.Manager.VRT_Manager.Instance.GetHeadsetTag();
+                    if (tag != null)
+                    {
+                        if (tag != null && tag.trackedEndpoints.ContainsKey((0)))
+                        {
+                            Vector3 tagRotation = UnmultiplyQuaternion(tag.trackedEndpoints[0].getOrientation());
+                            Vector3 cameraRotation = UnmultiplyQuaternion(camera.transform.localRotation);
+                            if (GetShortestAngle(newRotation.y, tagRotation.y - cameraRotation.y) > errorOffset)
+                            {
+                                if (offsetBuffer.Size > 0)
+                                {
+                                    foreach (float f in offsetBuffer)
+                                        offsetBuffer.PopFront();
+                                }
+                                t = timeToReachTarget;
+                                if (Blink != null)
+                                    Blink();
+                            }
+                            else
+                                t = 0;
+
+                            offsetBuffer.PushFront(tagRotation.y - cameraRotation.y);
+                            newRotation.y = AngleAvergage(offsetBuffer);
+
+                            previousOffset = destinationOffset;
+                            destinationOffset = Quaternion.Euler(newRotation);
+
+                        }
+                    }
+                    yield return new WaitForSeconds(waitTimeBeforeVerification);
+                }
+                else
+                {
+                    yield return new WaitForSeconds(0.5f);
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Updates the orientation data
+        /// </summary>
+        private bool UpdateOrientationData2()
+        {
+            
+            return false;
+        }
+
         /// <summary>
         /// Updates the orientation data
         /// </summary>
@@ -155,7 +216,7 @@ namespace VRTracker.Player
                 newRotation.y = tagRotation.y - cameraRotation.y;
                 previousOffset = destinationOffset;
                 destinationOffset = Quaternion.Euler(newRotation);
-                //    Debug.Log("Update Data | Tag: " + tagRotation.y.ToString() + " | Cam: " + cameraRotation.y.ToString() + " | New rot: " + newRotation.ToString() + " | Previous offset: " + previousOffset.ToString());
+                //    Debug.Log("Update Data | Tag: " + tagRotation.y.ToString() + " | Cam: " + cameraRotation.y.ToString() + " | New rot: " + newRotation.ToString() + " | Previous offset: " + previousOffset.ToString() + "  CAM: " + camera.transform.rotation.eulerAngles.y.ToString());
                 return true;
             }
             return false;
@@ -193,17 +254,28 @@ namespace VRTracker.Player
             if (headTag != null)
                 tagOffsetHead = headTag.GetComponent<VRTracker.VRT_SixDofOffset>();
 
-            if (gunTag != null)
-                tagOffsetGun = gunTag.GetComponent<VRTracker.VRT_SixDofOffset>();
-
-            if(tagOffsetHead!= null)
-                tagOffsetHead.SetToZero(); 
-
-            if(tagOffsetGun != null)
-                tagOffsetGun.SetToZero();
-                      
             if (Blink != null)
                 Blink();
+        }
+
+        /// <summary>
+        /// Calculate the avergage angle of a buffer of angles in degrees.
+        /// </summary>
+        /// <returns>The avergage.</returns>
+        /// <param name="data">Data.</param>
+        private float AngleAvergage(CircularBuffer<float> data)
+        {
+            float x = 0;
+            float y = 0;
+            //string info = "";
+            foreach (float angle in data)
+            {
+                //  info += angle.ToString() + " | ";
+                x += Mathf.Sin(Mathf.Deg2Rad * angle);
+                y += Mathf.Cos(Mathf.Deg2Rad * angle);
+            }
+            // Debug.Log(info);
+            return Mathf.Rad2Deg * Mathf.Atan2(x, y);
         }
 
         /// <summary>
