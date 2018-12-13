@@ -514,6 +514,8 @@ namespace VRTracker.Manager
 		/// </summary>
         private void CloseWebsocket()
         {
+            Debug.Log("close web socket");
+
             if (isSocketRunning)
             {
                 isSocketClosing = true;
@@ -526,14 +528,37 @@ namespace VRTracker.Manager
             }
 
         }
-			
-		/// <summary>
-		/// Sends your Unique ID, it can be your MAC address for
-		/// example but avoid the IP. It will be used by the Gateway
-		/// to identify you over the network. It is necessary on multi-gateway
-		/// configuration
-		/// </summary>
-		/// <param name="uid">Uid.</param>
+
+        [RuntimeInitializeOnLoadMethod]
+        static void RunOnStart()
+        {
+            Application.wantsToQuit += WantsToQuit;
+            Application.quitting += Quit;
+        }
+
+        static bool WantsToQuit()
+        {
+            Debug.Log("wants to quit");
+            return true;
+        }
+
+        static void Quit()
+        {
+            Debug.Log("Quit kwit");
+        }
+
+        private void OnApplicationPause(bool pause)
+        {
+            Debug.Log("onApplicationPause");
+        }
+
+        /// <summary>
+        /// Sends your Unique ID, it can be your MAC address for
+        /// example but avoid the IP. It will be used by the Gateway
+        /// to identify you over the network. It is necessary on multi-gateway
+        /// configuration
+        /// </summary>
+        /// <param name="uid">Uid.</param>
         private void SendMyUID(string uid)
         {
             myws.SendAsync(uid, OnSendComplete);
@@ -838,6 +863,7 @@ namespace VRTracker.Manager
 		/// </summary>
         void OnApplicationQuit()
         {
+            Debug.Log("on app quit");
             CloseWebsocket();
         }
 
@@ -853,6 +879,7 @@ namespace VRTracker.Manager
 
         public void OnDestroy()
         {
+            Debug.Log("on destroy");
             CloseWebsocket();
         }
 
