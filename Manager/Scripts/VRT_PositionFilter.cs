@@ -12,7 +12,7 @@ namespace VRTracker.Utils
         private float predictionDelay = 0.05f;
 
         private float maxPredictionDelaySinceLastMeasurement = 0.5f;
-        private float maxDelaySinceLastMeasurement = 0.1f;
+        private float maxDelaySinceLastMeasurement = 0.15f;
         private float discardSpeed = 3.5f; // Max speed before detecting a jump
         private float discardDistance = 0.15f;
         private float lerpDiscardDistance = 0.5f; // Distance between calculated position and real position at whihch we stop lerping to directly teleport the object
@@ -108,15 +108,7 @@ namespace VRTracker.Utils
             foreach (PositionOffset off in deleteList)
                 offsets.Remove(off);
 
-            if (currentOffset.magnitude > lerpDiscardDistance || (trackingDataBuffer[lastPositionIndex].position - lastCalculatedPosition).magnitude > lerpDiscardDistance)
-            {
-              //  if (blink)
-              //  {
-                    offsets.Clear();
-                    if (Blink != null)
-                        Blink();
-              //  }
-            }
+
 
             // ACC
             if (trackingDataBuffer[0].GetType() == typeof(TrackingDataIMU))
@@ -137,19 +129,23 @@ namespace VRTracker.Utils
                 lastCalculatedPositionTimestamp = timestamp;
             }
 
-            /* TRY TO FIX LONG OFFSET JUMPS, if line 110 isn't enought
-            if ((trackingDataBuffer[lastPositionIndex].position - lastCalculatedPosition).magnitude > discardDistance)
+            // TRY TO FIX LONG OFFSET JUMPS, if line 110 isn't enought
+            if (lastPositionIndex != -1 && (trackingDataBuffer[lastPositionIndex].position - lastCalculatedPosition).magnitude > lerpDiscardDistance)
             {
-                ResetFilter();
+                Debug.Log("RESET | last: " + lastCalculatedPosition.ToString() + "  received " + trackingDataBuffer[lastPositionIndex].position.ToString() + "  | MAG: " + (trackingDataBuffer[lastPositionIndex].position - lastCalculatedPosition).magnitude.ToString());
+                //ResetFilter();
+
+                offsets.Clear();
+                
                 if (blink)
                 {
                     if (Blink != null)
                         Blink();
                 }
-            }*/
+            }
             
-            // return lastCalculatedPosition + currentOffset;
-            return oneEuro.Filter(lastCalculatedPosition + currentOffset, (float)timestamp);
+             return lastCalculatedPosition + currentOffset;
+            //return oneEuro.Filter(lastCalculatedPosition + currentOffset, (float)timestamp);
         }
 
         /// <summary>
@@ -159,6 +155,22 @@ namespace VRTracker.Utils
         /// <param name="position">Position.</param>
         public virtual void AddPositionMeasurement(double timestamp, Vector3 position)
         {
+
+            /*if ((position - lastCalculatedPosition).magnitude > lerpDiscardDistance)
+            {
+                //  if (blink)
+                //  {
+                //  offsets.Clear();
+                if (trackingDataBuffer.Size > 0)
+                {
+                    Debug.Log("RESET BUFFER : received " + position.ToString() + "  last " + lastCalculatedPosition.ToString());
+                    ResetFilter();
+                    if (Blink != null)
+                        Blink();
+                }
+                //  }
+            }*/
+
             TrackingDataPosition trackingDataPosition = new TrackingDataPosition(timestamp - positionLatency, position);
 
             if (!isMainThread())
@@ -181,7 +193,7 @@ namespace VRTracker.Utils
             double lastPosTs = GetLastPositionTimestamp();
             if (trackingDataPosition.timestamp - lastPosTs < 0.001f)
             {
-//                Debug.LogError("Position Timestamp too close at " + trackingDataPosition.timestamp.ToString("F4") + "  last timestamp: " + lastPosTs.ToString("F4"));
+                Debug.LogError("Position Timestamp too close at " + trackingDataPosition.timestamp.ToString("F4") + "  last timestamp: " + lastPosTs.ToString("F4"));
                 return;
             }
 
@@ -211,8 +223,8 @@ namespace VRTracker.Utils
 
             // Check time since last measurement (of any type : position or acc)
             double delaySinceLastUpdate = trackingDataPosition.timestamp - trackingDataBuffer[index + 1].timestamp;
-            // if (delaySinceLastUpdate > maxDelaySinceLastMeasurement)
-            //   Debug.LogWarning("Too long delay since last update : " + delaySinceLastUpdate.ToString());
+            if (delaySinceLastUpdate > maxDelaySinceLastMeasurement)
+               Debug.LogWarning("Too long delay since last update : " + delaySinceLastUpdate.ToString());
 
             bool predictSpeedFromAcc = false; // Boolean to che kif we should calculate the speed from the last acceleration (in case of jump, no position etc)
 
@@ -229,9 +241,8 @@ namespace VRTracker.Utils
             }
                 // We couldn't find any previous position in the buffer so we add an offset to smooth from the last calculated position to here
             else {
-                    offsets.Add(new PositionOffset(trackingDataPosition.timestamp, lastCalculatedPosition - trackingDataPosition.position, 0.4f));
-                    offsets.Add(new PositionOffset(trackingDataPosition.timestamp, lastCalculatedPosition - trackingDataPosition.position, 0.4f));
-               // Debug.LogWarning("Jump detected of speed ");
+                offsets.Add(new PositionOffset(trackingDataPosition.timestamp, lastCalculatedPosition - trackingDataPosition.position, 0.2f));
+                Debug.LogWarning("offsets.Add Empty buffer " + (lastCalculatedPosition - trackingDataPosition.position).magnitude.ToString());
                 
             }
 
@@ -319,7 +330,7 @@ namespace VRTracker.Utils
             if (positionOffsetAfterPropagation.magnitude > 0.04f && previousPosition != null)
             {
                 offsets.Add(new PositionOffset(trackingDataPosition.timestamp, previousPosition.position - trackingDataPosition.position));
-                //      Debug.LogWarning("     Offset : " + positionOffsetAfterPropagation.magnitude.ToString("0.000") + "   at " + trackingDataBuffer[0].timestamp.ToString("0.000"));
+                Debug.Log("Add offset MAG propagation " + (previousPosition.position - trackingDataPosition.position).magnitude.ToString());
             }
             lastCalculatedPosition = trackingDataBuffer[0].position;
             lastCalculatedPositionTimestamp = trackingDataBuffer[0].timestamp;
@@ -375,8 +386,7 @@ namespace VRTracker.Utils
             if (delaySinceLastUpdate > maxDelaySinceLastMeasurement)
             {
                 Debug.LogWarning("Too long delay since last update : " + delaySinceLastUpdate.ToString() + "  " + trackingDataIMU.timestamp.ToString("0.000"));
-                if (trackingDataBuffer.Size > 0)
-                    ResetFilter();
+
                 return;
             }
 
