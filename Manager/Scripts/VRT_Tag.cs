@@ -174,10 +174,14 @@ namespace VRTracker.Manager
 		/// <param name="data">Data.</param>
         public void OnSpecialCommand(string data)
         {
-            if (data.Contains("triggeron"))
+            if (data.Contains("triggeron" + data))
             {
-                if(OnTriggerDown != null)
+                Debug.Log("trigger down");
+                if (OnTriggerDown != null)
+                {
+                    Debug.Log("trigger down not null");
                     OnTriggerDown();
+                }
                 triggerPressed = true;
                 triggerDown = true;
                 triggerUp = false;

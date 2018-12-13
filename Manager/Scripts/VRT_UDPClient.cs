@@ -300,11 +300,13 @@ namespace VRTracker.Manager
             if (receiveThread != null)
             {
                 connected = false;
+                //Debug.Log("Close UDP");
                 client.Close();
                 receiveThread.Abort();
             }
             if(client != null)
             {
+                //Debug.Log("Close UDP");
                 client.Close();
             }
 
