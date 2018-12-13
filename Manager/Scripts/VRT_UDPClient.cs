@@ -52,9 +52,9 @@ namespace VRTracker.Manager
 					IPEndPoint anyIP = new IPEndPoint(IPAddress.Broadcast, port);
 					byte[] data = client.Receive(ref anyIP);
 					
-                    Debug.Log("Data length " + data.Length);
+                    /*Debug.Log("Data length " + data.Length);
 					string text = ByteArrayToString(data);
-                    Debug.Log(text);
+                    Debug.Log(text);*/
                     ParseData(data);
 				}
 				catch (Exception err)
@@ -110,20 +110,19 @@ namespace VRTracker.Manager
                     // Position
                     case 0:
                         {
-                            i += 9;
                             shouldCheckMac = true;
-                            /*double timestamp = ((double)((data[i + 1] << 8) + data[i + 2]) / 10000.0d);
-
                             int sensorCount = data[i] & 0x0F;
+                            byte length = data[i+1];
+                            double timestamp = ((double)((data[i + 2] << 8) + data[i + 3]) / 10000.0d);
 
-                            bool isNeg = (data[i + 3] & 0x80) == 0x80 ? true : false;
-                            float x = isNeg ? (((data[i + 3] & 0x7F) << 8) + data[i + 4]) - 32768 : (((data[i + 3] & 0x7F) << 8) + data[i + 4]);
-                            isNeg = (data[i + 5] & 0x80) == 0x80 ? true : false;
-                            float y = isNeg ? (((data[i + 5] & 0x7F) << 8) + data[i + 6]) - 32768 : (((data[i + 5] & 0x7F) << 8) + data[i + 6]);
-                            isNeg = (data[i + 7] & 0x80) == 0x80 ? true : false;
-                            float z = isNeg ? (((data[i + 7] & 0x7F) << 8) + data[i + 8]) - 32768 : (((data[i + 7] & 0x7F) << 8) + data[i + 8]);
-                            Vector3 position = new Vector3(x/1000.0f, y/ 1000.0f, z/ 1000.0f);
-                            i += 9;
+                            bool isNeg = (data[i + 4] & 0x80) == 0x80 ? true : false;
+                            float x = isNeg ? (((data[i + 4] & 0x7F) << 8) + data[i + 5]) - 32768 : (((data[i + 4] & 0x7F) << 8) + data[i + 5]);
+                            isNeg = (data[i + 6] & 0x80) == 0x80 ? true : false;
+                            float y = isNeg ? (((data[i + 6] & 0x7F) << 8) + data[i + 7]) - 32768 : (((data[i + 6] & 0x7F) << 8) + data[i + 7]);
+                            isNeg = (data[i + 8] & 0x80) == 0x80 ? true : false;
+                            float z = isNeg ? (((data[i + 8] & 0x7F) << 8) + data[i + 9]) - 32768 : (((data[i + 8] & 0x7F) << 8) + data[i + 9]);
+                            Vector3 position = new Vector3(x/1000.0f, z/ 1000.0f, y/ 1000.0f);
+                            i += 10;
                             shouldCheckMac = true;
 
                             // Create Endpoint if inexsiting
@@ -133,7 +132,7 @@ namespace VRTracker.Manager
                             }
                             else
                                 currentTag.trackedEndpoints[sensorCount].UpdatePosition(position, timestamp);
-                            */
+                            
                             break;
                         }
 
