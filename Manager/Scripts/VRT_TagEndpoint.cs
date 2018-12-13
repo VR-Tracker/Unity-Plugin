@@ -152,6 +152,17 @@ namespace VRTracker.Manager
         }
 
         /// <summary>
+        /// Updates the position and add the timestamp
+        /// Currently not used
+        /// </summary>
+        /// <param name="position_">Position.</param>
+        /// <param name="timestamp">Timestamp.</param>
+        public void UpdatePosition(Vector3 position_, double timestamp)
+        {
+            UpdatePosition(position_);
+        }
+
+        /// <summary>
         /// Updates the position and store the data
         /// </summary>
         /// <param name="position_">Position.</param>

@@ -337,217 +337,87 @@ namespace VRTracker.Manager
             }
         }
 
-		/// <summary>
-		/// Raises the tag data event.
-		/// Handle the binary data received from the tag
-		/// </summary>
-		/// <param name="data">Data.</param>
-        public virtual void OnTagData(byte[] data)
-        {
-            //Debug.Log("UDP size " + data.Length + "  Timestamp " + System.DateTime.Now.Millisecond);
-            bool parsed = false;
-            int i = 2;
-            while (!parsed)
+		
+        public void UpdateTrackpadData(float x, float y, byte button){
+            if (button == 2)
             {
-                
-                switch (data[i] >> 4 & 0x0F)
-                {
-                    // IMU
-                    case 1:
-                        {
-                            int sensorCount = data[i] & 0x0F;
-
-                            float ox = ((data[i + 4] << 8) + data[i + 5]) / 100;
-                            float oy = ((data[i + 6] << 8) + data[i + 7]) / 100;
-                            float oz = ((data[i + 8] << 8) + data[i + 9]) / 100;
-                            bool isNeg = (data[i + 10] & 0x80) == 0x80 ? true : false;
-                            int ax = isNeg ? (((data[i + 10] & 0x7F) << 8) + data[i + 11]) - 32768 : (((data[i + 10] & 0x7F) << 8) + data[i + 11]);
-                            isNeg = (data[i + 12] & 0x80) == 0x80 ? true : false;
-                            int ay = isNeg ? (((data[i + 12] & 0x7F) << 8) + data[i + 13]) - 32768 : (((data[i + 12] & 0x7F) << 8) + data[i + 13]);
-                            isNeg = (data[i + 14] & 0x80) == 0x80 ? true : false;
-                            int az = isNeg ? (((data[i + 14] & 0x7F) << 8) + data[i + 15]) - 32768 : (((data[i + 14] & 0x7F) << 8) + data[i + 15]);
-                            Vector3 rec_orientation = new Vector3(ox, oy, oz);
-                            Vector3 rec_acceleration = new Vector3((float)ax* (9.80665f / 1000f), (float)ay* (9.80665f / 1000f), (float)az* (9.80665f / 1000.0f));
-                            i += 16;
-                            if (i >= data.Length)
-                                parsed = true;
-
-                            // Create Endpoint if inexsiting
-                            if (!trackedEndpoints.ContainsKey(sensorCount))
-                            {
-                                VRT_TagEndpoint endpoint = gameObject.AddComponent<VRT_TagEndpoint>();
-                                endpoint.SetTag(this);
-                                trackedEndpoints.Add(sensorCount, endpoint);
-                            }
-                            trackedEndpoints[sensorCount].UpdateOrientationAndAcceleration(rec_orientation, rec_acceleration);
-                            break;
-                        }
-                    // IMU Quaternion
-                    case 2:
-                        {
-                            int length = data[i + 1];
-                            int sensorCount = data[i] & 0x0F;
-                          //  float accuracy = (data[i + 1] << 8) / 10;
-                            float ow = ((float)((data[i + 2] << 8) + data[i + 3]) / 10000) - 1;
-                            float ox = -(((float)((data[i + 4] << 8) + data[i + 5]) / 10000) - 1);
-                            float oz = -(((float)((data[i + 6] << 8) + data[i + 7]) / 10000) - 1);
-                            float oy = -(((float)((data[i + 8] << 8) + data[i + 9]) / 10000) - 1);
-
-                            bool isNeg = (data[i + 10] & 0x80) == 0x80 ? true : false;
-                            int ax = isNeg ? (((data[i + 10] & 0x7F) << 8) + data[i + 11]) - 32768 : (((data[i + 10] & 0x7F) << 8) + data[i + 11]);
-                            isNeg = (data[i + 12] & 0x80) == 0x80 ? true : false;
-                            int ay = isNeg ? (((data[i + 12] & 0x7F) << 8) + data[i + 13]) - 32768 : (((data[i + 12] & 0x7F) << 8) + data[i + 13]);
-                            isNeg = (data[i + 14] & 0x80) == 0x80 ? true : false;
-                            int az = isNeg ? (((data[i + 14] & 0x7F) << 8) + data[i + 15]) - 32768 : (((data[i + 14] & 0x7F) << 8) + data[i + 15]);
-                            Quaternion rec_orientation = new Quaternion(ox, oy, oz, ow);
-                            Vector3 rec_acceleration = new Vector3((float)ax * (9.80665f / 1000f), (float)ay * (9.80665f / 1000f), (float)az * (9.80665f / 1000.0f));
-
-                            // If Timestamped
-                            bool timestamped = length == 18 ? true : false;
-                            double timestamp = 0;
-                            if(timestamped){
-                                timestamp = ((double)((data[i + 16] << 8) + data[i + 17])/10000.0d);
-                            }
-
-                            i += length;
-
-                            if (i >= data.Length)
-                                parsed = true;
-
-                            // Create Endpoint if inexsiting
-                            if (!trackedEndpoints.ContainsKey(sensorCount))
-                            {
-                                VRT_TagEndpoint endpoint = gameObject.AddComponent<VRT_TagEndpoint>();
-                                endpoint.SetTag(this);
-                                trackedEndpoints.Add(sensorCount, endpoint);
-                            }
-                            if(timestamped)
-                                trackedEndpoints[sensorCount].UpdateOrientationAndAcceleration(timestamp, rec_orientation, rec_acceleration);
-                            else
-                                trackedEndpoints[sensorCount].UpdateOrientationAndAcceleration(rec_orientation, rec_acceleration);
-                            break;
-                        }
-                    // Trackpad
-                    case 3:
-                        {
-
-                            byte x = data[i + 1];
-                            byte y = data[i + 2];
-                            //byte pressure = (byte)(data[i + 3] >> 4);
-                            byte btn = (byte)(data[i + 3] & 0x0F);
-
-                            if (btn == 2)
-                            {
-                                trackpadTouch = false;
-                                trackpadUp = true;
-                            }
-                            else if (btn == 1 || btn == 3)
-                            {
-                                trackpadTouch = true;
-                                trackpadDown = true;
-                            }
-
-                            trackpadXY.y = (float)-(x - 127.5) / 255;
-                            trackpadXY.x = (float)-(y - 127.5) / 255;
-                            if (data[i + 1] == 0 && data[i + 2] == 0)
-                                trackpadXY = Vector2.zero;
-                            i += 4;
-                            if (i >= data.Length)
-                                parsed = true;
-                            break;
-                        }
-
-                    // Gun
-                    case 6:
-                        {
-                            // byte buttons : 0 [trigger, grab, joy_d, a, b, x, y] 7
-                            byte buttons = data[i + 1];
-                            bool new_trigger = (buttons & (1 << 0)) != 0;
-                            bool new_grab = (buttons & (1 << 1)) != 0;
-                            bool new_joystick = (buttons & (1 << 2)) != 0;
-                            bool new_a = (buttons & (1 << 3)) != 0;
-                            bool new_b = (buttons & (1 << 4)) != 0;
-                            bool new_x = (buttons & (1 << 5)) != 0;
-                            bool new_y = (buttons & (1 << 6)) != 0;
-
-                            if (new_trigger != trigger)
-                            {
-                                trigger = new_trigger;
-                              //  Debug.Log("tag guin trigger");
-
-                                if (trigger && OnTriggerDown != null)
-                                    UnityMainThreadDispatcher.Instance().Enqueue(OnTriggerDown);
-                                else if(OnTriggerUp != null)
-                                    UnityMainThreadDispatcher.Instance().Enqueue(OnTriggerUp);
-                            }
-
-                            if (new_grab != grab)
-                            {
-                                grab = new_grab;
-                                if (grab && OnGrab != null)
-                                    UnityMainThreadDispatcher.Instance().Enqueue(OnGrab);
-                                else if (OnRelease != null)
-                                    UnityMainThreadDispatcher.Instance().Enqueue(OnRelease);
-                            }
-
-                            if (new_joystick != joystick)
-                            {
-                                joystick = new_joystick;
-                                if (joystick && OnJoystickPressed != null)
-                                    UnityMainThreadDispatcher.Instance().Enqueue(OnJoystickPressed);
-                                else if (OnJoystickReleased != null)
-                                    UnityMainThreadDispatcher.Instance().Enqueue(OnJoystickReleased);
-                            }
-
-                            if (new_a != a)
-                            {
-                                a = new_a;
-                                if (a && OnAPressed != null)
-                                    UnityMainThreadDispatcher.Instance().Enqueue(OnAPressed);
-                                else if (OnAReleased != null)
-                                    UnityMainThreadDispatcher.Instance().Enqueue(OnAReleased);
-                            }
-
-                            if (new_b != b)
-                            {
-                                b = new_b;
-                                if (b && OnBPressed != null)
-                                    UnityMainThreadDispatcher.Instance().Enqueue(OnBPressed);
-                                else if (OnBReleased != null)
-                                    UnityMainThreadDispatcher.Instance().Enqueue(OnBReleased);
-                            }
-
-                            if (new_x != x)
-                            {
-                                x = new_x;
-                                if (x && OnXPressed != null)
-                                    UnityMainThreadDispatcher.Instance().Enqueue(OnXPressed);
-                                else if (OnXReleased != null)
-                                    UnityMainThreadDispatcher.Instance().Enqueue(OnXReleased);
-                            }
-
-                            if (new_y != y)
-                            {
-                                y = new_y;
-                                if (y && OnYPressed != null)
-                                    UnityMainThreadDispatcher.Instance().Enqueue(OnYPressed);
-                                else if (OnYReleased != null)
-                                    UnityMainThreadDispatcher.Instance().Enqueue(OnYReleased);
-                            }
-
-                            i += 4;
-                            if (i >= data.Length)
-                                parsed = true;
-                            break;
-                        }
-
-                    default:
-                        {
-                            Debug.Log("Data could not be parsed : " + data[i].ToString() + "  index: " + i);
-                            break;
-                        }
-                }
+                trackpadTouch = false;
+                trackpadUp = true;
             }
+            else if (button == 1 || button == 3)
+            {
+                trackpadTouch = true;
+                trackpadDown = true;
+            }
+
+            trackpadXY.y = x;
+            trackpadXY.x = y;
+        }
+
+        public void UpdateGunData(bool trigger, bool grab, bool joystick, bool a, bool b, bool x, bool y){
+            if (this.trigger != trigger)
+            {
+                this.trigger = trigger;
+                if (trigger && OnTriggerDown != null)
+                    UnityMainThreadDispatcher.Instance().Enqueue(OnTriggerDown);
+                else if (OnTriggerUp != null)
+                    UnityMainThreadDispatcher.Instance().Enqueue(OnTriggerUp);
+            }
+
+            if (this.grab != grab)
+            {
+                this.grab = grab;
+                if (grab && OnGrab != null)
+                    UnityMainThreadDispatcher.Instance().Enqueue(OnGrab);
+                else if (OnRelease != null)
+                    UnityMainThreadDispatcher.Instance().Enqueue(OnRelease);
+            }
+
+            if (this.joystick != joystick)
+            {
+                this.joystick = joystick;
+                if (joystick && OnJoystickPressed != null)
+                    UnityMainThreadDispatcher.Instance().Enqueue(OnJoystickPressed);
+                else if (OnJoystickReleased != null)
+                    UnityMainThreadDispatcher.Instance().Enqueue(OnJoystickReleased);
+            }
+
+            if (this.a != a)
+            {
+                this.a = a;
+                if (a && OnAPressed != null)
+                    UnityMainThreadDispatcher.Instance().Enqueue(OnAPressed);
+                else if (OnAReleased != null)
+                    UnityMainThreadDispatcher.Instance().Enqueue(OnAReleased);
+            }
+
+            if (this.b != b)
+            {
+                this.b = b;
+                if (b && OnBPressed != null)
+                    UnityMainThreadDispatcher.Instance().Enqueue(OnBPressed);
+                else if (OnBReleased != null)
+                    UnityMainThreadDispatcher.Instance().Enqueue(OnBReleased);
+            }
+
+            if (this.x != x)
+            {
+                this.x = x;
+                if (x && OnXPressed != null)
+                    UnityMainThreadDispatcher.Instance().Enqueue(OnXPressed);
+                else if (OnXReleased != null)
+                    UnityMainThreadDispatcher.Instance().Enqueue(OnXReleased);
+            }
+
+            if (this.y != y)
+            {
+                this.y = y;
+                if (y && OnYPressed != null)
+                    UnityMainThreadDispatcher.Instance().Enqueue(OnYPressed);
+                else if (OnYReleased != null)
+                    UnityMainThreadDispatcher.Instance().Enqueue(OnYReleased);
+            }
+
         }
 
 
