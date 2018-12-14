@@ -9,11 +9,11 @@ using VRTracker.Player;
 
 namespace VRTracker.Network
 {
-	/// <summary>
-	/// VRT Network Manager overrides the UNET Network Manager
-	/// Handle the network component in the game
-	/// Store the list of players
-	/// </summary>
+    /// <summary>
+    /// VRT Network Manager overrides the UNET Network Manager
+    /// Handle the network component in the game
+    /// Store the list of players
+    /// </summary>
     public class VRT_NetworkManager : NetworkManager
     {
         [Tooltip("List of all the player in the Game")]
@@ -54,7 +54,6 @@ namespace VRTracker.Network
             serverBindToIP = true;
             networkAddress = serverBindAddress;
             isClient = true;
-            Debug.Log("Start Client");
             StartClient();
         }
 
@@ -96,10 +95,10 @@ namespace VRTracker.Network
         }
 
 
-		/// <summary>
-		/// Adds the player to the list, and update its id
-		/// </summary>
-		/// <param name="player">Player.</param>
+        /// <summary>
+        /// Adds the player to the list, and update its id
+        /// </summary>
+        /// <param name="player">Player.</param>
         public void AddPlayer(VRT_PlayerInstance player)
         {
             players.Add(player);
@@ -112,13 +111,16 @@ namespace VRTracker.Network
             }
 
             if (OnPlayerJoin != null)
+            {
                 OnPlayerJoin(player);
+            }
         }
 
-		/// <summary>
-		/// Removes the player on deconnection
-		/// </summary>
-		/// <param name="player">Player.</param>
+
+        /// <summary>
+        /// Removes the player on deconnection
+        /// </summary>
+        /// <param name="player">Player.</param>
         public void RemovePlayer(VRT_PlayerInstance player)
         {
             players.Remove(player);
@@ -127,12 +129,13 @@ namespace VRTracker.Network
 
         }
 
-		/// <summary>
-		/// Sets the local player in the game
-		/// </summary>
-		/// <param name="player">Player.</param>
+        /// <summary>
+        /// Sets the local player in the game
+        /// </summary>
+        /// <param name="player">Player.</param>
         public void SetLocalPlayer(VRT_PlayerInstance player)
         {
+            //Debug.Log("set local player");
             localPlayer = player;
             if (OnLocalPlayerJoin != null)
             {

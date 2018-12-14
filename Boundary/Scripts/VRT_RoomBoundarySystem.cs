@@ -6,6 +6,7 @@ using SimpleJSON;
 using System.IO;
 using System;
 using VRTracker.Manager;
+using VRTracker.Network;
 
 
 namespace VRTracker.Boundary
@@ -34,6 +35,7 @@ namespace VRTracker.Boundary
         [SerializeField] float alertFrequence;
         [SerializeField] float alertDistance;
         [SerializeField] float alertVolume;
+        [SerializeField] VRT_NetworkAutoStart autoStart;
         Coroutine alertRoutine;
         bool alertSoundPlaying = false;
 
@@ -50,14 +52,13 @@ namespace VRTracker.Boundary
             walls = new List<GameObject>();
             LoadCornersData();
             //Don't draw the boundaries for spectator
-            Debug.Log("spectator " + VRTracker.Manager.VRT_Manager.Instance.spectator);
             if (!VRTracker.Manager.VRT_Manager.Instance.spectator)
             {
                 DrawBoundaries();
                 OnNewBoundaries += UpdateBoundaries;
                 exist = true;
             }           
-        }
+        }    
 
         public void UpdateBoundaries()
         {
@@ -110,8 +111,17 @@ namespace VRTracker.Boundary
         /// </summary>
         void DrawBoundaries()
         {
-            Debug.Log("draw boundary");
-            walls.Clear();
+            if(walls.Count > 0)
+            {
+                textureAssigned = false;
+                for (int i = walls.Count-1; i >=0; i--)
+                {
+                    Destroy(walls[i].gameObject);
+                    
+                }
+                walls.Clear();
+            }
+            
             for (int i = 0; i < corners.Count; i++)
             {
                 //Debug.Log("drawing corner " + (i + 1) + " out of " + corners.Count);
@@ -155,11 +165,12 @@ namespace VRTracker.Boundary
         }
 
 
-        bool assigned;
+        bool textureAssigned;
         List<TextureAlpha> textureAlphaList = new List<TextureAlpha>();
 
         void AssignTextureAlphaScript()
         {
+            textureAlphaList.Clear();
             foreach (GameObject wall in walls)
             {
                 TextureAlpha textAlph = wall.GetComponent<TextureAlpha>();
@@ -179,9 +190,9 @@ namespace VRTracker.Boundary
             //Debug.Log("change alpha value in roomboundary script to " + value);
             generalAlpha = value;
 
-            if (!assigned)
+            if (!textureAssigned)
             {
-                assigned = true;
+                textureAssigned = true;
                 AssignTextureAlphaScript();
             }
 
