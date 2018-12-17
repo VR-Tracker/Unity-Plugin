@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using VRTracker.Player;
 using UnityEngine.Networking;
+using UnityEngine.XR;
+using System;
 
 public class VRT_ManualHeadsetOrientation : VRT_HeadsetRotation
 {
@@ -19,6 +21,17 @@ public class VRT_ManualHeadsetOrientation : VRT_HeadsetRotation
             this.enabled = false;
             return;
         }
+
+        VRStandardAssets.Utils.VRCameraFade fader = gameObject.GetComponentInChildren<VRStandardAssets.Utils.VRCameraFade>();
+        if (fader != null)
+        {
+            Blink += fader.FadeBlink;
+
+            if (tag.trackedEndpoints[0].filter != null && tag.trackedEndpoints[0].blinkOnJump)
+            {
+                tag.trackedEndpoints[0].filter.Blink += fader.FadeBlink;
+            }
+        }
     }
 
     private void FixedUpdate()
@@ -28,10 +41,9 @@ public class VRT_ManualHeadsetOrientation : VRT_HeadsetRotation
 
     public override void ResetOrientation()
     {
-        Vector3 camRot = camera.transform.eulerAngles;
-        Vector3 offsetY = new Vector3(0, camRot.y, 0);
-        transform.rotation = Quaternion.Euler(transform.eulerAngles - offsetY);
-        if (Blink != null)
+        InputTracking.Recenter();
+
+       if (Blink != null)
             Blink();
     }
 }
