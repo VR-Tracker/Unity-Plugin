@@ -108,15 +108,22 @@ namespace VRTracker.Manager
             else if (positionUpdateHandler != null)
             {
                 positionUpdateHandler(positionReceived);
+                transform.position = positionReceived;
+            }
+            else {
+                transform.position = positionReceived;
             }
 
             if (orientationUpdateHandler != null)
             {
                 orientationUpdateHandler(orientation_quat);
             }
+            else {
+                transform.rotation = orientation_quat;
+            }
 
-            transform.position = positionReceived;
-            transform.rotation = orientation_quat;
+
+
         }
 
         /// <summary>
