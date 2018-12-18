@@ -131,7 +131,10 @@ namespace VRTracker.Manager
                                 Debug.LogWarning("Tag does not exist for message. Tag found ? " + tagFound.ToString());
                             }
                             else
+                            {
+                               // Debug.Log("Parse positon "  + position.ToString("F4") + "  TS:" + timestamp.ToString());
                                 currentTag.trackedEndpoints[sensorCount].UpdatePosition(position, timestamp);
+                            }
                             
                             break;
                         }

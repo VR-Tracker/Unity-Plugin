@@ -170,7 +170,7 @@ namespace VRTracker.Manager
         {
             // PREDICTION
             this.positionReceived = position_;
-         //   Debug.Log("POS: " + (((System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond) - initialTimeMs) / 1000.0d).ToString());
+//            Debug.Log("POS: " + position_.ToString("F4"));
             if (positionFilter)
                 filter.AddPositionMeasurement(((System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond) - initialTimeMs) / 1000.0d, position_);
         }

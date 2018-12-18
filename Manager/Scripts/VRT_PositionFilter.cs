@@ -129,8 +129,24 @@ namespace VRTracker.Utils
                 lastCalculatedPositionTimestamp = timestamp;
             }
 
+
+           // Debug.Log("Delay " + delaySinceLastPositionMeasurement.ToString());
+
+            if (delaySinceLastPositionMeasurement > 0.7)
+            {
+                Debug.LogWarning("Reset 1");
+                ResetFilter();
+            }
+            else if((trackingDataBuffer[lastPositionIndex].position - lastCalculatedPosition).magnitude > lerpDiscardDistance){
+                Debug.LogWarning("Reset 2");
+                ResetFilter();
+            }
+            else{
+             //   Debug.Log("Buff: " + trackingDataBuffer[lastPositionIndex].position.ToString() + "   Last: " + lastCalculatedPosition.ToString());
+            }
+            
             // TRY TO FIX LONG OFFSET JUMPS, if line 110 isn't enought
-            if (lastPositionIndex != -1 && (trackingDataBuffer[lastPositionIndex].position - lastCalculatedPosition).magnitude > lerpDiscardDistance)
+           /* if (lastPositionIndex != -1 && (trackingDataBuffer[lastPositionIndex].position - lastCalculatedPosition).magnitude > lerpDiscardDistance)
             {
                 Debug.Log("RESET | last: " + lastCalculatedPosition.ToString() + "  received " + trackingDataBuffer[lastPositionIndex].position.ToString() + "  | MAG: " + (trackingDataBuffer[lastPositionIndex].position - lastCalculatedPosition).magnitude.ToString());
                 //ResetFilter();
@@ -143,9 +159,9 @@ namespace VRTracker.Utils
                         Blink();
                 }
             }
-            
-             return lastCalculatedPosition + currentOffset;
-            //return oneEuro.Filter(lastCalculatedPosition + currentOffset, (float)timestamp);
+            */
+            // return lastCalculatedPosition + currentOffset;
+            return oneEuro.Filter(lastCalculatedPosition + currentOffset, (float)timestamp);
         }
 
         /// <summary>
@@ -330,7 +346,7 @@ namespace VRTracker.Utils
             if (positionOffsetAfterPropagation.magnitude > 0.04f && previousPosition != null)
             {
                 offsets.Add(new PositionOffset(trackingDataPosition.timestamp, previousPosition.position - trackingDataPosition.position));
-                Debug.Log("Add offset MAG propagation " + (previousPosition.position - trackingDataPosition.position).magnitude.ToString());
+          //      Debug.Log("Add offset MAG propagation " + (previousPosition.position - trackingDataPosition.position).magnitude.ToString());
             }
             lastCalculatedPosition = trackingDataBuffer[0].position;
             lastCalculatedPositionTimestamp = trackingDataBuffer[0].timestamp;
