@@ -39,6 +39,21 @@ namespace VRTracker.Network
             {
                 Instance = this;
             }
+
+            // Check for file configuration for the IP and Port Settings
+            if (VRTracker.Configuration.VRT_FileSettings.Instance != null)
+            {
+                if (VRTracker.Configuration.VRT_FileSettings.Instance.ip_set)
+                {
+                    serverBindAddress = VRTracker.Configuration.VRT_FileSettings.Instance.ip;
+                    serverBindToIP = true;
+                    networkAddress = serverBindAddress;
+                }
+                if (VRTracker.Configuration.VRT_FileSettings.Instance.port_set)
+                {
+                    networkPort = VRTracker.Configuration.VRT_FileSettings.Instance.port;
+                }
+            }
         }
 
 		public void OnEnable()
@@ -51,7 +66,7 @@ namespace VRTracker.Network
 		internal void JoinGame(string ipAddress)
         {
             serverBindAddress = ipAddress;
-            serverBindToIP = true;
+
             networkAddress = serverBindAddress;
             isClient = true;
             StartClient();

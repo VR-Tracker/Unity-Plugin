@@ -54,7 +54,16 @@ namespace VRTracker.Manager
         // Use this for initialization
         void Start()
         {
-			
+            // Check for file configuration for the Spectator Settings
+            if (VRTracker.Configuration.VRT_FileSettings.Instance != null){
+                if (VRTracker.Configuration.VRT_FileSettings.Instance.host_set && VRTracker.Configuration.VRT_FileSettings.Instance.host)
+                    spectator = false;
+                if (VRTracker.Configuration.VRT_FileSettings.Instance.server_set && VRTracker.Configuration.VRT_FileSettings.Instance.server)
+                    spectator = true;
+                if (VRTracker.Configuration.VRT_FileSettings.Instance.client_set && VRTracker.Configuration.VRT_FileSettings.Instance.client)
+                    spectator = false;
+            }
+
             DontDestroyOnLoad(this.gameObject);
 
             if (vrtrackerWebsocket == null)

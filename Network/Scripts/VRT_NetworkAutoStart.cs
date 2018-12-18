@@ -28,6 +28,14 @@ namespace VRTracker.Network {
 			networkDiscovery = FindObjectOfType<VRTracker.Network.VRT_NetworkDiscovery>();
 			networkManager = FindObjectOfType<VRTracker.Network.VRT_NetworkManager>();
 
+
+            // Check for file configuration for the Host Settings
+            if (VRTracker.Configuration.VRT_FileSettings.Instance != null)
+            {
+                if (VRTracker.Configuration.VRT_FileSettings.Instance.host_set)
+                    host = VRTracker.Configuration.VRT_FileSettings.Instance.host;
+            }
+
             // Either we use the Network Discovery if enabled...
             if (networkDiscovery != null && networkDiscovery.enabled) {
                 if (host && VRT_Manager.Instance.spectator)

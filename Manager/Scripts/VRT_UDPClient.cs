@@ -316,24 +316,20 @@ namespace VRTracker.Manager
         {
             if(pause)
             {
-                Debug.Log("Pausing app, udp close");
                 askedToClose = true;
                 if (receiveThread != null)
                 {
-                    Debug.Log("receive thread not null");
                     connected = false;
                     client.Close();
                     receiveThread.Abort();
                 }
                 if (client != null)
                 {
-                    Debug.Log("client not null");
                     client.Close();
                 }
             }
             else
             {
-                Debug.Log("UnPause UDP Init");
                 Init();
             }
         }

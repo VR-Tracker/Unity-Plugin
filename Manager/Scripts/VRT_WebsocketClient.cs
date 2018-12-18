@@ -514,8 +514,6 @@ namespace VRTracker.Manager
 		/// </summary>
         private void CloseWebsocket()
         {
-            Debug.Log("close web socket");
-
             if (isSocketRunning)
             {
                 isSocketClosing = true;
@@ -538,18 +536,15 @@ namespace VRTracker.Manager
 
         static bool WantsToQuit()
         {
-            Debug.Log("wants to quit");
             return true;
         }
 
         static void Quit()
         {
-            Debug.Log("Quit kwit");
         }
 
         private void OnApplicationPause(bool pause)
         {
-            Debug.Log("onApplicationPause");
         }
 
         /// <summary>
@@ -863,7 +858,6 @@ namespace VRTracker.Manager
 		/// </summary>
         void OnApplicationQuit()
         {
-            Debug.Log("on app quit");
             CloseWebsocket();
         }
 
@@ -879,7 +873,6 @@ namespace VRTracker.Manager
 
         public void OnDestroy()
         {
-            Debug.Log("on destroy");
             CloseWebsocket();
         }
 
