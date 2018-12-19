@@ -43,7 +43,10 @@ namespace VRTracker.Manager
 
 		private void ReceiveData()
 		{
-            client = new UdpClient(port);
+            client = new UdpClient();
+            client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            client.Client.Bind(new IPEndPoint(IPAddress.Any, port));
+ 
             connected = true;
 			while (connected)
 			{
