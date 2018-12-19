@@ -44,16 +44,15 @@ namespace VRTracker.Manager
 		private void ReceiveData()
 		{
             client = new UdpClient(port);
-         //   client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-         //   client.Client.Bind(new IPEndPoint(IPAddress.Any, port));
- 
+            client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            IPEndPoint anyIP = new IPEndPoint(IPAddress.Broadcast, port);
+
             connected = true;
 			while (connected)
 			{
 				try
 				{
-					IPEndPoint anyIP = new IPEndPoint(IPAddress.Broadcast, port);
-					byte[] data = client.Receive(ref anyIP);
+                    byte[] data = client.Receive(ref anyIP);
 					
                     /*Debug.Log("Data length " + data.Length);
 					string text = ByteArrayToString(data);
