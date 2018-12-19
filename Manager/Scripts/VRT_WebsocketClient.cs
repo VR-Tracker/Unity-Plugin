@@ -32,7 +32,8 @@ namespace VRTracker.Manager
         private bool isSocketClosing = false;
         private bool isSocketRunning = false;
         public string localIp; //Store the local address of the device (192.168.42.xxx)
-  
+        [HideInInspector]
+        public bool connected = false;
 
         private void Awake()
         {
@@ -67,6 +68,7 @@ namespace VRTracker.Manager
 		/// <param name="e">E.</param>
         private void OnOpenHandler(object sender, System.EventArgs e)
         {
+            connected = true;
             if (OnConnected != null)
                 OnConnected();
             //Debug.LogWarning("COnnection to the gateway");
@@ -89,12 +91,20 @@ namespace VRTracker.Manager
 
         private void OnErrorHandler(object sender, System.EventArgs e)
         {
+            
             if(!isSocketClosing)
                 Debug.LogError("Error with connection to the gateway " + e.ToString());
             if (!isSocketRunning && !isSocketClosing)
             {
                 Debug.LogWarning("Trying to reconnect to the gateway");
                 UnityMainThreadDispatcher.Instance().Enqueue(TryToReconnect());
+            }
+
+            if (connected)
+            {
+                if (OnDisconnected != null)
+                    OnDisconnected();
+                connected = false;
             }
         }
 
@@ -478,6 +488,7 @@ namespace VRTracker.Manager
         // Called when connection to Gateway is closed
         private void OnCloseHandler(object sender, CloseEventArgs e)
         {
+            connected = false;
             if (isSocketClosing)
             {
                 if (OnDisconnected != null)
