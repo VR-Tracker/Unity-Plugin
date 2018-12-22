@@ -162,7 +162,7 @@ namespace VRTracker.Manager
         /// <summary>
         /// Reset Headset orientation and Tag orientation offset
         /// </summary>
-        public void ResetOrientation()
+        public virtual void ResetOrientation()
         {
             if (UnityEngine.XR.XRSettings.isDeviceActive)
                 UnityEngine.XR.InputTracking.Recenter();
@@ -172,7 +172,7 @@ namespace VRTracker.Manager
 		/// Raises the special command event.
 		/// </summary>
 		/// <param name="data">Data.</param>
-        public void OnSpecialCommand(string data)
+        public virtual void OnSpecialCommand(string data)
         {
             if (data.Contains("triggeron" + data))
             {
@@ -215,7 +215,7 @@ namespace VRTracker.Manager
 		/// </summary>
 		/// <param name="tagID">Tag I.</param>
 		/// <param name="data">Data.</param>
-        public void OnSpecialCommandToAll(string tagID, string data)
+        public virtual void OnSpecialCommandToAll(string tagID, string data)
         {
             if (waitingForID && data.Contains("buttonon"))
             {
@@ -232,7 +232,7 @@ namespace VRTracker.Manager
         /// <param name="status">Status.</param>
         /// <param name="battery">Battery.</param>
         /// <param name="version">Version.</param>
-        public void UpdateTagInformations(string status_, int battery_, string version_){
+        public virtual void UpdateTagInformations(string status_, int battery_, string version_){
             if (status != status_)
             {
                 // At start if not tracking the status is "unassigned"
@@ -261,9 +261,6 @@ namespace VRTracker.Manager
 
                 version = version_;
             }
-
-
-
         }
 
 		/// <summary>
@@ -271,7 +268,7 @@ namespace VRTracker.Manager
 		/// Handle the data received from the tag
 		/// </summary>
 		/// <param name="data">Data.</param>
-        public void OnTagData(string data)
+        public virtual void OnTagData(string data)
         {
             //Debug.LogWarning(data);
             string[] sensors = data.Split(new string[] { "&s=" }, System.StringSplitOptions.RemoveEmptyEntries);
@@ -342,7 +339,7 @@ namespace VRTracker.Manager
         }
 
 		
-        public void UpdateTrackpadData(float x, float y, byte button){
+        public virtual void UpdateTrackpadData(float x, float y, byte button){
             if (button == 2)
             {
                 trackpadTouch = false;
@@ -358,7 +355,7 @@ namespace VRTracker.Manager
             trackpadXY.x = y;
         }
 
-        public void UpdateGunData(bool trigger, bool grab, bool joystick, bool a, bool b, bool x, bool y){
+        public virtual void UpdateGunData(bool trigger, bool grab, bool joystick, bool a, bool b, bool x, bool y){
             if (this.trigger != trigger)
             {
                 this.trigger = trigger;
@@ -430,7 +427,7 @@ namespace VRTracker.Manager
 		/// </summary>
 		/// <returns>The for assignation.</returns>
 		/// <param name="delayToPressButton">Delay to press button.</param>
-        public IEnumerator WaitForAssignation(float delayToPressButton)
+        public virtual IEnumerator WaitForAssignation(float delayToPressButton)
         {
             //Prepare for assignation
             currentTime = delayToPressButton;
@@ -444,7 +441,7 @@ namespace VRTracker.Manager
 		/// <summary>
 		/// Raises the destroy event and remove the tag from the list in the manager
 		/// </summary>
-        protected void OnDestroy()
+        protected virtual void OnDestroy()
         {
             if (VRTracker.Manager.VRT_Manager.Instance)
                 VRTracker.Manager.VRT_Manager.Instance.RemoveTag(this);
@@ -455,7 +452,7 @@ namespace VRTracker.Manager
 		/// Used for automatic pairing
 		/// </summary>
 		/// <param name="tagID">Tag unique id</param>
-        public void AssignTag(string tagID)
+        public virtual void AssignTag(string tagID)
         {
             UID = tagID;
             IDisAssigned = true;
@@ -467,7 +464,7 @@ namespace VRTracker.Manager
         /// Sets the tracker color.
         /// </summary>
         /// <param name="color">Color.</param>
-        public void SetColor(Color color){
+        public virtual void SetColor(Color color){
             VRTracker.Manager.VRT_Manager.Instance.vrtrackerWebsocket.SetTagColor(UID, (int)(255 * color.r), (int)(255 * color.g), (int)(255 * color.b));
         }
 
