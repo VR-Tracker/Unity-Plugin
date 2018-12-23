@@ -69,13 +69,13 @@ namespace VRTracker.Manager
         public bool blinkOnJump = false;
 
         // Use this for initialization
-        public void SetTag(VRT_Tag tag)
+        public virtual void SetTag(VRT_Tag tag)
         {
             parentTag = tag;
         }
 
 
-        public void Start()
+        public virtual void Start()
 		{
 
             imuTimestampOffsetBuffer = new CircularBuffer<double>(20);
@@ -92,7 +92,7 @@ namespace VRTracker.Manager
 		}
 
 		// Update is called once per frame
-		public void Update()
+		public virtual void Update()
         {
             if (positionFilter)
             {
@@ -130,7 +130,7 @@ namespace VRTracker.Manager
         /// Gets the orientation of the tag
         /// </summary>
         /// <returns>The orientation.</returns>
-        public Quaternion getOrientation()
+        public virtual Quaternion getOrientation()
         {
             if (orientationUsesQuaternion)
                 return orientation_quat;
@@ -142,7 +142,7 @@ namespace VRTracker.Manager
         /// Gets the position received from the system
         /// </summary>
         /// <returns>The position.</returns>
-        public Vector3 GetPosition()
+        public virtual Vector3 GetPosition()
         {
             return this.positionReceived;
         }
