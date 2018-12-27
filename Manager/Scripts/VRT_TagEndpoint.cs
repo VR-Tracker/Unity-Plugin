@@ -118,12 +118,8 @@ namespace VRTracker.Manager
             {
                 orientationUpdateHandler(orientation_quat);
             }
-            else {
-                transform.rotation = orientation_quat;
-            }
 
-
-
+            transform.rotation = orientation_quat;
         }
 
         /// <summary>
