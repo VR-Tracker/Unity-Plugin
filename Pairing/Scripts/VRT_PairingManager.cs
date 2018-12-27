@@ -201,6 +201,7 @@ namespace VRTracker.Pairing
         /// Try to automatically pair the Tag using saved data in JSON file and available (connected) Tags
         /// </summary>
         public IEnumerator AutomaticPairing(){
+            yield return new WaitForSeconds(0.5f);
 
             bool alreadyPaired = true;
             foreach (VRTracker.Manager.VRT_Tag mTag in VRTracker.Manager.VRT_Manager.Instance.tags)
@@ -208,6 +209,8 @@ namespace VRTracker.Pairing
                 if (!mTag.IDisAssigned)
                     alreadyPaired = false;
             }
+            if(VRTracker.Manager.VRT_Manager.Instance.tags.Count == 0)
+                alreadyPaired = false;
 
             if (alreadyPaired)
             {
@@ -215,7 +218,7 @@ namespace VRTracker.Pairing
                 yield break;
             }
 
-            yield return new WaitForSeconds(1);
+            
             if(!areTagsInJSON()){
                 automaticPairingSuccessfull = false;
                 yield break;
