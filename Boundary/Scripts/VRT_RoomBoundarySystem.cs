@@ -35,7 +35,6 @@ namespace VRTracker.Boundary
         [SerializeField] float alertFrequence;
         [SerializeField] float alertDistance;
         [SerializeField] float alertVolume;
-        [SerializeField] VRT_NetworkAutoStart autoStart;
         Coroutine alertRoutine;
         bool alertSoundPlaying = false;
 
@@ -220,7 +219,7 @@ namespace VRTracker.Boundary
                 foreach (GameObject wall in walls)
                 {
                     // Get the distance from point to plane by using projection
-                    Vector3 V1 = tag.trackedEndpoints[0].transform.position - wall.transform.position;
+                    Vector3 V1 = tag.trackedEndpoints[0].transform.localPosition - wall.transform.localPosition;
                     Vector3 V2 = Vector3.Project(V1, wall.transform.forward);
                     if (distance > V2.magnitude)
                         distance = V2.magnitude;
