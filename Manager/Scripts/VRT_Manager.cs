@@ -135,7 +135,7 @@ namespace VRTracker.Manager
             foreach (VRTracker.Manager.VRT_Tag tag in tags)
                 if (tag.tagType == VRTracker.Manager.VRT_Tag.TagType.Head)
                     return tag;
-			Debug.LogWarning("Could not find a VR Tracker Tag with type " + VRTracker.Manager.VRT_Tag.TagType.Head.ToString() + " in current Scene");
+			//Debug.LogWarning("Could not find a VR Tracker Tag with type " + VRTracker.Manager.VRT_Tag.TagType.Head.ToString() + " in current Scene");
             return null;
         }
 
@@ -148,7 +148,7 @@ namespace VRTracker.Manager
             foreach (VRTracker.Manager.VRT_Tag tag in tags)
                 if (tag.tagType == VRTracker.Manager.VRT_Tag.TagType.LeftController)
                     return tag;
-            Debug.LogWarning("Could not find a VR Tracker Tag with type " + VRTracker.Manager.VRT_Tag.TagType.LeftController.ToString() + " in current Scene");
+           // Debug.LogWarning("Could not find a VR Tracker Tag with type " + VRTracker.Manager.VRT_Tag.TagType.LeftController.ToString() + " in current Scene");
             return null;
         }
 
@@ -161,7 +161,7 @@ namespace VRTracker.Manager
             foreach (VRTracker.Manager.VRT_Tag tag in tags)
                 if (tag.tagType == VRTracker.Manager.VRT_Tag.TagType.RightController)
                     return tag;
-            Debug.LogWarning("Could not find a VR Tracker Tag with type " + VRTracker.Manager.VRT_Tag.TagType.RightController.ToString() + " in current Scene");
+            //Debug.LogWarning("Could not find a VR Tracker Tag with type " + VRTracker.Manager.VRT_Tag.TagType.RightController.ToString() + " in current Scene");
             return null;
         }
 

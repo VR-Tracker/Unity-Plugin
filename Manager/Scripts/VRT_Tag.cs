@@ -49,6 +49,9 @@ namespace VRTracker.Manager
         [System.NonSerialized] public bool triggerPressed = false;
         [System.NonSerialized] public bool triggerUp = false;
         [System.NonSerialized] public bool triggerDown = false;
+        [System.NonSerialized] public bool grabPressed = false;
+        [System.NonSerialized] public bool grabUp = false;
+        [System.NonSerialized] public bool grabDown = false;
         [System.NonSerialized] public bool buttonPressed = false;
         [System.NonSerialized] public bool buttonUp = false;
         [System.NonSerialized] public bool buttonDown = false;
@@ -359,6 +362,10 @@ namespace VRTracker.Manager
             if (this.trigger != trigger)
             {
                 this.trigger = trigger;
+                this.triggerPressed = trigger;
+                triggerDown = trigger;
+                triggerUp = !trigger;
+
                 if (trigger && OnTriggerDown != null)
                     UnityMainThreadDispatcher.Instance().Enqueue(OnTriggerDown);
                 else if (OnTriggerUp != null)
@@ -367,7 +374,12 @@ namespace VRTracker.Manager
 
             if (this.grab != grab)
             {
+                
                 this.grab = grab;
+                this.grabPressed = trigger;
+                grabDown = trigger;
+                grabUp = !trigger;
+
                 if (grab && OnGrab != null)
                     UnityMainThreadDispatcher.Instance().Enqueue(OnGrab);
                 else if (OnRelease != null)
