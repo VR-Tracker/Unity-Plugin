@@ -115,7 +115,7 @@ namespace VRTracker.Manager
         // Use this for initialization
         protected virtual void Start()
         {
-
+           
             if (VRTracker.Manager.VRT_Manager.Instance.spectator)
             {
                 gameObject.SetActive(false);
@@ -140,6 +140,7 @@ namespace VRTracker.Manager
                     endpoint.SetTag(this);
                 }
             }
+            Debug.Log("start  vrt tag");
         }
 
         protected virtual void Update()

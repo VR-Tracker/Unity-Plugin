@@ -39,6 +39,7 @@ namespace VRTracker.Player
         /*[Tooltip("The VRTK Headset Fade script to use when fading the headset. If this is left blank then the script will need to be applied to the same GameObject.")]
         public VRTK.VRTK_HeadsetFade headsetFade;
         */
+
         void Start()
         {
             offsetBuffer = new CircularBuffer<float>(20);
@@ -54,14 +55,17 @@ namespace VRTracker.Player
                 networkIdentity = GetComponentInParent<NetworkIdentity>();
             newRotation = Vector3.zero;
             if (tag == null && VRTracker.Manager.VRT_Manager.Instance != null)
+            {
                 tag = VRTracker.Manager.VRT_Manager.Instance.GetHeadsetTag();
+            }
+
             if (networkIdentity != null && !networkIdentity.isLocalPlayer)
             {
                 gameObject.SetActive(false);
                 this.enabled = false;
                 return;
             }
-
+            
             VRStandardAssets.Utils.VRCameraFade fader = gameObject.GetComponentInChildren<VRStandardAssets.Utils.VRCameraFade>();
             if (fader != null)
             {

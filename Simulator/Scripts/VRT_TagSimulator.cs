@@ -10,6 +10,7 @@ public class VRT_TagSimulator : VRTracker.Manager.VRT_Tag {
 
 	// Use this for initialization
 	protected override void Start () {
+        Debug.Log("start tag sim");
 		VRTracker.Manager.VRT_Manager.Instance.AddTag(this);
 
         VRTracker.Player.VRT_FollowTag[] tagsFollow = FindObjectsOfType<VRTracker.Player.VRT_FollowTag>();
