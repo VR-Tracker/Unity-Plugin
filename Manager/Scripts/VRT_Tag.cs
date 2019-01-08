@@ -140,7 +140,6 @@ namespace VRTracker.Manager
                     endpoint.SetTag(this);
                 }
             }
-            Debug.Log("start  vrt tag");
         }
 
         protected virtual void Update()
