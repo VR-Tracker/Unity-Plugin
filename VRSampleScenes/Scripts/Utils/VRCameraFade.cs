@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -100,8 +100,10 @@ namespace VRStandardAssets.Utils
             // If not already fading start a coroutine to fade from the fade colour to the fade out colour.
             if (m_IsFading)
                 return;
-            StartCoroutine(BeginFade(m_FadeColor, m_FadeOutColor, duration));
-
+            if (gameObject.activeInHierarchy)
+            { 
+                StartCoroutine(BeginFade(m_FadeColor, m_FadeOutColor, duration));
+            }
             // Fade in the audio over the same duration.
             if(m_DefaultSnapshot && fadeAudio)
                 m_DefaultSnapshot.TransitionTo (duration);
