@@ -1,6 +1,10 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+<<<<<<< Updated upstream
 --- !u!1 &1485480611
+=======
+--- !u!1 &6107263973537673348
+>>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,21 +12,33 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< Updated upstream
   - component: {fileID: 1485480612}
   - component: {fileID: 1485480613}
   m_Layer: 0
   m_Name: Tag_RightHand
+=======
+  - component: {fileID: 6109149116798824940}
+  - component: {fileID: 6147707487745185638}
+  m_Layer: 0
+  m_Name: HeadEndpoint
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< Updated upstream
 --- !u!4 &1485480612
+=======
+--- !u!4 &6109149116798824940
+>>>>>>> Stashed changes
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 1485480611}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -33,11 +49,23 @@ Transform:
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1485480613
+=======
+  m_GameObject: {fileID: 6107263973537673348}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 6113371836117913052}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6147707487745185638
+>>>>>>> Stashed changes
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 1485480611}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -50,6 +78,21 @@ MonoBehaviour:
   battery: 0
   UID: Enter Your Tag UID
 --- !u!1 &1607711820
+=======
+  m_GameObject: {fileID: 6107263973537673348}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 392991a6841e74b52b63698d9db929f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  endpointID: 0
+  secondLed: 1
+  useCustomOrientation: 0
+  customOrientationOffset: 0
+  positionFilter: 1
+  blinkOnJump: 1
+--- !u!1 &6107503150318456770
+>>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -57,21 +100,33 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< Updated upstream
   - component: {fileID: 1607711821}
   - component: {fileID: 1607711822}
   m_Layer: 0
   m_Name: Endpoint
+=======
+  - component: {fileID: 6113144117135180790}
+  - component: {fileID: 6147671921340984978}
+  m_Layer: 0
+  m_Name: Tag_RightController
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< Updated upstream
 --- !u!4 &1607711821
+=======
+--- !u!4 &6113144117135180790
+>>>>>>> Stashed changes
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 1607711820}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -81,11 +136,24 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1607711822
+=======
+  m_GameObject: {fileID: 6107503150318456770}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 6108970116327662793}
+  m_Father: {fileID: 6109642725670853968}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6147671921340984978
+>>>>>>> Stashed changes
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 1607711820}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -99,6 +167,20 @@ MonoBehaviour:
   positionFilter: 1
   blinkOnJump: 0
 --- !u!1 &1653254373
+=======
+  m_GameObject: {fileID: 6107503150318456770}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4b89a5f8b9c849b595b98387d4d31ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tagType: 3
+  tagVersion: 1
+  status: 
+  battery: 0
+  UID: Enter Your Tag UID
+--- !u!1 &6107520034932086720
+>>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -106,21 +188,33 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< Updated upstream
   - component: {fileID: 1653254374}
   - component: {fileID: 1653254375}
   m_Layer: 0
   m_Name: Endpoint
+=======
+  - component: {fileID: 6113371836117913052}
+  - component: {fileID: 6147805740394375818}
+  m_Layer: 0
+  m_Name: Tag_Head
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< Updated upstream
 --- !u!4 &1653254374
+=======
+--- !u!4 &6113371836117913052
+>>>>>>> Stashed changes
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 1653254373}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -130,11 +224,24 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1653254375
+=======
+  m_GameObject: {fileID: 6107520034932086720}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 6109149116798824940}
+  m_Father: {fileID: 6109642725670853968}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6147805740394375818
+>>>>>>> Stashed changes
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 1653254373}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -148,6 +255,20 @@ MonoBehaviour:
   positionFilter: 1
   blinkOnJump: 0
 --- !u!1 &3050379336751801078
+=======
+  m_GameObject: {fileID: 6107520034932086720}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4b89a5f8b9c849b595b98387d4d31ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tagType: 0
+  tagVersion: 0
+  status: 
+  battery: 0
+  UID: Enter Your Tag UID
+--- !u!1 &6107678151496117378
+>>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -155,21 +276,36 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< Updated upstream
   - component: {fileID: 2758121712918020218}
   - component: {fileID: 3705374276072618252}
   m_Layer: 0
   m_Name: HeadEndpoint
+=======
+  - component: {fileID: 6109642725670853968}
+  - component: {fileID: 6148162671236364484}
+  - component: {fileID: 6147925126271507362}
+  - component: {fileID: 6147480386518012554}
+  - component: {fileID: 6148087306182142926}
+  m_Layer: 0
+  m_Name: VRTrackerVRTK
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< Updated upstream
 --- !u!4 &2758121712918020218
+=======
+--- !u!4 &6109642725670853968
+>>>>>>> Stashed changes
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 3050379336751801078}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 1}
@@ -179,11 +315,26 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3705374276072618252
+=======
+  m_GameObject: {fileID: 6107678151496117378}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 6108970115548994578}
+  - {fileID: 6113144117135180790}
+  - {fileID: 6113371836117913052}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6148162671236364484
+>>>>>>> Stashed changes
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 3050379336751801078}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -198,10 +349,22 @@ MonoBehaviour:
   blinkOnJump: 1
 --- !u!1 &5543490597880808183
 GameObject:
+=======
+  m_GameObject: {fileID: 6107678151496117378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c690f7d1968728c4f878685e6693ef8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  localIp: 
+--- !u!114 &6147925126271507362
+MonoBehaviour:
+>>>>>>> Stashed changes
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2063437266}
@@ -215,10 +378,21 @@ GameObject:
   m_IsActive: 1
 --- !u!4 &2063437266
 Transform:
+=======
+  m_GameObject: {fileID: 6107678151496117378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b49deb630d657472084b6263ac4963c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6147480386518012554
+MonoBehaviour:
+>>>>>>> Stashed changes
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 5543490597880808183}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -229,11 +403,27 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2912440034589292206
+=======
+  m_GameObject: {fileID: 6107678151496117378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98894206b0d164a6196d85f1b44f5da5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UserUID: 
+  roomNorthOffset: 0
+  spectator: 0
+  tags: []
+  vrtrackerWebsocket: {fileID: 6148162671236364484}
+  vrtrackerUDP: {fileID: 6147925126271507362}
+--- !u!114 &6148087306182142926
+>>>>>>> Stashed changes
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 5543490597880808183}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -246,6 +436,15 @@ MonoBehaviour:
   battery: 0
   UID: Enter Your Tag UID
 --- !u!1 &7239904052896450786
+=======
+  m_GameObject: {fileID: 6107678151496117378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306705e95aa12654681ecbb6e5912379, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &6108970115548994579
+>>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -253,21 +452,33 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< Updated upstream
   - component: {fileID: 5823181892324537062}
   - component: {fileID: 3808344922145009958}
   m_Layer: 0
   m_Name: Tag_Head
+=======
+  - component: {fileID: 6108970115548994578}
+  - component: {fileID: 6108970115548994589}
+  m_Layer: 0
+  m_Name: Tag_LeftController
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< Updated upstream
 --- !u!4 &5823181892324537062
+=======
+--- !u!4 &6108970115548994578
+>>>>>>> Stashed changes
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 7239904052896450786}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -278,23 +489,48 @@ Transform:
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3808344922145009958
+=======
+  m_GameObject: {fileID: 6108970115548994579}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 6108970116360176405}
+  m_Father: {fileID: 6109642725670853968}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6108970115548994589
+>>>>>>> Stashed changes
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 7239904052896450786}
+=======
+  m_GameObject: {fileID: 6108970115548994579}
+>>>>>>> Stashed changes
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a4b89a5f8b9c849b595b98387d4d31ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+<<<<<<< Updated upstream
   tagType: 0
   tagVersion: 0
   status: 
   battery: 0
   UID: Enter Your Tag UID
 --- !u!1 &7246009842374303598
+=======
+  tagType: 2
+  tagVersion: 1
+  status: 
+  battery: 0
+  UID: Enter Your Tag UID
+--- !u!1 &6108970116327662798
+>>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -302,6 +538,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< Updated upstream
   - component: {fileID: 2063437265}
   - component: {fileID: 380861383662588522}
   - component: {fileID: 738208094002533727}
@@ -309,17 +546,28 @@ GameObject:
   - component: {fileID: 8945644107318071581}
   m_Layer: 0
   m_Name: VRTrackerVRTK
+=======
+  - component: {fileID: 6108970116327662793}
+  - component: {fileID: 6108970116327662792}
+  m_Layer: 0
+  m_Name: RightControllerEndpoint
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< Updated upstream
 --- !u!4 &2063437265
+=======
+--- !u!4 &6108970116327662793
+>>>>>>> Stashed changes
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 7246009842374303598}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -332,11 +580,23 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &380861383662588522
+=======
+  m_GameObject: {fileID: 6108970116327662798}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 6113144117135180790}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6108970116327662792
+>>>>>>> Stashed changes
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 7246009842374303598}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -347,10 +607,27 @@ MonoBehaviour:
   connected: 0
 --- !u!114 &738208094002533727
 MonoBehaviour:
+=======
+  m_GameObject: {fileID: 6108970116327662798}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 392991a6841e74b52b63698d9db929f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  endpointID: 0
+  secondLed: 0
+  useCustomOrientation: 0
+  customOrientationOffset: 0
+  positionFilter: 1
+  blinkOnJump: 1
+--- !u!1 &6108970116360176394
+GameObject:
+>>>>>>> Stashed changes
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 7246009842374303598}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -359,10 +636,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
 --- !u!114 &6983233381555650486
 MonoBehaviour:
+=======
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6108970116360176405}
+  - component: {fileID: 6108970116360176404}
+  m_Layer: 0
+  m_Name: LeftControllerEndpoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6108970116360176405
+Transform:
+>>>>>>> Stashed changes
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 7246009842374303598}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -376,14 +669,40 @@ MonoBehaviour:
   vrtrackerWebsocket: {fileID: 380861383662588522}
   vrtrackerUDP: {fileID: 738208094002533727}
 --- !u!114 &8945644107318071581
+=======
+  m_GameObject: {fileID: 6108970116360176394}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 6108970115548994578}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6108970116360176404
+>>>>>>> Stashed changes
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 7246009842374303598}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 306705e95aa12654681ecbb6e5912379, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+=======
+  m_GameObject: {fileID: 6108970116360176394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 392991a6841e74b52b63698d9db929f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  endpointID: 0
+  secondLed: 0
+  useCustomOrientation: 0
+  customOrientationOffset: 0
+  positionFilter: 1
+  blinkOnJump: 1
+>>>>>>> Stashed changes
