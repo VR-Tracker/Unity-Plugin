@@ -8,15 +8,15 @@ Prefab:
     m_TransformParent: {fileID: 0}
     m_Modifications: []
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 0}
+  m_SourcePrefab: {fileID: 0}
   m_RootGameObject: {fileID: 1301206466242658}
-  m_IsPrefabParent: 1
+  m_IsPrefabAsset: 1
 --- !u!1 &1301206466242658
 GameObject:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 5
+  serializedVersion: 6
   m_Component:
   - component: {fileID: 4997283690951720}
   - component: {fileID: 114549296266325334}
@@ -31,10 +31,10 @@ GameObject:
 --- !u!4 &4997283690951720
 Transform:
   m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1301206466242658}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -44,7 +44,7 @@ Transform:
 --- !u!82 &82930702996524710
 AudioSource:
   m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1301206466242658}
   m_Enabled: 1
@@ -139,7 +139,7 @@ AudioSource:
 --- !u!114 &114549296266325334
 MonoBehaviour:
   m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1301206466242658}
   m_Enabled: 1
@@ -147,9 +147,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88405f5b8a1b44fe8851afe05093510b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  distanceStartFade: 1.5
+  distanceStartFade: 0.7
   corners: []
-  boundaryWall: {fileID: 1699629693251344, guid: 464edce09e1f2104d8745de80d1ba26f,
+  boundaryWall: {fileID: 1208899913499532, guid: 50e612a74ddb7d745bf23001a577249d,
     type: 2}
   alertAudio: {fileID: 82930702996524710}
   audioMixer: {fileID: 24100000, guid: 75a84222fa2bbb54999ba9cd0af4182a, type: 2}
