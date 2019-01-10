@@ -259,7 +259,14 @@ namespace VRTracker.Manager
             if (parentTag.tagVersion == VRT_Tag.TagVersion.V3)
                 neworientation = new Quaternion(-neworientation.x, neworientation.y, -neworientation.z, neworientation.w);
 
-            if (parentTag.tagVersion == VRT_Tag.TagVersion.V2)
+            else if (parentTag.tagVersion == VRT_Tag.TagVersion.V2)
+            {
+                neworientation = neworientation * Quaternion.Euler(0, 180, 180);
+                neworientation.x = -neworientation.x;
+                neworientation.z = -neworientation.z;
+            }
+
+            else if (parentTag.tagVersion == VRT_Tag.TagVersion.Gun)
             {
                 neworientation = neworientation * Quaternion.Euler(0, 180, 180);
                 neworientation.x = -neworientation.x;
