@@ -54,6 +54,7 @@ namespace VRTracker.Network {
                 }
                 else
                 {
+                    networkDiscovery.StartClient();
                     StartCoroutine(WaitForLanBoradcast());
                 }				
 			}
