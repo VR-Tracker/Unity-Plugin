@@ -11,6 +11,8 @@ namespace VRTracker.Manager
         private XRNode trackPoint;
         private bool buttonState = false;
 
+        public float playerHeight;
+
         public override void Start()
         {
             parentTag = GetComponentInParent<VRT_Tag>();
@@ -29,7 +31,9 @@ namespace VRTracker.Manager
         // Update is called once per frame
         public override void Update()
         {
-            transform.position = InputTracking.GetLocalPosition(trackPoint);
+            Vector3 pos = InputTracking.GetLocalPosition(trackPoint);
+            pos.y += playerHeight;
+            transform.position = pos;
             transform.rotation = InputTracking.GetLocalRotation(trackPoint);
 
             if (positionUpdateHandler != null)
@@ -64,11 +68,13 @@ namespace VRTracker.Manager
                     buttonState = Input.GetButton("TriggerRight");
                     if (buttonState && parentTag.OnTriggerDown != null)
                     {
+                        Debug.Log("Trigger Down");
                         UnityMainThreadDispatcher.Instance().Enqueue(parentTag.OnTriggerDown);
                     }
 
                     else if (!buttonState && parentTag.OnTriggerUp != null)
                     {
+                        Debug.Log("Trigger Up");
                         UnityMainThreadDispatcher.Instance().Enqueue(parentTag.OnTriggerUp);
                     }
                 }
