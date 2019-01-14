@@ -23,24 +23,30 @@ namespace VRTracker.Network {
 
 		private void Start()
 		{
-			base.Initialize();
-			base.StartAsClient();
-			StartCoroutine(CleanupExpiredEntries());
 		}
 
 		public void StartBroadcast()
 		{
             if(broadcasting)
     			StopBroadcast();
-			base.Initialize();
+            
+			Initialize();
 
 			string matchName = SceneManager.GetActiveScene().name;
 			broadcastData = broadcastData + ":" + matchName + ":" + GetComponent<VRTracker.Network.VRT_NetworkManager>().networkPort.ToString() + ":" + GetComponent<VRTracker.Network.VRT_NetworkManager>().playerPrefab.name;
             broadcasting = true;
-            base.StartAsServer();
+            StartAsServer();
+            Debug.Log("Broadcasting");
 		}
 
-		private IEnumerator CleanupExpiredEntries()
+        public void StartClient()
+        {
+            Initialize();
+            StartAsClient();
+            StartCoroutine(CleanupExpiredEntries());
+        }
+
+        private IEnumerator CleanupExpiredEntries()
 		{
 			while (true)
 			{
