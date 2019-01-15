@@ -76,7 +76,7 @@ namespace VRTracker.Boundary
         {
             JSONNode cornerList = null;
             string filePath = Path.Combine(Application.persistentDataPath, JsonFilePath);
-            Debug.Log(filePath);
+            //Debug.Log(filePath);
             if (File.Exists(filePath))
             {
                 // Read the json from the file into a string
