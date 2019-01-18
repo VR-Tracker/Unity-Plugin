@@ -1,5 +1,7 @@
 # Unity plugin V3
 
+This plugin has been developed and tested using Unity 2018.3. Using ealier versions of Unity will break the prefabs, but all scripts are compatible down to Unity 5.6
+
 ## Documentation
 Follow the documentation available on [Notion](https://www.notion.so/vrtracker/VR-Tracker-Unity-Plugin-V3-5aad172e672944c1a4f47a5ac2c8e72d)
 
