@@ -68,13 +68,13 @@ namespace VRTracker.Manager
                     buttonState = Input.GetButton("TriggerRight");
                     if (buttonState && parentTag.OnTriggerDown != null)
                     {
-                        Debug.Log("Trigger Down");
+                        //Debug.Log("Trigger Down");
                         UnityMainThreadDispatcher.Instance().Enqueue(parentTag.OnTriggerDown);
                     }
 
                     else if (!buttonState && parentTag.OnTriggerUp != null)
                     {
-                        Debug.Log("Trigger Up");
+                        //Debug.Log("Trigger Up");
                         UnityMainThreadDispatcher.Instance().Enqueue(parentTag.OnTriggerUp);
                     }
                 }
