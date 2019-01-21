@@ -23,7 +23,8 @@ namespace VRTracker.Network {
 
 		private void Start()
 		{
-		}
+            Initialize();
+        }
 
 		public void StartBroadcast()
 		{

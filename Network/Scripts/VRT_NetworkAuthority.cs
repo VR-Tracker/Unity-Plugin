@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using VRTracker.Interaction;
 
 namespace VRTracker.Network
 {
@@ -55,6 +56,10 @@ namespace VRTracker.Network
             GameObject iObject = NetworkServer.FindLocalObject(objectId); // Finds the object on the server scene (find by ID)
             NetworkIdentity objectNetworkIdentity = iObject.GetComponent<NetworkIdentity>(); // Look for the object Network Identity
             objectNetworkIdentity.RemoveClientAuthority(playerNetworkIndentity.connectionToClient); // Remove the authority for this player 
+
+            if (iObject.GetComponent<VRT_InteractableObject>())
+                iObject.GetComponent<VRT_InteractableObject>().NotifyServerReleased();
+
         }
 
 
@@ -66,8 +71,10 @@ namespace VRTracker.Network
         /// <param name="objectId">NetworkInstanceId of the object</param>
         public void SetAuth(NetworkInstanceId objectId)
         {
-            if(playerNetworkIndentity.isClient)
+            if (playerNetworkIndentity.isClient)
+            {
                 CmdSetAuth(objectId);
+            }
         }
 
         /// <summary>
@@ -82,6 +89,9 @@ namespace VRTracker.Network
             GameObject iObject = NetworkServer.FindLocalObject(objectId); // Finds the object on the server scene (find by ID)
             NetworkIdentity objectNetworkIdentity = iObject.GetComponent<NetworkIdentity>(); // Look for the object Network Identity
             NetworkConnection otherOwner = objectNetworkIdentity.clientAuthorityOwner; // Check who is the current owner of the object authority
+
+            if(iObject.GetComponent<VRT_InteractableObject>())
+                iObject.GetComponent<VRT_InteractableObject>().NotifyServerGrabbed();
 
             // First case : the player asking for the authority already has it
             if (otherOwner == playerNetworkIndentity.connectionToClient)
