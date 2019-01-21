@@ -47,7 +47,7 @@ namespace VRStandardAssets.Utils
             // If applicable set the immediate colour to be faded out and then fade in.
             if (m_FadeInOnStart)
             {
-                m_FadeImage.color = m_FadeColor;
+                m_FadeImage.material.color = m_FadeColor;
                 FadeIn(true);
             }
         }
@@ -58,7 +58,7 @@ namespace VRStandardAssets.Utils
             // If applicable set the immediate colour to be faded out and then fade in.
             if (m_FadeInOnSceneLoad)
             {
-                m_FadeImage.color = m_FadeColor;
+                m_FadeImage.material.color = m_FadeColor;
                 FadeIn(true);
             }
         }
@@ -101,7 +101,7 @@ namespace VRStandardAssets.Utils
             if (m_IsFading)
                 return;
             if (gameObject.activeInHierarchy)
-            { 
+            {
                 StartCoroutine(BeginFade(m_FadeColor, m_FadeOutColor, duration));
             }
             // Fade in the audio over the same duration.
@@ -157,16 +157,17 @@ namespace VRStandardAssets.Utils
 
             // Execute this loop once per frame until the timer exceeds the duration.
             float timer = 0f;
+
             while (timer <= duration)
             {
                 // Set the colour based on the normalised time.
-                m_FadeImage.color = Color.Lerp(startCol, endCol, timer / duration);
+                m_FadeImage.material.color = Color.Lerp(startCol, endCol, timer / duration);
 
                 // Increment the timer by the time between frames and return next frame.
                 timer += Time.deltaTime;
                 yield return null;
             }
-
+            m_FadeImage.material.color = endCol;
             // Fading is finished so allow other fading calls again.
             m_IsFading = false;
 
