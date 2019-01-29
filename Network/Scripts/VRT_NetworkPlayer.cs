@@ -24,17 +24,18 @@ namespace VRTracker.Network {
                 Debug.LogError("Network Manager not found");
 
 
-#if (VRTACKER_INTERNAL)
+#if (VRTRACKER_INTERNAL)
             VRT_PlayerInstance localPlayer = this.gameObject.GetComponent<VRT_PlayerInstanceExtended> ();
+              networkManager.AddPlayer(localPlayer);
+
+            if (this.gameObject.GetComponent<NetworkIdentity> ().isLocalPlayer)
+            {
+                networkManager.SetLocalPlayer(localPlayer);
+			}		
 #else
             VRT_PlayerInstance localPlayer = this.gameObject.GetComponent<VRT_PlayerInstance>();
 #endif
-            networkManager.AddPlayer(localPlayer);
-
-            if (this.gameObject.GetComponent<NetworkIdentity> ().isLocalPlayer) {
-                networkManager.SetLocalPlayer(localPlayer);
-			}
-				
+          		
         }
 
         void OnDestroy()
