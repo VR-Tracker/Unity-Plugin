@@ -22,7 +22,7 @@ namespace VRTracker.Network
         public event Action<VRT_PlayerInstance> OnPlayerLeave;
         public event Action<VRT_PlayerInstance> OnLocalPlayerJoin;  // Called the local player is set
 
-        public static VRT_NetworkManager Instance;
+       // public static VRT_NetworkManager Instance;
 
         [Tooltip("Local player in the Game")]
         public VRT_PlayerInstance localPlayer;
@@ -35,10 +35,10 @@ namespace VRTracker.Network
 
         public void Start()
         {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
+            //if (Instance == null)
+            //{
+            //    Instance = this;
+            //}
 
             // Check for file configuration for the IP and Port Settings
             if (VRTracker.Configuration.VRT_FileSettings.Instance != null)

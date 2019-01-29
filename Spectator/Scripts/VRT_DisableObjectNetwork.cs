@@ -23,7 +23,7 @@ public class VRT_DisableObjectNetwork : MonoBehaviour
     {
         if (disableIfNotLocalClient)
         {
-            if (VRT_NetworkManager.Instance.GetLocalPlayer() != pInstance)
+            if (pInstance.isLocalPlayer)
             {
                 if (objectToDisable == null)
                     gameObject.SetActive(false);
@@ -33,16 +33,17 @@ public class VRT_DisableObjectNetwork : MonoBehaviour
         }
 
 
+        // NO LONGER ACCESSIBLE WITH FORGE NETWORKMANAGER
 
-        if (disableOnSpectator)
-        {
-            if (VRTracker.Manager.VRT_Manager.Instance.spectator)
-            {
-                if (objectToDisable == null)
-                    gameObject.SetActive(false);
-                else
-                    objectToDisable.SetActive(false);
-            }
-        }
+        //if (disableOnSpectator)
+        //{
+        //    if (VRTracker.Manager.VRT_Manager.Instance.spectator)
+        //    {
+        //        if (objectToDisable == null)
+        //            gameObject.SetActive(false);
+        //        else
+        //            objectToDisable.SetActive(false);
+        //    }
+        //}
     }
 }

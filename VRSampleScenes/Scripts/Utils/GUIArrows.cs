@@ -28,10 +28,10 @@ namespace VRStandardAssets.Utils
             // Speed is distance (zero alpha to one alpha) divided by time (duration).
             m_FadeSpeed = 1f / m_FadeDuration;
 
-            if (VRT_NetworkManager.Instance != null)
-            {
-                VRT_NetworkManager.Instance.OnLocalPlayerJoin += SetLocalCamera;
-            }
+            //if (VRT_NetworkManager.Instance != null)
+            //{
+            //    VRT_NetworkManager.Instance.OnLocalPlayerJoin += SetLocalCamera;
+            //}
         }
 
         void SetLocalCamera(VRT_PlayerInstance pInstance)
