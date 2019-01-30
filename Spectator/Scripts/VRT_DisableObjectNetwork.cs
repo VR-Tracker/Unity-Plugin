@@ -14,7 +14,7 @@ public class VRT_DisableObjectNetwork : MonoBehaviour
     [SerializeField] private GameObject objectToDisable;
     //set only one of the options below to true;
     [SerializeField] bool disableIfNotLocalClient;
-    [SerializeField] VRT_PlayerInstance pInstance; //this game object player instance
+    [SerializeField] VRT_PlayerInstanceExtended pInstance; //this game object player instance
 
 
     [SerializeField] bool disableOnSpectator;
