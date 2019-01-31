@@ -19,18 +19,20 @@ public class VRT_DisableObjectNetwork : MonoBehaviour
 
     [SerializeField] bool disableOnSpectator;
 
-    void Start()
+    public void Init() // called by player network when not owner of this object
     {
         if (disableIfNotLocalClient)
         {
-            if (pInstance.isLocalPlayer)
-            {
-                if (objectToDisable == null)
-                    gameObject.SetActive(false);
-                else
-                    objectToDisable.SetActive(false);
-            }
+            if (objectToDisable == null)
+                gameObject.SetActive(false); //if nothing is assigned in inspector, disable this object
+            else
+                objectToDisable.SetActive(false);
         }
+    }
+
+    void Start()
+    {
+
 
 
         // NO LONGER ACCESSIBLE WITH FORGE NETWORKMANAGER
