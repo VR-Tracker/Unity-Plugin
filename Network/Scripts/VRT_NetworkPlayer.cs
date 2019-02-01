@@ -43,9 +43,9 @@ namespace VRTracker.Network {
             if (networkManager)
             {
 #if (VRTACKER_INTERNAL)
-                networkManager.RemovePlayer(this.gameObject.GetComponent<VRT_PlayerInstanceExtended>());
+               // networkManager.RemovePlayer(this.gameObject.GetComponent<VRT_PlayerInstanceExtended>());
 #else
-                networkManager.RemovePlayer(this.gameObject.GetComponent<VRT_PlayerInstance>());
+               // networkManager.RemovePlayer(this.gameObject.GetComponent<VRT_PlayerInstance>());
 #endif
             }
         }
