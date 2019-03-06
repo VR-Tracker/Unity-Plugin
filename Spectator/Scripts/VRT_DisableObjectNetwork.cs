@@ -33,8 +33,6 @@ public class VRT_DisableObjectNetwork : MonoBehaviour
     void Start()
     {
 
-
-
         // NO LONGER ACCESSIBLE WITH FORGE NETWORKMANAGER
 
         //if (disableOnSpectator)
