@@ -115,7 +115,7 @@ namespace VRTracker.Player
         }
 
         /// <summary>
-        /// Inform the user to reorient its view
+        /// Inform the user to reorient its view and its gun orientation
         /// This function is called from a server command
         /// </summary>
         /// <param name="con">Con.</param>

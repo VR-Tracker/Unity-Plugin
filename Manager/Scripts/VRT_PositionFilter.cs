@@ -191,7 +191,7 @@ namespace VRTracker.Utils
         public void AddPositionMeasurement(TrackingDataPosition trackingDataPosition){
 
             double lastPosTs = GetLastPositionTimestamp();
-            if (trackingDataPosition.timestamp - lastPosTs < 0.001f)
+            if (trackingDataPosition.timestamp - lastPosTs < 0.01f)
             {
                 Debug.LogError("Position Timestamp too close at " + trackingDataPosition.timestamp.ToString("F4") + "  last timestamp: " + lastPosTs.ToString("F4"));
                 return;

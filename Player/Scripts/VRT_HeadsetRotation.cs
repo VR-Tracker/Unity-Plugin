@@ -75,7 +75,7 @@ namespace VRTracker.Player
 
             previousOffset = Quaternion.identity;
             destinationOffset = Quaternion.identity;
-           // ResetOrientation();
+            // ResetOrientation();
             StartCoroutine(FixOffset2());
         }
 
@@ -200,7 +200,7 @@ namespace VRTracker.Player
         /// </summary>
         private bool UpdateOrientationData2()
         {
-            
+
             return false;
         }
 
@@ -252,7 +252,18 @@ namespace VRTracker.Player
             VRTracker.VRT_SixDofOffset tagOffsetGun = null;
 
             if (headTag != null)
+            {
                 tagOffsetHead = headTag.GetComponent<VRTracker.VRT_SixDofOffset>();
+                tagOffsetHead.SetToZero();
+                InputTracking.Recenter();
+
+            }
+
+            if (gunTag != null)
+            {
+                tagOffsetGun = gunTag.GetComponent<VRTracker.VRT_SixDofOffset>();
+                tagOffsetGun.SetToZero();
+            }
 
             if (Blink != null)
                 Blink();

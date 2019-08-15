@@ -39,11 +39,11 @@ public class VRT_ManualHeadsetOrientation : VRT_HeadsetRotation
         //Debug.Log("child script fixed update");
     }
 
-    public override void ResetOrientation()
-    {
-        InputTracking.Recenter();
+    //public override void ResetOrientation()
+    //{
+    //    InputTracking.Recenter();
 
-       if (Blink != null)
-            Blink();
-    }
+    //   if (Blink != null)
+    //        Blink();
+    //}
 }
