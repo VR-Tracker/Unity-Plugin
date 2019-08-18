@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.XR;
 using UnityEngine.Networking;
 using CircularBuffer;
@@ -30,11 +31,15 @@ namespace VRTracker.Player
         private int waitTimeBeforeVerification = 1; 	//Time in second before checking if the orientation need to be corrected
         [Tooltip("The minimum offset in degrees to blink instead of rotating.")]
         public float minOffsetToBlink = 15.0f;			//Minimun difference for the orientation to display a blink and do an hard correction
-        public float errorOffset = 30.0f; // Offset to detect error (on start or when headset is put on) 
+        public float errorOffset = 30.0f; // Offset to detect error (on start or when headset is put on)
         private int errorCounter = 0;
         private CircularBuffer<float> offsetBuffer;
 
         protected Action Blink;
+
+        [Header("Events")]
+        [Tooltip("Events triggered on reorientation")]
+        public UnityEvent onReorientation;
 
         /*[Tooltip("The VRTK Headset Fade script to use when fading the headset. If this is left blank then the script will need to be applied to the same GameObject.")]
         public VRTK.VRTK_HeadsetFade headsetFade;
@@ -256,7 +261,7 @@ namespace VRTracker.Player
                 tagOffsetHead = headTag.GetComponent<VRTracker.VRT_SixDofOffset>();
                 tagOffsetHead.SetToZero();
                 InputTracking.Recenter();
-
+                onReorientation.Invoke();
             }
 
             if (gunTag != null)
