@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -30,7 +30,7 @@ namespace VRTracker.Network {
 
 		public void StartBroadcast()
 		{
-            if(broadcasting)
+            //if(broadcasting)
     			StopBroadcast();
 			base.Initialize();
 
