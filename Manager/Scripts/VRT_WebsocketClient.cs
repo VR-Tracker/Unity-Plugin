@@ -27,7 +27,7 @@ namespace VRTracker.Manager
         public event Action OnConnected;
         public event Action OnDisconnected;
         public event Action<string> OnNoGateway; // Event trigger if the Gateway could not be found
-        [System.NonSerialized] public string serverIp = "";
+        public string serverIp = "";
         private bool serverIpReceived = false;
         private bool isSocketClosing = false;
         private bool isSocketRunning = false;
@@ -36,12 +36,13 @@ namespace VRTracker.Manager
 
         private void Awake()
         {
+            localIp = GetLocalIPAddress();
+
         }
 
         // Use this for initialization
         void Start()
         {
-            localIp = GetLocalIPAddress ();
             OpenWebsocket();
         }
 
