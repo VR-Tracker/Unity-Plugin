@@ -22,10 +22,12 @@ namespace VRTracker.Network {
 		public VRTracker.Network.VRT_NetworkDiscovery networkDiscovery;
 		public VRTracker.Network.VRT_NetworkManager networkManager;
 		private bool hostFound = false;
-
+        private int timeOut = 10;
+        private int currentConnectionTime = 0;
 		// Use this for initialization
 		void Start () {
-			networkDiscovery = FindObjectOfType<VRTracker.Network.VRT_NetworkDiscovery>();
+            currentConnectionTime = 0;
+            networkDiscovery = FindObjectOfType<VRTracker.Network.VRT_NetworkDiscovery>();
 			networkManager = FindObjectOfType<VRTracker.Network.VRT_NetworkManager>();
 
             // Either we use the Network Discovery if enabled...
@@ -77,8 +79,24 @@ namespace VRTracker.Network {
         /// <returns>The for lan boradcast.</returns>
 		IEnumerator WaitForLanBoradcast()
 		{
-            while(!hostFound){
+            while(!hostFound && currentConnectionTime < timeOut)
+            {
                 yield return new WaitForSeconds(1);
+                currentConnectionTime++;
+            }
+            if(currentConnectionTime >= timeOut)
+            {
+                Debug.Log("No server found");
+                if (VRT_Manager.Instance.spectator)
+                {
+                    networkManager.StartLanServer();
+                    networkDiscovery.StartBroadcast();
+                }
+                else
+                {
+                    networkManager.StartLanHost();
+                    networkDiscovery.StartBroadcast();
+                }
             }
             yield return null;
 		}
