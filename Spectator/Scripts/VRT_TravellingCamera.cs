@@ -45,7 +45,10 @@ namespace VRTracker.Spectator
                     position2 = temp;
                 }
             }
-            transform.LookAt(lookat.position, Vector3.up);
+            if(lookat != null)
+                transform.LookAt(lookat.position, Vector3.up);
+            else
+                transform.LookAt(Vector3.zero, Vector3.up);
         }
     }
 }
