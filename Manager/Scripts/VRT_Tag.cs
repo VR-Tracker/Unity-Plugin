@@ -113,7 +113,7 @@ namespace VRTracker.Manager
         protected virtual void Start()
         {
 
-            if (VRTracker.Manager.VRT_Manager.Instance.spectator)
+            if (SpectatorManager.Instance.spectator)
             {
                 gameObject.SetActive(false);
                 return;

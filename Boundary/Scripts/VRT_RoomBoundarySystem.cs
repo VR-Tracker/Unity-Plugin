@@ -52,7 +52,7 @@ namespace VRTracker.Boundary
             walls = new List<GameObject>();
             LoadCornersData();
             //Don't draw the boundaries for spectator
-            if (!VRTracker.Manager.VRT_Manager.Instance.spectator)
+            if (!SpectatorManager.Instance.spectator)
             {
                 DrawBoundaries();
                 OnNewBoundaries += UpdateBoundaries;
@@ -90,7 +90,7 @@ namespace VRTracker.Boundary
                         corners.Add(new Vector3(vectorPos.x, 0, vectorPos.z));
                     }
                 }
-                if (VRT_Manager.Instance.spectator)
+                if (SpectatorManager.Instance.spectator)
                 {
                     if (cornersLoaded != null)
                     {

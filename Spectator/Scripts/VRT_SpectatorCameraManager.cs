@@ -39,7 +39,7 @@ namespace VRTracker.Spectator
             {
                 DisableCam(cam);
             }
-            if (VRT_Manager.Instance != null && VRT_Manager.Instance.spectator)
+            if (VRT_Manager.Instance != null && SpectatorManager.Instance.spectator)
             {
                 EnableCam(cameras[index]);
             }

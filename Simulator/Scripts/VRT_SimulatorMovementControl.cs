@@ -30,7 +30,7 @@ namespace VRTracker.Simulator {
         // Use this for initialization
         void Start () {
 			trackers = new List<GameObject> ();
-            if (VRT_Manager.Instance.spectator)
+            if (SpectatorManager.Instance.spectator)
             {
                 gameObject.SetActive(false);
             }

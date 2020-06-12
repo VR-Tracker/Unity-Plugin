@@ -21,7 +21,7 @@ public class VRTrackerPlayerCamera : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-		if (VRTracker.Manager.VRT_Manager.Instance != null && !VRTracker.Manager.VRT_Manager.Instance.spectator)
+		if (VRTracker.Manager.VRT_Manager.Instance != null && !SpectatorManager.Instance.spectator)
 		{	
             return;
         }

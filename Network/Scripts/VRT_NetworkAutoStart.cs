@@ -32,11 +32,11 @@ namespace VRTracker.Network {
 
             // Either we use the Network Discovery if enabled...
             if (networkDiscovery != null && networkDiscovery.enabled) {
-                if (host && VRT_Manager.Instance.spectator)
+                if (host && SpectatorManager.Instance.spectator)
                 {
                     Debug.LogError("NETWORK: Cannot be host (VRT_NetworkAutoStart) and Spectator (VRT_Manager)");
                 }
-                else if (VRT_Manager.Instance.spectator)
+                else if (SpectatorManager.Instance.spectator)
                 {
                     networkManager.StartLanServer();
                     networkDiscovery.StartBroadcast();
@@ -54,10 +54,10 @@ namespace VRTracker.Network {
 
             // ...Or we use the Gateway to get Server IP
             else {
-                if(VRT_Manager.Instance.spectator && host){
+                if(SpectatorManager.Instance.spectator && host){
                     Debug.LogError("NETWORK: Cannot be host (VRT_NetworkAutoStart) and Spectator (VRT_Manager)");
                 }
-                else if (VRT_Manager.Instance.spectator)
+                else if (SpectatorManager.Instance.spectator)
                 {
                     networkManager.StartLanServer();
                 }
@@ -87,7 +87,7 @@ namespace VRTracker.Network {
             if(currentConnectionTime >= timeOut)
             {
                 Debug.Log("No server found");
-                if (VRT_Manager.Instance.spectator)
+                if (SpectatorManager.Instance.spectator)
                 {
                     networkManager.StartLanServer();
                     networkDiscovery.StartBroadcast();

@@ -60,7 +60,7 @@ namespace VRTracker.Pairing
 		// Use this for initialization
 		void Start () {
 
-            if (VRTracker.Manager.VRT_Manager.Instance.spectator)
+            if (SpectatorManager.Instance.spectator)
             {
                 gameObject.SetActive(false);
                 if (gameScene != null)
@@ -99,7 +99,7 @@ namespace VRTracker.Pairing
             else {
                 pairingScene = new SceneField(SceneManager.GetActiveScene());
                 Debug.Log("Type Of Pairing Scene " + pairingScene.GetType().ToString());
-                if (VRTracker.Manager.VRT_Manager.Instance.spectator){
+                if (SpectatorManager.Instance.spectator){
                     if(gameScene.SceneName != "")
                         SceneManager.LoadScene(gameScene);
                     else // Load next scene in Build setting if no Game Scene was set manually in the Pairing Manager
@@ -127,7 +127,7 @@ namespace VRTracker.Pairing
 
         public IEnumerator PairFromMainScene(){
             // Do not try pairing if spectator
-            if (VRTracker.Manager.VRT_Manager.Instance.spectator)
+            if (SpectatorManager.Instance.spectator)
                 yield return null;
 
             // Try automatic pairing

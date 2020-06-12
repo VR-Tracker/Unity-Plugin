@@ -17,7 +17,7 @@ namespace VRTracker.Spectator {
 
         void Start()
         {
-            if (VRTracker.Manager.VRT_Manager.Instance.spectator)
+            if (SpectatorManager.Instance.spectator)
             {
                 if (objectToDisable == null)
                     gameObject.SetActive(false);
