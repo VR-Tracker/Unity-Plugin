@@ -62,7 +62,7 @@ namespace VRTracker.Network
             Debug.Log("NETWORK: Starting as Host");
             isServer = true;
             isClient = true;
-            VRT_Manager.Instance.vrtrackerWebsocket.SetServerIp();
+            SpectatorManager.Instance.SetServerIp();
             serverBindAddress = VRT_Manager.Instance.vrtrackerWebsocket.serverIp;
             serverBindToIP = true;
             networkAddress = serverBindAddress;
@@ -73,8 +73,8 @@ namespace VRTracker.Network
         {
             Debug.Log("NETWORK: Starting as Server");
             isServer = true;
-            VRT_Manager.Instance.vrtrackerWebsocket.SetServerIp();
-            serverBindAddress = VRT_Manager.Instance.vrtrackerWebsocket.serverIp;
+            SpectatorManager.Instance.SetServerIp();
+            serverBindAddress = SpectatorManager.Instance.serverIp;
             serverBindToIP = true;
             networkAddress = serverBindAddress;
             StartServer();
