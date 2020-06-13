@@ -109,7 +109,7 @@ namespace VRTracker.Network {
         IEnumerator WaitForServerIP()
         {
             //while testing
-            while (!VRT_Manager.Instance.vrtrackerWebsocket.serverIp.StartsWith("192.168.", System.StringComparison.CurrentCulture))
+            while (!SpectatorManager.Instance.serverIp.StartsWith("192.168.", System.StringComparison.CurrentCulture))
             {
                 yield return new WaitForSeconds(1);
             }
@@ -117,7 +117,7 @@ namespace VRTracker.Network {
             //Joining the server
             if (networkManager != null)
             {
-                networkManager.JoinGame(VRT_Manager.Instance.vrtrackerWebsocket.serverIp);
+                networkManager.JoinGame(SpectatorManager.Instance.serverIp);
             }
             yield return null;
         }
