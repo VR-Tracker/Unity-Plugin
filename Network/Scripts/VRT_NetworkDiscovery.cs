@@ -30,7 +30,7 @@ namespace VRTracker.Network {
 
 		public void StartBroadcast()
 		{
-            //if(broadcasting)
+            if(broadcasting)
     			StopBroadcast();
 			base.Initialize();
 
